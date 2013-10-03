@@ -4,8 +4,6 @@
 #include <armadillo>
 #include "math.h"
 
-// test
-
 using namespace arma;
 
 
