@@ -1,5 +1,7 @@
 #include "hartreefock.h"
 
+// test
+
 HartreeFock::HartreeFock()
 {
     nElectrons = 1;
