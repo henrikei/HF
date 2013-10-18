@@ -2,7 +2,6 @@
 
 HartreeFock::HartreeFock()
 {
-    nElectrons = 1;
     nAtoms = 2;
     nBasisFunc = 4;
     nucleiPos = zeros<mat>(3, nAtoms);
@@ -148,7 +147,7 @@ void HartreeFock::calcIntegrals(){
         for (int j = 0; j < matDim; j++){
             for (int k = 0; k < matDim; k++){
                 for (int l = 0; l < matDim; l++){
-                    Q[i][j][k][l] = getTwoElectronIntegral(i, j, k, l);
+                    Q[i][j][k][l] = 2*getTwoElectronIntegral(i, j, k, l) - getTwoElectronIntegral(i, j, l, k);
                 }
             }
         }

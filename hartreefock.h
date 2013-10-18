@@ -16,7 +16,6 @@ public:
     double getEnergy();
     vec getCoeff();
 private:
-    int nElectrons;
     int nAtoms;
     int nBasisFunc;
     mat nucleiPos;
