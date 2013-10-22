@@ -20,7 +20,12 @@ int main()
     integrator.setMaxAngMom(2);
     integrator.setE();
 
-    cout << integrator.E[0] << endl;
+    cout << integrator.kinetic(1,0,0,0,0,0) << endl;
+    cout << integrator.kinetic(0,1,0,0,0,0) << endl;
+    cout << integrator.kinetic(0,0,1,0,0,0) << endl;
+    cout << integrator.kinetic(0,0,0,1,0,0) << endl;
+    cout << integrator.kinetic(0,0,0,0,1,0) << endl;
+    cout << integrator.kinetic(0,0,0,0,0,1) << endl;
 
 
 
