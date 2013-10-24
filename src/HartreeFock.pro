@@ -12,13 +12,15 @@ SOURCES += main.cpp \
     system.cpp \
     primitivebasis.cpp \
     contractedbasis.cpp \
-    integrator.cpp
+    integrator.cpp \
+    boysfunction.cpp
 
 HEADERS += \
     hartreefock.h \
     system.h \
     primitivebasis.h \
     contractedbasis.h \
-    integrator.h
+    integrator.h \
+    boysfunction.h
 
 include(defaults.pri)

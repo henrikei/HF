@@ -2,6 +2,7 @@
 #include <armadillo>
 #include <unittest++/UnitTest++.h>
 #include <src/integrator.h>
+#include <src/boysfunction.h>
 
 using namespace std;
 using namespace arma;
@@ -113,8 +114,10 @@ TEST(KineticIntegrals){
     CHECK_CLOSE(integrator.kinetic(1, 1, 1, 1, 1, 1), 0.28653192666, 0.00001);
 }
 
+
 int main()
 {
     return UnitTest::RunAllTests();
 }
+
 

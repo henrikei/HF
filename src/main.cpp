@@ -4,6 +4,7 @@
 #include "system.h"
 #include "primitivebasis.h"
 #include "integrator.h"
+#include "boysfunction.h"
 
 
 using namespace std;
@@ -20,12 +21,9 @@ int main()
     integrator.setMaxAngMom(2);
     integrator.setE();
 
-    cout << integrator.kinetic(1,0,0,0,0,0) << endl;
-    cout << integrator.kinetic(0,1,0,0,0,0) << endl;
-    cout << integrator.kinetic(0,0,1,0,0,0) << endl;
-    cout << integrator.kinetic(0,0,0,1,0,0) << endl;
-    cout << integrator.kinetic(0,0,0,0,1,0) << endl;
-    cout << integrator.kinetic(0,0,0,0,0,1) << endl;
+    BoysFunction boys(10, 3.8565398872482959);
+    cout << boys.returnValue(1) << endl;
+
 
 
 
