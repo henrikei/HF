@@ -114,6 +114,50 @@ TEST(KineticIntegrals){
     CHECK_CLOSE(integrator.kinetic(1, 1, 1, 1, 1, 1), 0.28653192666, 0.00001);
 }
 
+TEST(BoysIntegrals){
+    BoysFunction boys(12, 2.3252);
+
+    CHECK_CLOSE(boys.returnValue(1), 1.0007267355e-01, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(3), 2.5784878802e-02, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(6), 1.0688807154e-02, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(10), 5.8076406817e-03, 1.0E-10);
+
+    boys.resetx(8.9631);
+
+    CHECK_CLOSE(boys.returnValue(1), 1.6505538584e-02, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(3), 7.6131457739e-04, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(6), 7.7859828141e-05, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(10), 1.9587800991e-05, 1.0E-10);
+
+    boys.resetx(17.6721);
+
+    CHECK_CLOSE(boys.returnValue(1), 5.9646183419e-03, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(3), 7.1619859825e-05, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(6), 1.1232871899e-06, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(10), 4.4197332912e-08, 1.0E-10);
+
+    boys.resetx(31.1302);
+
+    CHECK_CLOSE(boys.returnValue(1), 2.5511857399e-03, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(3), 9.8720995169e-06, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(6), 2.8346995237e-08, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(10), 1.1882122875e-10, 1.0E-10);
+
+    boys.resetx(44.8960);
+
+    CHECK_CLOSE(boys.returnValue(1), 1.4730024561e-03, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(3), 2.7404345865e-06, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(6), 2.6232503507e-09, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(10), 2.5417117298e-12, 1.0E-10);
+
+    boys.resetx(57.1625);
+
+    CHECK_CLOSE(boys.returnValue(1), 1.0252933095e-03, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(3), 1.1766761813e-06, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(6), 5.4571584880e-10, 1.0E-10);
+    CHECK_CLOSE(boys.returnValue(10), 2.0120504238e-13, 1.0E-10);
+}
+
 
 int main()
 {

@@ -26,7 +26,7 @@ double BoysFunction::returnValue(int n)
 
 void BoysFunction::setFs(double x)
 {
-    if (x <= 30){
+    if (x <= 50){
         F(nMax) = tabulated(nMax, x);
     } else {
         F(nMax) = asymptotic(nMax, x);
@@ -43,7 +43,7 @@ void BoysFunction::setFs(double x)
 
 double BoysFunction::tabulated(int n, double x)
 {
-    double dx = 30.0/(nx - 1); // x-spacing in tabulated values
+    double dx = 50.0/(nx - 1); // x-spacing in tabulated values
     int xIndex = int ((x + 0.5*dx)/dx);
     double xt = xIndex*dx;     // tabulated x-value
     double Dx = x - xt;        // difference between actual and tabulated x-value
@@ -51,7 +51,7 @@ double BoysFunction::tabulated(int n, double x)
     double value = 0;
     double factorial = 1;
 
-    for(int k = 0; k < 6; k++){
+    for(int k = 0; k < 7; k++){
         if(k != 0){
             factorial *= k;
         }

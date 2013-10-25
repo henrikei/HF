@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include "hartreefock.h"
 #include "system.h"
@@ -21,8 +22,8 @@ int main()
     integrator.setMaxAngMom(2);
     integrator.setE();
 
-    BoysFunction boys(10, 3.8565398872482959);
-    cout << boys.returnValue(1) << endl;
+    BoysFunction boys(12, 2.3252);
+    cout << scientific << setprecision(10) << boys.returnValue(6) << endl;
 
 
 
