@@ -17,15 +17,14 @@ int main()
     integrator.setPositionA(RA);
     rowvec3 RB = {-1.3, 1.4, -2.4};
     integrator.setPositionB(RB);
+    rowvec3 RC = {2.3, 0.9, 3.2};
     integrator.setAlpha(0.2);
     integrator.setBeta(0.3);
     integrator.setMaxAngMom(2);
     integrator.setE();
+    integrator.setR(RC);
 
-    BoysFunction boys(12, 2.3252);
-    cout << scientific << setprecision(10) << boys.returnValue(6) << endl;
-
-
+    cout << integrator.coulomb1(1,0,0,0,0,0) << endl;
 
 
 //    mat nucleiPos = zeros<mat>(3,2);
