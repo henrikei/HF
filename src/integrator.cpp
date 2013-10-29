@@ -99,37 +99,109 @@ void Integrator::setR(rowvec3 C)
     }
 
 
-    for(int tuv = 1; tuv < nMax+1; tuv++){
-        for(int n = 0; n < tuv+1; n++){
-            for(int t = 0; t < tMax; t++){
-                for(int u = 0; u < tMax; u++){
-                    for(int v = 0; v < tMax; v++){
-                        if(t + u + v == tuv){
+    for(int t = 0; t < tMax; t++){
+        for(int n = 0; n < nMax - t; n++){
+            if (t == 0){
+                R.at(n)(t+1,0,0) = PC(0)*R.at(n+1)(t,0,0);
+            } else {
+                R.at(n)(t+1,0,0) = t*R.at(n+1)(t-1,0,0) + PC(0)*R.at(n+1)(t,0,0);
+            }
+        }
+    }
 
-                            if(t == 0){
-                                R.at(n)(t+1,u,v) = PC(0)*R.at(n+1)(t,u,v);
-                            } else {
-                                R.at(n)(t+1,u,v) = t*R.at(n+1)(t-1,u,v) + PC(0)*R.at(n+1)(t,u,v);
-                            }
+    for(int t = 0; t < tMax+1; t++){
+        for(int u = 0; u < tMax; u++){
+            for(int n = 0; n < nMax - u; n++){
+                if (u == 0){
+                    R.at(n)(t,u+1,0) = PC(1)*R.at(n+1)(t,u,0);
+                } else {
+                    R.at(n)(t,u+1,0) = u*R.at(n+1)(t,u-1,0) + PC(1)*R.at(n+1)(t,u,0);
+                }
+            }
+        }
+    }
 
-                            if(u == 0){
-                                R.at(n)(t,u+1,v) = PC(1)*R.at(n+1)(t,u,v);
-                            } else {
-                                R.at(n)(t,u+1,v) = u*R.at(n+1)(t,u-1,v) + PC(1)*R.at(n+1)(t,u,v);
-                            }
-
-                            if(v == 0){
-                                R.at(n)(t,u,v+1) = PC(2)*R.at(n+1)(t,u,v);
-                            } else {
-                                R.at(n)(t,u,v+1) = v*R.at(n+1)(t,u,v-1) + PC(2)*R.at(n+1)(t,u,v);
-                            }
-
-                        }
+    for(int t = 0; t < tMax+1; t++){
+        for(int u = 0; u < tMax+1; u++){
+            for(int v = 0; v < tMax; v++){
+                for(int n = 0; n < nMax - v; n++){
+                    if (v == 0){
+                        R.at(n)(t,u,v+1) = PC(2)*R.at(n+1)(t,u,v);
+                    } else {
+                        R.at(n)(t,u,v+1) = v*R.at(n+1)(t,u,v-1) + PC(2)*R.at(n+1)(t,u,v);
                     }
                 }
             }
         }
     }
+
+
+//  Wrong!!
+//    for (int t = 0; t < tMax; t++){
+//        for (int n = 0; n < nMax - t; n++){
+//            if (t == 0){
+//                R.at(n)(t+1,0,0) = PC(0)*R.at(n+1)(t,0,0);
+//            } else {
+//                R.at(n)(t+1,0,0) = t*R.at(n+1)(t-1,0,0) + PC(0)*R.at(n+1)(t,0,0);
+//            }
+//        }
+//    }
+
+//    for (int u = 0; u < tMax; u++){
+//        for (int n = 0; n < nMax - u; n++){
+//            if (u == 0){
+//                R.at(n)(0,u+1,0) = PC(1)*R.at(n+1)(0,u,0);
+//            } else {
+//                R.at(n)(0,u+1,0) = u*R.at(n+1)(0,u-1,0) + PC(1)*R.at(n+1)(0,u,0);
+//            }
+//        }
+//    }
+
+//    for (int u = 0; u < tMax+1; u++){
+//        for (int v = 0; v < tMax; v++){
+//            for (int n = 0; n < nMax - v; n++){
+//                if (v == 0){
+//                    R.at(n)(0,u,v+1) = PC(2)*R.at(n+1)(t,u,v);
+//                } else {
+//                    R.at(n)(0,u,v+1) = v*R.at(n+1)(t,u,v-1) + PC(2)*R.at(n+1)(t,u,v);
+//                }
+//            }
+//        }
+//    }
+
+
+
+//    for(int tuv = 0; tuv < nMax+1; tuv++){
+//        for(int n = 0; n < nMax; n++){
+//            for(int t = 0; t < tMax; t++){
+//                for(int u = 0; u < tMax; u++){
+//                    for(int v = 0; v < tMax; v++){
+//                        if(t + u + v == tuv){
+
+//                            if(t == 0){
+//                                R.at(n)(t+1,u,v) = PC(0)*R.at(n+1)(t,u,v);
+//                            } else {
+//                                R.at(n)(t+1,u,v) = t*R.at(n+1)(t-1,u,v) + PC(0)*R.at(n+1)(t,u,v);
+//                            }
+
+//                            if(u == 0){
+//                                R.at(n)(t,u+1,v) = PC(1)*R.at(n+1)(t,u,v);
+//                            } else {
+//                                R.at(n)(t,u+1,v) = u*R.at(n+1)(t,u-1,v) + PC(1)*R.at(n+1)(t,u,v);
+//                            }
+
+//                            if(v == 0){
+//                                R.at(n)(t,u,v+1) = PC(2)*R.at(n+1)(t,u,v);
+//                            } else {
+//                                R.at(n)(t,u,v+1) = v*R.at(n+1)(t,u,v-1) + PC(2)*R.at(n+1)(t,u,v);
+//                            }
+
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 }
 

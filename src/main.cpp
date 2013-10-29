@@ -24,7 +24,8 @@ int main()
     integrator.setE();
     integrator.setR(RC);
 
-    cout << integrator.coulomb1(1,0,0,0,0,0) << endl;
+    cout << integrator.R.at(0) << endl;
+    cout << integrator.coulomb1(1,1,1,1,0,0) << endl;
 
 
 //    mat nucleiPos = zeros<mat>(3,2);
