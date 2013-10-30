@@ -13,19 +13,30 @@ using namespace std;
 int main()
 {
     Integrator integrator;
-    rowvec3 RA = {1.2, 2.3, 3.4};
-    integrator.setPositionA(RA);
-    rowvec3 RB = {-1.3, 1.4, -2.4};
-    integrator.setPositionB(RB);
-    rowvec3 RC = {2.3, 0.9, 3.2};
-    integrator.setAlpha(0.2);
-    integrator.setBeta(0.3);
-    integrator.setMaxAngMom(2);
-    integrator.setE();
-    integrator.setR(RC);
 
-    cout << integrator.R.at(0) << endl;
-    cout << integrator.coulomb1(1,1,1,1,0,0) << endl;
+    rowvec3 RA = {1.2, 2.3, 3.4};
+    rowvec3 RB = {-1.3, 1.4, -2.4};
+    rowvec3 RC = {2.3, 0.9, 3.2};
+    rowvec3 RD = {-2.0, 1.9, 2.2};
+    double alpha = 0.2;
+    double beta = 0.3;
+    double gamma = 0.4;
+    double delta = 0.5;
+    int angMomMax = 3;
+
+    integrator.setPositionA(RA);
+    integrator.setPositionB(RB);
+    integrator.setPositionC(RC);
+    integrator.setPositionD(RD);
+    integrator.setAlpha(alpha);
+    integrator.setBeta(beta);
+    integrator.setGamma(gamma);
+    integrator.setDelta(delta);
+    integrator.setMaxAngMom(angMomMax);
+    integrator.setE();
+
+    //cout << integrator.coulomb1(2,0,0,2,0,0) << endl;
+    cout << integrator.coulomb2(1,1,2,0,0,0,0,0,0,0,0,3) << endl;
 
 
 //    mat nucleiPos = zeros<mat>(3,2);
