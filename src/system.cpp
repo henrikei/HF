@@ -1,19 +1,30 @@
 #include "system.h"
 
-System::System()
+
+
+System::System(const mat &newNucleiPos, const vector<rowvec> &newExponents, const vector<rowvec> &newCoeffs)
 {
+    nucleiPos = newNucleiPos;
+    exponents = newExponents;
+    coeffs = newCoeffs;
+
+    nNuclei = nucleiPos.n_rows;
+    nBasisFunc = exponents.size();
+    matDim = nNuclei*nBasisFunc;
+}
+
+double System::getOneParticleInt(int p, int q)
+{
+    int p1 = p/nNuclei;
+    int p2 = p%nNuclei;
+    int q1 = q/nNuclei;
+    int q2 = q/nNuclei;
+
 
 }
 
-void System::setupBasis()
+double System::getTwoParticleInt(int p, int q, int r, int s)
 {
-    double alpha = 20.2;
-    double coeff = 1.0;
-    char type = '1';
-
-    PrimitiveBasis *primitive;
-    primitive = new PrimitiveBasis(alpha, coeff, type);
-    ContractedBasis *s1 = new ContractedBasis;
-    s1->addPrimitive(primitive);
-    basis.push_back(s1);
 }
+
+

@@ -203,8 +203,8 @@ TEST(Coulomb1){
     CHECK_CLOSE(6.435114042344e-01, integrator.coulomb1(0,0,0,0,2,1), 1e-5);
     CHECK_CLOSE(1.536931448007e+00, integrator.coulomb1(0,0,0,0,2,2), 1e-5);
     CHECK_CLOSE(1.067865861209e-01, integrator.coulomb1(0,0,0,1,2,0), 1e-5);
-//    CHECK_CLOSE(2.033153544029e-01, integrator.coulomb1(0,0,2,0,1,1), 1e-5);
-//    CHECK_CLOSE(3.524622701603e-01, integrator.coulomb1(0,0,2,0,2,0), 1e-5);
+    CHECK_CLOSE(2.033153544029e-01, integrator.coulomb1(0,0,0,1,2,1), 1e-5);
+    CHECK_CLOSE(3.524622701603e-01, integrator.coulomb1(0,0,0,2,2,0), 1e-5);
 //    CHECK_CLOSE(3.703919381580e-01, integrator.coulomb1(0,0,2,1,0,0), 1e-5);
 //    CHECK_CLOSE(7.292169308884e-01, integrator.coulomb1(0,0,2,1,0,1), 1e-5);
 //    CHECK_CLOSE(1.162963233448e-01, integrator.coulomb1(0,0,2,1,1,0), 1e-5);

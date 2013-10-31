@@ -32,7 +32,6 @@ public:
     double coulomb1(int i, int j, int k, int l, int m, int n);
     double coulomb2(int i1, int j1, int k1, int l1, int m1, int n1, int i2, int j2, int k2, int l2, int m2, int n2);
 
-
     cube E[3];
     vector<cube> R;
 
