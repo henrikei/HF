@@ -5,38 +5,58 @@
 #include "system.h"
 #include "integrator.h"
 #include "boysfunction.h"
+#include "basishandler.h"
 #include "basisfunctions/basisfunctions.h"
+#include "basisfunctions/h_321g.h"
+#include "basisfunctions/h_theijssen.h"
 
 
 using namespace std;
 
 int main()
 {
-    Integrator integrator;
+    rowvec posA = {-0.5, 0.0, 0.0};
+    rowvec posB = {0.5, 0.0, 0.0};
 
-    rowvec3 RA = {1.2, 2.3, 3.4};
-    rowvec3 RB = {-1.3, 1.4, -2.4};
-    rowvec3 RC = {2.3, 0.9, 3.2};
-    rowvec3 RD = {-2.0, 1.9, 2.2};
-    double alpha = 0.2;
-    double beta = 0.3;
-    double gamma = 0.4;
-    double delta = 0.5;
-    int angMomMax = 3;
+    BasisHandler* basisHandler = new BasisHandler;
 
-    integrator.setPositionA(RA);
-    integrator.setPositionB(RB);
-    integrator.setPositionC(RC);
-    integrator.setPositionD(RD);
-    integrator.setAlpha(alpha);
-    integrator.setBeta(beta);
-    integrator.setGamma(gamma);
-    integrator.setDelta(delta);
-    integrator.setMaxAngMom(angMomMax);
-    integrator.setE();
+    BasisFunctions* basis;
+    basis = new H_Theijssen;
+    basis->setPosition(posA);
+    basisHandler->addBasisFunctions(basis);
 
-    //cout << integrator.coulomb1(2,0,0,2,0,0) << endl;
-    cout << integrator.coulomb2(1,1,2,0,0,0,0,0,0,0,0,3) << endl;
+    basis = new H_Theijssen;
+    basis->setPosition(posB);
+    basisHandler->addBasisFunctions(basis);
+
+    cout << basisHandler->getTotalNumOfBasisFunc() << endl;
+    cout << basisHandler->getExponents(6) << endl;
+
+
+//    Integrator integrator;
+
+//    rowvec3 RA = {1.2, 2.3, 3.4};
+//    rowvec3 RB = {-1.3, 1.4, -2.4};
+//    rowvec3 RC = {2.3, 0.9, 3.2};
+//    rowvec3 RD = {-2.0, 1.9, 2.2};
+//    double alpha = 0.2;
+//    double beta = 0.3;
+//    double gamma = 0.4;
+//    double delta = 0.5;
+//    int angMomMax = 3;
+
+//    integrator.setPositionA(RA);
+//    integrator.setPositionB(RB);
+//    integrator.setPositionC(RC);
+//    integrator.setPositionD(RD);
+//    integrator.setAlpha(alpha);
+//    integrator.setBeta(beta);
+//    integrator.setGamma(gamma);
+//    integrator.setDelta(delta);
+//    integrator.setMaxAngMom(angMomMax);
+//    integrator.setE();
+
+//    cout << integrator.coulomb2(1,1,2,0,0,0,0,0,0,0,0,3) << endl;
 
 
 //    mat nucleiPos = zeros<mat>(3,2);

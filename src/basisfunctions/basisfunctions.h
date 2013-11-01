@@ -14,14 +14,15 @@ class BasisFunctions
 public:
     BasisFunctions();
     void setPosition(rowvec newPosition);
+    rowvec3 getPosition();
     rowvec getExponents(int p);
     rowvec getCoeffs(int p);
-    rowvec3 getPowers(int p);
+    irowvec getPowers(int p);
     int getNumOfBasisFunc();
-private:
+protected:
     vector<rowvec> exponents;
     vector<rowvec> coeffs;
-    vector<rowvec3> powers;
+    vector<irowvec> powers;
     rowvec3 position;
     int nBasisFunctions;
 };

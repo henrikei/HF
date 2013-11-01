@@ -11,6 +11,11 @@ void BasisFunctions::setPosition(rowvec newPosition)
     position = newPosition;
 }
 
+rowvec3 BasisFunctions::getPosition()
+{
+    return position;
+}
+
 
 rowvec BasisFunctions::getExponents(int p)
 {
@@ -23,7 +28,7 @@ rowvec BasisFunctions::getCoeffs(int p)
     return coeffs.at(p);
 }
 
-rowvec3 BasisFunctions::getPowers(int p)
+irowvec BasisFunctions::getPowers(int p)
 {
     return powers.at(p);
 }
