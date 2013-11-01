@@ -10,17 +10,15 @@ QMAKE_CXXFLAGS_RELEASE += -std=c++0x
 SOURCES += main.cpp \
     hartreefock.cpp \
     system.cpp \
-    primitivebasis.cpp \
-    contractedbasis.cpp \
-    integrator.cpp \
-    boysfunction.cpp
+    boysfunction.cpp \
+    basisfunctions.cpp \
+    basisfunctions/basisfunctions.cpp
 
 HEADERS += \
     hartreefock.h \
     system.h \
-    primitivebasis.h \
-    contractedbasis.h \
     integrator.h \
-    boysfunction.h
+    boysfunction.h \
+    basisfunctions/basisfunctions.h
 
 include(defaults.pri)
