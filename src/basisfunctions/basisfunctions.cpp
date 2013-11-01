@@ -22,3 +22,13 @@ rowvec BasisFunctions::getCoeffs(int p)
 {
     return coeffs.at(p);
 }
+
+rowvec3 BasisFunctions::getPowers(int p)
+{
+    return powers.at(p);
+}
+
+int BasisFunctions::getNumOfBasisFunc()
+{
+    return exponents.size();
+}

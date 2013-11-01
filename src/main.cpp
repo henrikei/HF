@@ -3,9 +3,9 @@
 #include <fstream>
 #include "hartreefock.h"
 #include "system.h"
-#include "primitivebasis.h"
 #include "integrator.h"
 #include "boysfunction.h"
+#include "basisfunctions/basisfunctions.h"
 
 
 using namespace std;

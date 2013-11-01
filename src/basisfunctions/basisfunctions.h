@@ -17,6 +17,7 @@ public:
     rowvec getExponents(int p);
     rowvec getCoeffs(int p);
     rowvec3 getPowers(int p);
+    int getNumOfBasisFunc();
 private:
     vector<rowvec> exponents;
     vector<rowvec> coeffs;

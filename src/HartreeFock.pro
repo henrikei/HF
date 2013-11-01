@@ -12,13 +12,16 @@ SOURCES += main.cpp \
     system.cpp \
     boysfunction.cpp \
     basisfunctions.cpp \
-    basisfunctions/basisfunctions.cpp
+    basisfunctions/basisfunctions.cpp \
+    basisfunctions/h_321g.cpp \
+    integrator.cpp
 
 HEADERS += \
     hartreefock.h \
     system.h \
     integrator.h \
     boysfunction.h \
-    basisfunctions/basisfunctions.h
+    basisfunctions/basisfunctions.h \
+    basisfunctions/h_321g.h
 
 include(defaults.pri)
