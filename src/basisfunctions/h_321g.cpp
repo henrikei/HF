@@ -20,4 +20,6 @@ H_321G::H_321G()
 
     powers.push_back(powers1);
     powers.push_back(powers2);
+
+    angMom = 0;
 }

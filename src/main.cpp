@@ -10,13 +10,16 @@
 #include "basisfunctions/h_321g.h"
 #include "basisfunctions/h_theijssen.h"
 
-
 using namespace std;
 
 int main()
 {
     rowvec posA = {-0.5, 0.0, 0.0};
     rowvec posB = {0.5, 0.0, 0.0};
+
+    mat nucleiPositions = zeros<mat>(2,3);
+    nucleiPositions.row(0) = posA;
+    nucleiPositions.row(1) = posB;
 
     BasisHandler* basisHandler = new BasisHandler;
 
@@ -29,8 +32,13 @@ int main()
     basis->setPosition(posB);
     basisHandler->addBasisFunctions(basis);
 
+
+    System system(basisHandler, nucleiPositions);
+
     cout << basisHandler->getTotalNumOfBasisFunc() << endl;
     cout << basisHandler->getExponents(6) << endl;
+
+    cout << system.geth(0,0) << endl;
 
 
 //    Integrator integrator;

@@ -67,3 +67,10 @@ irowvec BasisHandler::getPowers(int p)
 
     return allBasisFunctions.at(nucleiNumber)->getPowers(p-n);
 }
+
+int BasisHandler::getAngMom(int p)
+{
+    int nucleiNumber = map.at(p);
+
+    return allBasisFunctions.at(nucleiNumber)->getAngMom();
+}

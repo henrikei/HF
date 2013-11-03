@@ -13,16 +13,13 @@ using namespace arma;
 class System
 {
 public:
-    System(BasisHandler* newBasisHandler);
-private:
-    BasisHandler* basisHandler;
-    mat h;
-    mat F;
-    mat S;
-    vec C;
-    field<mat> Q;
-
+    System(BasisHandler* newBasisHandler, mat newNucleiPositions);
     double geth(int p, int q);
+private:
+    int matDim;
+    mat nucleiPositions;
+    BasisHandler* basisHandler;
+    Integrator* integrator;
 };
 
 #endif // SYSTEM_H

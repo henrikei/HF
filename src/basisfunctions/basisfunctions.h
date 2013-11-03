@@ -18,6 +18,7 @@ public:
     rowvec getExponents(int p);
     rowvec getCoeffs(int p);
     irowvec getPowers(int p);
+    int getAngMom();
     int getNumOfBasisFunc();
 protected:
     vector<rowvec> exponents;
@@ -25,6 +26,7 @@ protected:
     vector<irowvec> powers;
     rowvec3 position;
     int nBasisFunctions;
+    int angMom;
 };
 
 #endif // BASISFUNCTIONS_H

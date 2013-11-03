@@ -31,5 +31,7 @@ H_Theijssen::H_Theijssen()
     powers.push_back(powers2);
     powers.push_back(powers3);
     powers.push_back(powers4);
+
+    angMom = 0;
 }
 

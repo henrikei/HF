@@ -2,29 +2,21 @@
 
 
 
-System::System(BasisHandler *newBasisHandler)
+System::System(BasisHandler *newBasisHandler, mat newNucleiPositions)
 {
     basisHandler = newBasisHandler;
+    integrator = new Integrator;
 
-    int matDim = basisHandler->getTotalNumOfBasisFunc();
+    nucleiPositions = newNucleiPositions;
 
-    h = zeros<mat>(matDim, matDim);
-    F = zeros<mat>(matDim, matDim);
-    S = zeros<mat>(matDim, matDim);
-    C = zeros<vec>(matDim);
-
-    Q.set_size(matDim, matDim);
-    for(int i = 0; i < matDim; i++){
-        for(int j = 0; j < matDim; j++){
-            Q(i,j) = zeros<mat>(matDim, matDim);
-        }
-    }
+    matDim = basisHandler->getTotalNumOfBasisFunc();
 }
+
 
 double System::geth(int p, int q)
 {
     rowvec expA = basisHandler->getExponents(p);
-    rowvec ecpB = basisHandler->getExponents(q);
+    rowvec expB = basisHandler->getExponents(q);
 
     rowvec coeffsA = basisHandler->getCoeffs(p);
     rowvec coeffsB = basisHandler->getCoeffs(q);
@@ -32,5 +24,36 @@ double System::geth(int p, int q)
     irowvec powersA = basisHandler->getPowers(p);
     irowvec powersB = basisHandler->getPowers(q);
 
-    int n = expA.n_elem;
+    rowvec3 positionA = basisHandler->getPosition(p);
+    rowvec3 positionB = basisHandler->getPosition(q);
+
+    int angMom = basisHandler->getAngMom(p);
+
+    int nPrimitives = expA.n_elem;
+
+
+    integrator->setPositionA(positionA);
+    integrator->setPositionB(positionB);
+
+    integrator->setMaxAngMom(angMom);
+
+    int i = powersA(0);
+    int j = powersB(0);
+    int k = powersA(1);
+    int l = powersB(1);
+    int m = powersA(2);
+    int n = powersB(2);
+
+    double value = 0;
+
+    for (int v = 0; v < nPrimitives ; v++){
+        for (int w = 0; w < nPrimitives; w++){
+            integrator->setAlpha(expA(v));
+            integrator->setBeta(expB(w));
+            integrator->setE();
+            value += integrator->kinetic(i, j, k, l, m, n)*coeffsA(v)*coeffsB(w);
+        }
+    }
+
+    return value;
 }

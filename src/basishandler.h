@@ -18,6 +18,7 @@ public:
     rowvec getExponents(int p);
     rowvec getCoeffs(int p);
     irowvec getPowers(int p);
+    int getAngMom(int p);
 private:
     vector<BasisFunctions*> allBasisFunctions;
     vector<int> map;

@@ -33,6 +33,10 @@ irowvec BasisFunctions::getPowers(int p)
     return powers.at(p);
 }
 
+int BasisFunctions::getAngMom(){
+    return angMom;
+}
+
 int BasisFunctions::getNumOfBasisFunc()
 {
     return exponents.size();
