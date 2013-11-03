@@ -9,7 +9,7 @@ System::System(BasisHandler *newBasisHandler, mat newNucleiPositions)
 
     nucleiPositions = newNucleiPositions;
 
-    matDim = basisHandler->getTotalNumOfBasisFunc();
+    numberOfNuclei = nucleiPositions.n_rows;
 }
 
 
@@ -48,10 +48,19 @@ double System::geth(int p, int q)
 
     for (int v = 0; v < nPrimitives ; v++){
         for (int w = 0; w < nPrimitives; w++){
+
             integrator->setAlpha(expA(v));
             integrator->setBeta(expB(w));
             integrator->setE();
-            value += integrator->kinetic(i, j, k, l, m, n)*coeffsA(v)*coeffsB(w);
+            value += integrator->kinetic(i, j, k, l, m, n);
+
+            for (int x = 0; x < numberOfNuclei; x++){
+
+                integrator->setPositionC(nucleiPositions.row(x));
+                value += -integrator->coulomb1(i,j,k,l,m,n);
+            }
+
+            value *= coeffsA(v)*coeffsB(w);
         }
     }
 

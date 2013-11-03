@@ -16,7 +16,7 @@ public:
     System(BasisHandler* newBasisHandler, mat newNucleiPositions);
     double geth(int p, int q);
 private:
-    int matDim;
+    int numberOfNuclei;
     mat nucleiPositions;
     BasisHandler* basisHandler;
     Integrator* integrator;
