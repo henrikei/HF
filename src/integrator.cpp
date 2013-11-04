@@ -60,7 +60,7 @@ void Integrator::setMaxAngMom(int newAngMom)
     angMom = newAngMom;
 }
 
-void Integrator::setE()
+void Integrator::setE_AB()
 {
     double p = alpha + beta;
     rowvec3 P = (alpha*Rnuclei.row(0) + beta*Rnuclei.row(1))/p;
@@ -68,9 +68,9 @@ void Integrator::setE()
     rowvec3 PA = P - Rnuclei.row(0);
     rowvec3 PB = P - Rnuclei.row(1);
 
-    E[0] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
-    E[1] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
-    E[2] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+    E_AB[0] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+    E_AB[1] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+    E_AB[2] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
 
 
     // Loop over x-, y- and z- coordinates
@@ -79,12 +79,12 @@ void Integrator::setE()
 
         // First loop over t and i with j = 0
 
-        E[dir](0,0,0) = exp(-alpha*beta*AB(dir)*AB(dir)/p);
+        E_AB[dir](0,0,0) = exp(-alpha*beta*AB(dir)*AB(dir)/p);
         for (int i = 0; i < angMom+2; i++){
             // Treat the case t=0 separately due to (t-1) term
-            E[dir](i+1,0,0) = PA(dir)*E[dir](i,0,0) + E[dir](i,0,1);
+            E_AB[dir](i+1,0,0) = PA(dir)*E_AB[dir](i,0,0) + E_AB[dir](i,0,1);
             for (int t = 1; t <= i + 0 + 1; t++){
-                E[dir](i+1,0,t) = E[dir](i,0,t-1)/(2*p) + PA(dir)*E[dir](i,0,t) + (t+1)*E[dir](i,0,t+1);
+                E_AB[dir](i+1,0,t) = E_AB[dir](i,0,t-1)/(2*p) + PA(dir)*E_AB[dir](i,0,t) + (t+1)*E_AB[dir](i,0,t+1);
             }
         }
 
@@ -93,14 +93,60 @@ void Integrator::setE()
         // Must here let i <= l because the forward loop is on index j
         for (int i = 0; i <= angMom+2; i++){
             for (int j = 0; j < angMom+2; j++){
-                E[dir](i,j+1,0) = PB(dir)*E[dir](i,j,0) + E[dir](i,j,1);
+                E_AB[dir](i,j+1,0) = PB(dir)*E_AB[dir](i,j,0) + E_AB[dir](i,j,1);
                 for (int t = 1; t <= i + j + 1; t++){
-                    E[dir](i,j+1,t) = E[dir](i,j,t-1)/(2*p) + PB(dir)*E[dir](i,j,t) + (t+1)*E[dir](i,j,t+1);
+                    E_AB[dir](i,j+1,t) = E_AB[dir](i,j,t-1)/(2*p) + PB(dir)*E_AB[dir](i,j,t) + (t+1)*E_AB[dir](i,j,t+1);
                 }
             }
         }
     }
 }
+
+
+
+void Integrator::setE_CD()
+{
+    double q = gamma + delta;
+    rowvec3 Q = (gamma*Rnuclei.row(2) + delta*Rnuclei.row(3))/q;
+    rowvec3 CD = Rnuclei.row(2) - Rnuclei.row(3);
+    rowvec3 QC = Q - Rnuclei.row(2);
+    rowvec3 QD = Q - Rnuclei.row(3);
+
+    E_CD[0] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+    E_CD[1] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+    E_CD[2] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+
+
+    // Loop over x-, y- and z- coordinates
+
+    for(int dir = 0; dir < 3; dir++){
+
+        // First loop over t and i with j = 0
+
+        E_CD[dir](0,0,0) = exp(-gamma*delta*CD(dir)*CD(dir)/q);
+        for (int i = 0; i < angMom+2; i++){
+            // Treat the case t=0 separately due to (t-1) term
+            E_CD[dir](i+1,0,0) = QC(dir)*E_CD[dir](i,0,0) + E_CD[dir](i,0,1);
+            for (int t = 1; t <= i + 0 + 1; t++){
+                E_CD[dir](i+1,0,t) = E_CD[dir](i,0,t-1)/(2*q) + QC(dir)*E_CD[dir](i,0,t) + (t+1)*E_CD[dir](i,0,t+1);
+            }
+        }
+
+        // Second loop over t and j and i
+
+        // Must here let i <= l because the forward loop is on index j
+        for (int i = 0; i <= angMom+2; i++){
+            for (int j = 0; j < angMom+2; j++){
+                E_CD[dir](i,j+1,0) = QD(dir)*E_CD[dir](i,j,0) + E_CD[dir](i,j,1);
+                for (int t = 1; t <= i + j + 1; t++){
+                    E_CD[dir](i,j+1,t) = E_CD[dir](i,j,t-1)/(2*q) + QD(dir)*E_CD[dir](i,j,t) + (t+1)*E_CD[dir](i,j,t+1);
+                }
+            }
+        }
+    }
+}
+
+
 
 void Integrator::setR(double a, rowvec3 A, int coulombType)
 {
@@ -235,7 +281,7 @@ void Integrator::setR(double a, rowvec3 A, int coulombType)
 double Integrator::overlap(int i, int j, int k, int l, int m, int n)
 {
     double p = alpha + beta;
-    return E[0](i,j,0)*E[1](k,l,0)*E[2](m,n,0)*pow(M_PI/p, 1.5);
+    return E_AB[0](i,j,0)*E_AB[1](k,l,0)*E_AB[2](m,n,0)*pow(M_PI/p, 1.5);
 }
 
 double Integrator::kinetic(int i, int j, int k, int l, int m, int n)
@@ -244,24 +290,24 @@ double Integrator::kinetic(int i, int j, int k, int l, int m, int n)
     double p = alpha + beta;
 
     if (j < 2){
-        Tij = 4*beta*beta*E[0](i,j+2,0) - 2*beta*(2*j + 1)*E[0](i,j,0);
+        Tij = 4*beta*beta*E_AB[0](i,j+2,0) - 2*beta*(2*j + 1)*E_AB[0](i,j,0);
     } else {
-        Tij = 4*beta*beta*E[0](i,j+2,0) - 2*beta*(2*j + 1)*E[0](i,j,0) + j*(j-1)*E[0](i,j-2,0);
+        Tij = 4*beta*beta*E_AB[0](i,j+2,0) - 2*beta*(2*j + 1)*E_AB[0](i,j,0) + j*(j-1)*E_AB[0](i,j-2,0);
     }
 
     if (l < 2){
-        Tkl = 4*beta*beta*E[1](k,l+2,0) - 2*beta*(2*l + 1)*E[1](k,l,0);
+        Tkl = 4*beta*beta*E_AB[1](k,l+2,0) - 2*beta*(2*l + 1)*E_AB[1](k,l,0);
     } else {
-        Tkl = 4*beta*beta*E[1](k,l+2,0) - 2*beta*(2*l + 1)*E[1](k,l,0) + l*(l-1)*E[1](k,l-2,0);
+        Tkl = 4*beta*beta*E_AB[1](k,l+2,0) - 2*beta*(2*l + 1)*E_AB[1](k,l,0) + l*(l-1)*E_AB[1](k,l-2,0);
     }
 
     if (n < 2){
-        Tmn = 4*beta*beta*E[2](m,n+2,0) - 2*beta*(2*n + 1)*E[2](m,n,0);
+        Tmn = 4*beta*beta*E_AB[2](m,n+2,0) - 2*beta*(2*n + 1)*E_AB[2](m,n,0);
     } else {
-        Tmn = 4*beta*beta*E[2](m,n+2,0) - 2*beta*(2*n + 1)*E[2](m,n,0) + n*(n-1)*E[2](m,n-2,0);
+        Tmn = 4*beta*beta*E_AB[2](m,n+2,0) - 2*beta*(2*n + 1)*E_AB[2](m,n,0) + n*(n-1)*E_AB[2](m,n-2,0);
     }
 
-    kinetic = -0.5*(Tij*E[1](k,l,0)*E[2](m,n,0) + E[0](i,j,0)*Tkl*E[2](m,n,0) + E[0](i,j,0)*E[1](k,l,0)*Tmn)*pow(M_PI/p, 1.5);
+    kinetic = -0.5*(Tij*E_AB[1](k,l,0)*E_AB[2](m,n,0) + E_AB[0](i,j,0)*Tkl*E_AB[2](m,n,0) + E_AB[0](i,j,0)*E_AB[1](k,l,0)*Tmn)*pow(M_PI/p, 1.5);
 
     return kinetic;
 }
@@ -283,7 +329,7 @@ double Integrator::coulomb1(int i, int j, int k, int l, int m, int n)
     for (int t = 0; t < tMax + 1; t++){
         for (int u = 0; u < uMax + 1; u++){
             for (int v = 0; v < vMax + 1; v++){
-                value += E[0](i,j,t)*E[1](k,l,u)*E[2](m,n,v)*R.at(0)(t,u,v);
+                value += E_AB[0](i,j,t)*E_AB[1](k,l,u)*E_AB[2](m,n,v)*R.at(0)(t,u,v);
             }
         }
     }
@@ -319,8 +365,8 @@ double Integrator::coulomb2(int i1, int j1, int k1, int l1, int m1, int n1, int 
                 for (int tau = 0; tau < tauMax+1; tau++){
                     for (int ny = 0; ny < nyMax+1; ny++){
                         for (int phi = 0; phi < phiMax+1; phi++){
-                            value += (1 - 2*((tau + ny + phi)%2))*E[0](i1,j1,t)*E[1](k1,l1,u)*E[2](m1,n1,v)
-                                     *E[0](i2,j2,tau)*E[1](k2,l2,ny)*E[2](m2,n2,phi)*R.at(0)(t+tau,u+ny,v+phi);
+                            value += (1 - 2*((tau + ny + phi)%2))*E_AB[0](i1,j1,t)*E_AB[1](k1,l1,u)*E_AB[2](m1,n1,v)
+                                     *E_CD[0](i2,j2,tau)*E_CD[1](k2,l2,ny)*E_CD[2](m2,n2,phi)*R.at(0)(t+tau,u+ny,v+phi);
                         }
                     }
                 }

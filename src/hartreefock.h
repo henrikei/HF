@@ -3,6 +3,7 @@
 
 #include <armadillo>
 #include "math.h"
+#include "system.h"
 
 using namespace arma;
 
@@ -10,32 +11,25 @@ using namespace arma;
 class HartreeFock
 {
 public:
-    HartreeFock();
-    void setPositions(mat newNucleiPos);
+    HartreeFock(System *newSystem);
     void solve();
     double getEnergy();
     vec getCoeff();
 private:
-    int nAtoms;
-    int nBasisFunc;
-    mat nucleiPos;
+    System *system;
 
-    vec alphas;
     mat h;
     double**** Q;
     mat F;
     mat S;
     vec C;
+    int matDim;
     double fockEnergy;
     double energy;
     double toler;
 
-    uvec map(int i);
     void buildMatrix();
     void calcIntegrals();
-    double getOneElectronIntegral(int i, int j);
-    double getTwoElectronIntegral(int i, int j, int k, int l);
-    double getOverlapIntegral(int i, int j);
     void solveSingle();
 };
 

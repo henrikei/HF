@@ -33,12 +33,18 @@ int main()
     basisHandler->addBasisFunctions(basis);
 
 
-    System system(basisHandler, nucleiPositions);
+    System *system;
+    system = new System(basisHandler, nucleiPositions);
 
     cout << basisHandler->getTotalNumOfBasisFunc() << endl;
     cout << basisHandler->getExponents(6) << endl;
 
-    cout << system.geth(0,0) << endl;
+    cout << system->getOneElectronIntegrals(0,0) << endl;
+    cout << system->getTwoElectronIntegral(0,0,0,0) << endl;
+
+    HartreeFock solver(system);
+    solver.solve();
+    cout << solver.getEnergy() << endl;
 
 
 //    Integrator integrator;
@@ -73,6 +79,8 @@ int main()
 //    HartreeFock H;
 //    H.setPositions(nucleiPos);
 //    H.solve();
+//    cout << H.getOneElectronIntegral(0,0) << endl;
+//    cout << H.getTwoElectronIntegral(0,0,0,0) << endl;
 //    cout << H.getEnergy() << endl;
 
 

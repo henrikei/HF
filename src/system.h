@@ -14,7 +14,9 @@ class System
 {
 public:
     System(BasisHandler* newBasisHandler, mat newNucleiPositions);
-    double geth(int p, int q);
+    rowvec2 getOneElectronIntegrals(int p, int q);
+    double getTwoElectronIntegral(int p, int r, int q, int s);
+    int getTotalNumOfBasisFunc();
 private:
     int numberOfNuclei;
     mat nucleiPositions;
