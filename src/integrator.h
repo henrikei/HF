@@ -13,7 +13,7 @@ using namespace std;
 class Integrator
 {
 public:
-    Integrator();
+    Integrator(int angMomMax);
     ~Integrator();
 
     void setAlpha(double newAlpha);
@@ -38,6 +38,7 @@ public:
     vector<cube> R;
 
 private:
+    BoysFunction *boys;
     mat Rnuclei;
     double alpha, beta, gamma, delta;
     double angMom;

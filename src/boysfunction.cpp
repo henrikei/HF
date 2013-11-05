@@ -2,15 +2,14 @@
 
 
 
-BoysFunction::BoysFunction(int nMaxNew, double x)
+BoysFunction::BoysFunction(int angMomMax)
 {
-    nMax = nMaxNew;
+    nMax = 4*angMomMax;
     F = zeros<vec>(nMax+1);
     readFromFile();
-    setFs(x);
 }
 
-void BoysFunction::resetx(double x)
+void BoysFunction::setx(double x)
 {
     setFs(x);
 }

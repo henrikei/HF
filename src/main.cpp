@@ -9,13 +9,17 @@
 #include "basisfunctions/basisfunctions.h"
 #include "basisfunctions/h_321g.h"
 #include "basisfunctions/h_theijssen.h"
+#include "basisfunctions/o_321g.h"
 
 using namespace std;
 
 int main()
 {
-    rowvec posA = {-0.5, 0.0, 0.0};
-    rowvec posB = {0.5, 0.0, 0.0};
+    double d = 2.28;
+    rowvec posA = {-d/2, 0.0, 0.0};
+    rowvec posB = {d/2, 0.0, 0.0};
+    rowvec charges = {8.0, 8.0};
+    int nElectrons = 16;
 
     mat nucleiPositions = zeros<mat>(2,3);
     nucleiPositions.row(0) = posA;
@@ -24,23 +28,17 @@ int main()
     BasisHandler* basisHandler = new BasisHandler;
 
     BasisFunctions* basis;
-    basis = new H_Theijssen;
+    basis = new O_321G;
     basis->setPosition(posA);
     basisHandler->addBasisFunctions(basis);
 
-    basis = new H_Theijssen;
+    basis = new O_321G;
     basis->setPosition(posB);
     basisHandler->addBasisFunctions(basis);
 
 
     System *system;
-    system = new System(basisHandler, nucleiPositions);
-
-    cout << basisHandler->getTotalNumOfBasisFunc() << endl;
-    cout << basisHandler->getExponents(6) << endl;
-
-    cout << system->getOneElectronIntegrals(0,0) << endl;
-    cout << system->getTwoElectronIntegral(0,0,0,0) << endl;
+    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
 
     HartreeFock solver(system);
     solver.solve();

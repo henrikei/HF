@@ -74,3 +74,20 @@ int BasisHandler::getAngMom(int p)
 
     return allBasisFunctions.at(nucleiNumber)->getAngMom();
 }
+
+
+int BasisHandler::getAngMomMax()
+{
+    int angMomMax = 0;
+    int angMomTest = 0;
+    int nNuclei = allBasisFunctions.size();
+
+    for (int i = 0; i < nNuclei; i++){
+        angMomTest = allBasisFunctions.at(i)->getAngMom();
+        if (angMomTest > angMomMax){
+            angMomMax = angMomTest;
+        }
+    }
+
+    return angMomMax;
+}

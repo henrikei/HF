@@ -1,7 +1,9 @@
 #include "integrator.h"
 
-Integrator::Integrator()
+Integrator::Integrator(int angMomMax)
 {
+    boys = new BoysFunction(angMomMax);
+
     Rnuclei = zeros(4,3);
 
     alpha = 0;
@@ -160,14 +162,14 @@ void Integrator::setR(double a, rowvec3 A, int coulombType)
         nMax = 4*angMom;
     }
 
-    BoysFunction Boys(nMax, a*dot(A,A));
+    boys->setx(a*dot(A,A));
 
     cube Rinit = ones<cube>(tMax+1, tMax+1, tMax+1);
 
     // Generate initial Rs
     R.clear();
     for(int n = 0; n < nMax+1; n++){
-        Rinit(0,0,0) = pow(-2*a, n)*Boys.returnValue(n);
+        Rinit(0,0,0) = pow(-2*a, n)*boys->returnValue(n);
         R.push_back(Rinit);
     }
 
