@@ -5,10 +5,12 @@ HartreeFock::HartreeFock(System *newSystem)
     system = newSystem;
 
     matDim = system->getTotalNumOfBasisFunc();
+    nElectrons = system->getNumOfElectrons();
     h = zeros<mat>(matDim, matDim);
     F = zeros<mat>(matDim, matDim);
     S = zeros<mat>(matDim, matDim);
-    C = zeros<vec>(matDim);
+    C = zeros<mat>(matDim, nElectrons/2);
+    P = zeros<mat>(matDim, matDim);
     fockEnergy = 1.0E6;
     energy = 1.0E6;
     toler = 1.0E-10;
@@ -24,7 +26,7 @@ void HartreeFock::solve()
     double energyDiff = 1.0;
 
     // Calculate integrals
-    C = zeros<vec>(matDim);
+    C = zeros<mat>(matDim, nElectrons/2);
     calcIntegrals();
 
 
@@ -41,15 +43,15 @@ void HartreeFock::solve()
 
     for (int i = 0; i < matDim; i++){
         for (int j = 0; j < matDim; j++){
-            energy += 2*h(i, j)*C(i)*C(j);
+            energy += P(i,j)*h(i, j);
             for (int k = 0; k < matDim; k++){
                 for (int l = 0; l < matDim; l++){
-                    energy += Q[i][j][k][l]*C(i)*C(j)*C(k)*C(l);
+                    energy += 0.5*P(i,j)*P(l,k)*(Q[i][k][j][l] - 0.5*Q[i][k][l][j]);
                 }
             }
         }
     }
-    energy += 1.0; // To be modified. Should be the potential energy due to interactions between the nuclei
+    energy += system->getNucleiPotential();
 }
 
 
@@ -60,7 +62,7 @@ double HartreeFock::getEnergy(){
 
 
 //----------------------------------------------------------------------------------------------------------------
-vec HartreeFock::getCoeff(){
+mat HartreeFock::getCoeff(){
     return C;
 }
 
@@ -79,7 +81,7 @@ void HartreeFock::buildMatrix()
             // Add two-electron integrals
             for (int k = 0; k < matDim; k++){
                 for (int l = 0; l < matDim; l++){
-                    F(i,j) += Q[i][k][j][l]*C(k)*C(l);
+                    F(i,j) += 0.5*P(l,k)*(2*Q[i][k][j][l] - Q[i][k][l][j]);
                 }
             }
         }
@@ -115,8 +117,7 @@ void HartreeFock::calcIntegrals()
         for (int j = 0; j < matDim; j++){
             for (int k = 0; k < matDim; k++){
                 for (int l = 0; l < matDim; l++){
-                    Q[i][j][k][l] = 2*system->getTwoElectronIntegral(i, j, k, l) - system->getTwoElectronIntegral(i, j, l, k);
-                    cout << i << " " << j << " " << k << " " << l << endl;
+                    Q[i][j][k][l] = system->getTwoElectronIntegral(i, j, k, l);
                 }
             }
         }
@@ -149,12 +150,18 @@ void HartreeFock::solveSingle()
     // Diagonalize matrix h2
 
     eig_sym(eigVal, eigVec, F2);
-    C = V*eigVec.col(0);
+    C = V*eigVec.cols(0, nElectrons/2-1);
 
     // Normalize vector C
 
-    double norm = dot(C, S*C);
-    C = C/sqrt(norm);
+    double norm;
+    for (int i = 0; i < nElectrons/2; i++){
+        norm = dot(C.col(i), S*C.col(i));
+        C.col(i) = C.col(i)/sqrt(norm);
+    }
+
+    // Compute density matrix
+    P = 2*C*C.t();
 
     fockEnergy = eigVal(0);
 }

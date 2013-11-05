@@ -2,14 +2,14 @@
 
 
 
-System::System(BasisHandler *newBasisHandler, mat newNucleiPositions)
+System::System(BasisHandler *newBasisHandler, mat newNucleiPositions, rowvec newCharges, int newNElectrons)
 {
     basisHandler = newBasisHandler;
-    integrator = new Integrator;
-
+    integrator = new Integrator(basisHandler->getAngMomMax());
     nucleiPositions = newNucleiPositions;
-
     numberOfNuclei = nucleiPositions.n_rows;
+    charges = newCharges;
+    nElectrons = newNElectrons;
 }
 
 
@@ -66,7 +66,7 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
             for (int x = 0; x < numberOfNuclei; x++){
 
                 integrator->setPositionC(nucleiPositions.row(x));
-                energy += -integrator->coulomb1(i,j,k,l,m,n);
+                energy += -integrator->coulomb1(i,j,k,l,m,n)*charges(x);
             }
 
             energy *= coeffsA(v)*coeffsB(w);
@@ -164,8 +164,33 @@ double System::getTwoElectronIntegral(int p, int r, int q, int s)
     return value;
 }
 
+
+double System::getNucleiPotential()
+{
+    double value = 0;
+    rowvec3 AB;
+
+    for (int i = 0; i < numberOfNuclei; i++){
+        for (int j = i+1; j < numberOfNuclei; j++){
+            AB = nucleiPositions.row(i) - nucleiPositions.row(j);
+            value += charges(i)*charges(j)/sqrt(dot(AB,AB));
+        }
+    }
+
+    cout << value << endl;
+
+    return value;
+}
+
+
 int System::getTotalNumOfBasisFunc()
 {
     return basisHandler->getTotalNumOfBasisFunc();
+}
+
+
+int System::getNumOfElectrons()
+{
+    return nElectrons;
 }
 

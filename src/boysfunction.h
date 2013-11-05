@@ -9,8 +9,8 @@ using namespace arma;
 class BoysFunction
 {
 public:
-    BoysFunction(int nMaxNew, double x);
-    void resetx(double x);
+    BoysFunction(int angMomMax);
+    void setx(double x);
     double returnValue(int n);
 private:
     void setFs(double x);

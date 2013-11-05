@@ -14,7 +14,7 @@ public:
     HartreeFock(System *newSystem);
     void solve();
     double getEnergy();
-    vec getCoeff();
+    mat getCoeff();
 private:
     System *system;
 
@@ -22,8 +22,10 @@ private:
     double**** Q;
     mat F;
     mat S;
-    vec C;
+    mat C;
+    mat P;
     int matDim;
+    int nElectrons;
     double fockEnergy;
     double energy;
     double toler;

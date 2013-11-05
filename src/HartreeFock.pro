@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     basisfunctions/h_321g.cpp \
     integrator.cpp \
     basishandler.cpp \
-    basisfunctions/h_theijssen.cpp
+    basisfunctions/h_theijssen.cpp \
+    basisfunctions/o_321g.cpp
 
 HEADERS += \
     hartreefock.h \
@@ -25,6 +26,7 @@ HEADERS += \
     basisfunctions/basisfunctions.h \
     basisfunctions/h_321g.h \
     basishandler.h \
-    basisfunctions/h_theijssen.h
+    basisfunctions/h_theijssen.h \
+    basisfunctions/o_321g.h
 
 include(defaults.pri)
