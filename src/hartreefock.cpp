@@ -116,6 +116,7 @@ void HartreeFock::calcIntegrals()
             for (int k = 0; k < matDim; k++){
                 for (int l = 0; l < matDim; l++){
                     Q[i][j][k][l] = 2*system->getTwoElectronIntegral(i, j, k, l) - system->getTwoElectronIntegral(i, j, l, k);
+                    cout << i << " " << j << " " << k << " " << l << endl;
                 }
             }
         }
