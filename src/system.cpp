@@ -72,6 +72,7 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
             energy *= coeffsA(v)*coeffsB(w);
 
             overlap += integrator->overlap(i,j,k,l,m,n)*coeffsA(v)*coeffsB(w);
+            double aa = overlap;
         }
     }
 
@@ -83,26 +84,26 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
 
 //------------------------------------------------------------------------------
 // Returns two-electron integral
-double System::getTwoElectronIntegral(int p, int r, int q, int s)
+double System::getTwoElectronIntegral(int p, int q, int r, int s)
 {
     rowvec expA = basisHandler->getExponents(p);
-    rowvec expB = basisHandler->getExponents(q);
-    rowvec expC = basisHandler->getExponents(r);
+    rowvec expB = basisHandler->getExponents(r);
+    rowvec expC = basisHandler->getExponents(q);
     rowvec expD = basisHandler->getExponents(s);
 
     rowvec coeffsA = basisHandler->getCoeffs(p);
-    rowvec coeffsB = basisHandler->getCoeffs(q);
-    rowvec coeffsC = basisHandler->getCoeffs(r);
+    rowvec coeffsB = basisHandler->getCoeffs(r);
+    rowvec coeffsC = basisHandler->getCoeffs(q);
     rowvec coeffsD = basisHandler->getCoeffs(s);
 
     irowvec powersA = basisHandler->getPowers(p);
-    irowvec powersB = basisHandler->getPowers(q);
-    irowvec powersC = basisHandler->getPowers(r);
+    irowvec powersB = basisHandler->getPowers(r);
+    irowvec powersC = basisHandler->getPowers(q);
     irowvec powersD = basisHandler->getPowers(s);
 
     rowvec3 positionA = basisHandler->getPosition(p);
-    rowvec3 positionB = basisHandler->getPosition(q);
-    rowvec3 positionC = basisHandler->getPosition(r);
+    rowvec3 positionB = basisHandler->getPosition(r);
+    rowvec3 positionC = basisHandler->getPosition(q);
     rowvec3 positionD = basisHandler->getPosition(s);
 
     irowvec indices = {p, r, q, s};
@@ -161,6 +162,8 @@ double System::getTwoElectronIntegral(int p, int r, int q, int s)
         }
     }
 
+    double valtest = value;
+
     return value;
 }
 
@@ -176,6 +179,8 @@ double System::getNucleiPotential()
             value += charges(i)*charges(j)/sqrt(dot(AB,AB));
         }
     }
+
+    cout << value << endl;
 
     return value;
 }

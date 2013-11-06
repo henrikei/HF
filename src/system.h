@@ -15,7 +15,7 @@ class System
 public:
     System(BasisHandler* newBasisHandler, mat newNucleiPositions, rowvec newCharges, int newNElectrons);
     rowvec2 getOneElectronIntegrals(int p, int q);
-    double getTwoElectronIntegral(int p, int r, int q, int s);
+    double getTwoElectronIntegral(int p, int q, int r, int s);
     double getNucleiPotential();
     int getTotalNumOfBasisFunc();
     int getNumOfElectrons();
