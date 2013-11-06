@@ -94,10 +94,12 @@ void HartreeFock::buildMatrix()
 void HartreeFock::calcIntegrals()
 {
     // The one-electron integrals (matrix h) and overlap inegrals (matrix S)
+    rowvec oneElectronIntegrals;
     for (int i = 0; i < matDim; i++){
         for (int j = 0; j < matDim; j++){
-            S(i,j) = system->getOneElectronIntegrals(i,j)(0);
-            h(i,j) = system->getOneElectronIntegrals(i,j)(1);
+            oneElectronIntegrals = system->getOneElectronIntegrals(i,j);
+            S(i,j) = oneElectronIntegrals(0);
+            h(i,j) = oneElectronIntegrals(1);
         }
     }
 

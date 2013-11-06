@@ -177,8 +177,6 @@ double System::getNucleiPotential()
         }
     }
 
-    cout << value << endl;
-
     return value;
 }
 
