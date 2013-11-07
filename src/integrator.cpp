@@ -164,7 +164,7 @@ void Integrator::setR(double a, rowvec3 A, int coulombType)
 
     boys->setx(a*dot(A,A));
 
-    cube Rinit = ones<cube>(tMax+1, tMax+1, tMax+1);
+    cube Rinit = zeros<cube>(tMax+1, tMax+1, tMax+1);
 
     // Generate initial Rs
     R.clear();

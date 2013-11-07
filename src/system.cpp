@@ -61,18 +61,17 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
             integrator->setAlpha(expA(v));
             integrator->setBeta(expB(w));
             integrator->setE_AB();
-            energy += integrator->kinetic(i, j, k, l, m, n);
+            energy += integrator->kinetic(i, j, k, l, m, n)*coeffsA(v)*coeffsB(w);
 
             for (int x = 0; x < numberOfNuclei; x++){
 
                 integrator->setPositionC(nucleiPositions.row(x));
-                energy += -integrator->coulomb1(i,j,k,l,m,n)*charges(x);
+                energy += -integrator->coulomb1(i,j,k,l,m,n)*charges(x)*coeffsA(v)*coeffsB(w);
             }
 
-            energy *= coeffsA(v)*coeffsB(w);
+            //energy = energy*coeffsA(v)*coeffsB(w);
 
             overlap += integrator->overlap(i,j,k,l,m,n)*coeffsA(v)*coeffsB(w);
-            double aa = overlap;
         }
     }
 
@@ -162,8 +161,6 @@ double System::getTwoElectronIntegral(int p, int q, int r, int s)
         }
     }
 
-    double valtest = value;
-
     return value;
 }
 
@@ -179,8 +176,6 @@ double System::getNucleiPotential()
             value += charges(i)*charges(j)/sqrt(dot(AB,AB));
         }
     }
-
-    cout << value << endl;
 
     return value;
 }

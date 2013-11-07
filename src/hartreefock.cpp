@@ -36,8 +36,6 @@ void HartreeFock::solve()
         buildMatrix();
         solveSingle();
         energyDiff = fabs(fockEnergyOld - fockEnergy);
-
-        cout << C << endl;
     }
 
     // Calculate energy (not equal to Fock energy)

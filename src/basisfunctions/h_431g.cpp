@@ -1,11 +1,11 @@
-#include "h_321g.h"
+#include "h_431g.h"
 
-H_321G::H_321G()
+H_431G::H_431G()
 {
-    rowvec exp1 = {5.4471780, 0.8245470};
-    rowvec exp2 = {0.1831920};
+    rowvec exp1 = {18.7311370, 2.8253944, 0.6401217};
+    rowvec exp2 = {0.1612778};
 
-    rowvec coeffs1 = {0.1562850, 0.9046910};
+    rowvec coeffs1 = {0.0334946, 0.2347269, 0.8137573};
     rowvec coeffs2 = {1.0};
 
     irowvec powers1 = {0, 0, 0};

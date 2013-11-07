@@ -10,6 +10,7 @@
 #include "basisfunctions/h_321g.h"
 #include "basisfunctions/h_theijssen.h"
 #include "basisfunctions/o_321g.h"
+#include "basisfunctions/h_431g.h"
 
 using namespace std;
 
