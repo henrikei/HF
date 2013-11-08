@@ -11,16 +11,17 @@
 #include "basisfunctions/h_theijssen.h"
 #include "basisfunctions/o_321g.h"
 #include "basisfunctions/h_431g.h"
+#include "basisfunctions/n_431g.h"
 
 using namespace std;
 
 int main()
 {
-    double d = 2.28;
+    double d = 1.4;
     rowvec posA = {-d/2, 0.0, 0.0};
     rowvec posB = {d/2, 0.0, 0.0};
-    rowvec charges = {8.0, 8.0};
-    int nElectrons = 16;
+    rowvec charges = {1.0, 1.0};
+    int nElectrons = 2;
 
     mat nucleiPositions = zeros<mat>(2,3);
     nucleiPositions.row(0) = posA;
@@ -29,11 +30,11 @@ int main()
     BasisHandler* basisHandler = new BasisHandler;
 
     BasisFunctions* basis;
-    basis = new O_321G;
+    basis = new H_321G;
     basis->setPosition(posA);
     basisHandler->addBasisFunctions(basis);
 
-    basis = new O_321G;
+    basis = new H_321G;
     basis->setPosition(posB);
     basisHandler->addBasisFunctions(basis);
 

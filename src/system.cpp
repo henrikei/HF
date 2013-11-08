@@ -61,6 +61,7 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
             integrator->setAlpha(expA(v));
             integrator->setBeta(expB(w));
             integrator->setE_AB();
+
             energy += integrator->kinetic(i, j, k, l, m, n)*coeffsA(v)*coeffsB(w);
 
             for (int x = 0; x < numberOfNuclei; x++){
