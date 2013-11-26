@@ -150,21 +150,23 @@ void Integrator::setE_CD()
 
 
 
-void Integrator::setR(double a, rowvec3 A, int coulombType)
+void Integrator::setR(double a, rowvec3 A, int tMax, int uMax, int vMax)
 {
-    int tMax, nMax;
+//    int tMax, nMax;
 
-    if (coulombType == 0){
-        tMax = 2*angMom;
-        nMax = 2*angMom;
-    } else {
-        tMax = 4*angMom;
-        nMax = 4*angMom;
-    }
+//    if (coulombType == 0){
+//        tMax = 2*angMom;
+//        nMax = 2*angMom;
+//    } else {
+//        tMax = 4*angMom;
+//        nMax = 4*angMom;
+//    }
+
+    int nMax = tMax + uMax + vMax;
 
     boys->setx(a*dot(A,A));
 
-    cube Rinit = zeros<cube>(tMax+1, tMax+1, tMax+1);
+    cube Rinit = zeros<cube>(tMax+1, uMax+1, vMax+1);
 
     // Generate initial Rs
     R.clear();
@@ -185,7 +187,7 @@ void Integrator::setR(double a, rowvec3 A, int coulombType)
     }
 
     for(int t = 0; t < tMax+1; t++){
-        for(int u = 0; u < tMax - t; u++){
+        for(int u = 0; u < uMax; u++){
             for(int n = 0; n < nMax - t - u; n++){
                 if (u == 0){
                     R.at(n)(t,u+1,0) = A(1)*R.at(n+1)(t,u,0);
@@ -197,8 +199,8 @@ void Integrator::setR(double a, rowvec3 A, int coulombType)
     }
 
     for(int t = 0; t < tMax+1; t++){
-        for(int u = 0; u < tMax+1; u++){
-            for(int v = 0; v < tMax - t - u; v++){
+        for(int u = 0; u < uMax+1; u++){
+            for(int v = 0; v < vMax; v++){
                 for(int n = 0; n < nMax - t - u - v; n++){
                     if (v == 0){
                         R.at(n)(t,u,v+1) = A(2)*R.at(n+1)(t,u,v);
@@ -325,7 +327,7 @@ double Integrator::coulomb1(int i, int j, int k, int l, int m, int n)
     rowvec3 P = (alpha*Rnuclei.row(0) + beta*Rnuclei.row(1))/p;
     rowvec3 PC = P - Rnuclei.row(2); // tests coulomb1 for the particular case 1/rc = 1/Rnuclei.row(2)
 
-    setR(p, PC, 0);
+    setR(p, PC, tMax, uMax, vMax);
 
     double value = 0;
 
@@ -359,7 +361,7 @@ double Integrator::coulomb2(int i1, int j1, int k1, int l1, int m1, int n1, int 
     rowvec PQ = P - Q;
     double a = p*q/(p + q);
 
-    setR(a, PQ, 1);
+    setR(a, PQ, tMax+tauMax, uMax+nyMax, vMax+phiMax);
 
     double value = 0;
 

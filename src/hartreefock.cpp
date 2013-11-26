@@ -96,10 +96,12 @@ void HartreeFock::calcIntegrals()
     // The one-electron integrals (matrix h) and overlap inegrals (matrix S)
     rowvec oneElectronIntegrals;
     for (int i = 0; i < matDim; i++){
-        for (int j = 0; j < matDim; j++){
+        for (int j = i; j < matDim; j++){
             oneElectronIntegrals = system->getOneElectronIntegrals(i,j);
             S(i,j) = oneElectronIntegrals(0);
+            S(j,i) = S(i,j);
             h(i,j) = oneElectronIntegrals(1);
+            h(j,i) = h(i,j);
         }
     }
 
@@ -116,11 +118,18 @@ void HartreeFock::calcIntegrals()
     }
 
     for (int i = 0; i < matDim; i++){
-        for (int j = 0; j < matDim; j++){
-            for (int k = 0; k < matDim; k++){
-                for (int l = 0; l < matDim; l++){
+        for (int j = 0; j < i+1; j++){
+            for (int k = 0; k < i+1; k++){
+                for (int l = 0; l < j+1; l++){
                     Q[i][j][k][l] = system->getTwoElectronIntegral(i, j, k, l);
-                    cout << Q[i][j][k][l] << endl;
+                    Q[k][j][i][l] = Q[i][j][k][l];
+                    Q[i][l][k][j] = Q[i][j][k][l];
+                    Q[k][l][i][j] = Q[i][j][k][l];
+
+                    Q[j][i][l][k] = Q[i][j][k][l];
+                    Q[j][k][l][i] = Q[i][j][k][l];
+                    Q[l][i][j][k] = Q[i][j][k][l];
+                    Q[l][k][j][i] = Q[i][j][k][l];
                 }
             }
         }

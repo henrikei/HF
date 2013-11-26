@@ -27,7 +27,7 @@ public:
     void setMaxAngMom(int newAngMom);
     void setE_AB();
     void setE_CD();
-    void setR(double a, rowvec3 A, int coulombType);
+    void setR(double a, rowvec3 A, int tMax, int uMax, int vMax);
     double overlap(int i, int j, int k, int l, int m, int n);
     double kinetic(int i, int j, int k, int l, int m, int n);
     double coulomb1(int i, int j, int k, int l, int m, int n);

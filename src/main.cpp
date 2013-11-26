@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 #include <iomanip>
 #include <fstream>
 #include "hartreefock.h"
@@ -17,11 +18,13 @@ using namespace std;
 
 int main()
 {
-    double d = 1.4;
+    clock_t begin = clock();
+
+    double d = 2.050;
     rowvec posA = {-d/2, 0.0, 0.0};
     rowvec posB = {d/2, 0.0, 0.0};
-    rowvec charges = {1.0, 1.0};
-    int nElectrons = 2;
+    rowvec charges = {7.0, 7.0};
+    int nElectrons = 14;
 
     mat nucleiPositions = zeros<mat>(2,3);
     nucleiPositions.row(0) = posA;
@@ -30,11 +33,11 @@ int main()
     BasisHandler* basisHandler = new BasisHandler;
 
     BasisFunctions* basis;
-    basis = new H_321G;
+    basis = new N_431G;
     basis->setPosition(posA);
     basisHandler->addBasisFunctions(basis);
 
-    basis = new H_321G;
+    basis = new N_431G;
     basis->setPosition(posB);
     basisHandler->addBasisFunctions(basis);
 
@@ -44,7 +47,10 @@ int main()
 
     HartreeFock solver(system);
     solver.solve();
-    cout << solver.getEnergy() << endl;
+    cout << "Energy: " << solver.getEnergy() << endl;
+
+    clock_t end = clock();
+    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
 
 

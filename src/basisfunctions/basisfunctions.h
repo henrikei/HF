@@ -27,6 +27,8 @@ protected:
     rowvec3 position;
     int nBasisFunctions;
     int angMom;
+
+    void normalizeCoeffs();
 };
 
 #endif // BASISFUNCTIONS_H
