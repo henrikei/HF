@@ -32,18 +32,11 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
     rowvec3 positionA = basisHandler->getPosition(p);
     rowvec3 positionB = basisHandler->getPosition(q);
 
-    int angMom = basisHandler->getAngMom(p);
-    int angMomTest = basisHandler->getAngMom(q);
-    angMom = min(angMom, angMomTest);
-
     int nPrimitivesA = expA.n_elem;
     int nPrimitivesB = expB.n_elem;
 
-
     integrator->setPositionA(positionA);
     integrator->setPositionB(positionB);
-
-    integrator->setMaxAngMom(angMom);
 
     int i = powersA(0);
     int j = powersB(0);
@@ -60,17 +53,15 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
 
             integrator->setAlpha(expA(v));
             integrator->setBeta(expB(w));
-            integrator->setE_AB();
+            integrator->setE_AB("oneParticle");
 
-            energy += integrator->kinetic(i, j, k, l, m, n)*coeffsA(v)*coeffsB(w);
+            energy += integrator->kinetic(i,j,k,l,m,n)*coeffsA(v)*coeffsB(w);
 
             for (int x = 0; x < numberOfNuclei; x++){
 
                 integrator->setPositionC(nucleiPositions.row(x));
                 energy += -integrator->coulomb1(i,j,k,l,m,n)*charges(x)*coeffsA(v)*coeffsB(w);
             }
-
-            //energy = energy*coeffsA(v)*coeffsB(w);
 
             overlap += integrator->overlap(i,j,k,l,m,n)*coeffsA(v)*coeffsB(w);
         }
@@ -106,28 +97,15 @@ double System::getTwoElectronIntegral(int p, int q, int r, int s)
     rowvec3 positionC = basisHandler->getPosition(q);
     rowvec3 positionD = basisHandler->getPosition(s);
 
-    irowvec indices = {p, r, q, s};
-    int angMom = basisHandler->getAngMom(indices(0));
-    int angMomTest;
-    for (int i = 1; i < 4; i ++){
-        angMomTest = basisHandler->getAngMom(indices(i));
-        if (angMom < angMomTest){
-            angMom = angMomTest;
-        }
-    }
-
     int nPrimitivesA = expA.n_elem;
     int nPrimitivesB = expB.n_elem;
     int nPrimitivesC = expC.n_elem;
     int nPrimitivesD = expD.n_elem;
 
-
     integrator->setPositionA(positionA);
     integrator->setPositionB(positionB);
     integrator->setPositionC(positionC);
     integrator->setPositionD(positionD);
-
-    integrator->setMaxAngMom(angMom);
 
     int i1 = powersA(0);
     int j1 = powersB(0);
@@ -153,8 +131,8 @@ double System::getTwoElectronIntegral(int p, int q, int r, int s)
                     integrator->setBeta(expB(w));
                     integrator->setGamma(expC(x));
                     integrator->setDelta(expD(y));
-                    integrator->setE_AB();
-                    integrator->setE_CD();
+                    integrator->setE_AB("twoParticle");
+                    integrator->setE_CD("twoParticle");
                     value += integrator->coulomb2(i1,j1,k1,l1,m1,n1,i2,j2,k2,l2,m2,n2)
                             *coeffsA(v)*coeffsB(w)*coeffsC(x)*coeffsD(y);
                 }

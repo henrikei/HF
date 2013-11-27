@@ -17,9 +17,8 @@ TEST(OverlapIntegrals){
     integrator.setPositionB(RB);
     integrator.setAlpha(0.2);
     integrator.setBeta(0.3);
-    integrator.setMaxAngMom(2);
 
-    integrator.setE_AB();
+    integrator.setE_AB("oneParticle");
     CHECK_CLOSE(integrator.overlap(0, 0, 0, 0, 0, 0), 0.119172363581, 0.00001);
     CHECK_CLOSE(integrator.overlap(0, 0, 0, 0, 0, 2), 0.760605693318, 0.00001);
     CHECK_CLOSE(integrator.overlap(0, 0, 0, 2, 0, 0), 0.134617101901, 0.00001);
@@ -46,9 +45,8 @@ TEST(KineticIntegrals){
     integrator.setPositionB(RB);
     integrator.setAlpha(0.2);
     integrator.setBeta(0.3);
-    integrator.setMaxAngMom(2);
 
-    integrator.setE_AB();
+    integrator.setE_AB("oneParticle");
     CHECK_CLOSE(integrator.kinetic(0, 0, 0, 0, 0, 0), -0.0967870268058, 0.00001);
     CHECK_CLOSE(integrator.kinetic(0, 0, 0, 0, 0, 1), -0.158190730148, 0.00001);
     CHECK_CLOSE(integrator.kinetic(0, 0, 0, 0, 1, 0), 0.237286095222, 0.00001);
@@ -171,15 +169,13 @@ TEST(Coulomb1){
     rowvec3 RC = {2.3, 0.9, 3.2};
     double alpha = 0.2;
     double beta = 0.3;
-    int angMomMax = 2;
 
     integrator.setPositionA(RA);
     integrator.setPositionB(RB);
     integrator.setPositionC(RC);
     integrator.setAlpha(alpha);
     integrator.setBeta(beta);
-    integrator.setMaxAngMom(angMomMax);
-    integrator.setE_AB();
+    integrator.setE_AB("oneParticle");
 
     CHECK_CLOSE(2.788948987251e-02, integrator.coulomb1(0,0,0,0,0,0), 1e-5);
     CHECK_CLOSE(6.971203468743e-02, integrator.coulomb1(0,0,0,0,0,1), 1e-5);

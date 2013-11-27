@@ -24,9 +24,8 @@ public:
     void setPositionB(rowvec3 RB);
     void setPositionC(rowvec3 RC);
     void setPositionD(rowvec3 RD);
-    void setMaxAngMom(int newAngMom);
-    void setE_AB();
-    void setE_CD();
+    void setE_AB(string intType);
+    void setE_CD(string intType);
     void setR(double a, rowvec3 A, int tMax, int uMax, int vMax);
     double overlap(int i, int j, int k, int l, int m, int n);
     double kinetic(int i, int j, int k, int l, int m, int n);

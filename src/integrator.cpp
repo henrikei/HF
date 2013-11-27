@@ -10,7 +10,7 @@ Integrator::Integrator(int angMomMax)
     beta = 0;
     gamma = 0;
     delta = 0;
-    angMom = 0;
+    angMom = angMomMax;
 }
 
 Integrator::~Integrator()
@@ -57,12 +57,7 @@ void Integrator::setPositionD(rowvec3 RD)
     Rnuclei.row(3) = RD;
 }
 
-void Integrator::setMaxAngMom(int newAngMom)
-{
-    angMom = newAngMom;
-}
-
-void Integrator::setE_AB()
+void Integrator::setE_AB(string intType)
 {
     double p = alpha + beta;
     rowvec3 P = (alpha*Rnuclei.row(0) + beta*Rnuclei.row(1))/p;
@@ -74,6 +69,16 @@ void Integrator::setE_AB()
     E_AB[1] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
     E_AB[2] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
 
+    int iMax;
+    if (intType == "oneParticle"){
+        iMax = angMom + 2;
+    } else if (intType == "twoParticle"){
+        iMax = angMom;
+    } else {
+        cout << "Error: Integration type for E-coeffs not specified" << endl;
+        exit(EXIT_FAILURE);
+    }
+
 
     // Loop over x-, y- and z- coordinates
 
@@ -82,7 +87,7 @@ void Integrator::setE_AB()
         // First loop over t and i with j = 0
 
         E_AB[dir](0,0,0) = exp(-alpha*beta*AB(dir)*AB(dir)/p);
-        for (int i = 0; i < angMom+2; i++){
+        for (int i = 0; i < iMax; i++){
             // Treat the case t=0 separately due to (t-1) term
             E_AB[dir](i+1,0,0) = PA(dir)*E_AB[dir](i,0,0) + E_AB[dir](i,0,1);
             for (int t = 1; t <= i + 0 + 1; t++){
@@ -93,8 +98,8 @@ void Integrator::setE_AB()
         // Second loop over t and j and i
 
         // Must here let i <= l because the forward loop is on index j
-        for (int i = 0; i <= angMom+2; i++){
-            for (int j = 0; j < angMom+2; j++){
+        for (int i = 0; i <= iMax; i++){
+            for (int j = 0; j < iMax; j++){
                 E_AB[dir](i,j+1,0) = PB(dir)*E_AB[dir](i,j,0) + E_AB[dir](i,j,1);
                 for (int t = 1; t <= i + j + 1; t++){
                     E_AB[dir](i,j+1,t) = E_AB[dir](i,j,t-1)/(2*p) + PB(dir)*E_AB[dir](i,j,t) + (t+1)*E_AB[dir](i,j,t+1);
@@ -106,7 +111,7 @@ void Integrator::setE_AB()
 
 
 
-void Integrator::setE_CD()
+void Integrator::setE_CD(string intType)
 {
     double q = gamma + delta;
     rowvec3 Q = (gamma*Rnuclei.row(2) + delta*Rnuclei.row(3))/q;
@@ -118,6 +123,15 @@ void Integrator::setE_CD()
     E_CD[1] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
     E_CD[2] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
 
+    int iMax;
+    if (intType == "oneParticle"){
+        iMax = angMom + 2;
+    } else if (intType == "twoParticle"){
+        iMax = angMom;
+    } else {
+        cout << "Error: Integration type for E-coeffs not specified" << endl;
+        exit(EXIT_FAILURE);
+    }
 
     // Loop over x-, y- and z- coordinates
 
@@ -126,7 +140,7 @@ void Integrator::setE_CD()
         // First loop over t and i with j = 0
 
         E_CD[dir](0,0,0) = exp(-gamma*delta*CD(dir)*CD(dir)/q);
-        for (int i = 0; i < angMom+2; i++){
+        for (int i = 0; i < iMax; i++){
             // Treat the case t=0 separately due to (t-1) term
             E_CD[dir](i+1,0,0) = QC(dir)*E_CD[dir](i,0,0) + E_CD[dir](i,0,1);
             for (int t = 1; t <= i + 0 + 1; t++){
@@ -137,8 +151,8 @@ void Integrator::setE_CD()
         // Second loop over t and j and i
 
         // Must here let i <= l because the forward loop is on index j
-        for (int i = 0; i <= angMom+2; i++){
-            for (int j = 0; j < angMom+2; j++){
+        for (int i = 0; i <= iMax; i++){
+            for (int j = 0; j < iMax; j++){
                 E_CD[dir](i,j+1,0) = QD(dir)*E_CD[dir](i,j,0) + E_CD[dir](i,j,1);
                 for (int t = 1; t <= i + j + 1; t++){
                     E_CD[dir](i,j+1,t) = E_CD[dir](i,j,t-1)/(2*q) + QD(dir)*E_CD[dir](i,j,t) + (t+1)*E_CD[dir](i,j,t+1);
@@ -152,16 +166,6 @@ void Integrator::setE_CD()
 
 void Integrator::setR(double a, rowvec3 A, int tMax, int uMax, int vMax)
 {
-//    int tMax, nMax;
-
-//    if (coulombType == 0){
-//        tMax = 2*angMom;
-//        nMax = 2*angMom;
-//    } else {
-//        tMax = 4*angMom;
-//        nMax = 4*angMom;
-//    }
-
     int nMax = tMax + uMax + vMax;
 
     boys->setx(a*dot(A,A));
@@ -211,75 +215,6 @@ void Integrator::setR(double a, rowvec3 A, int tMax, int uMax, int vMax)
             }
         }
     }
-
-
-//  Wrong!!
-//    for (int t = 0; t < tMax; t++){
-//        for (int n = 0; n < nMax - t; n++){
-//            if (t == 0){
-//                R.at(n)(t+1,0,0) = PC(0)*R.at(n+1)(t,0,0);
-//            } else {
-//                R.at(n)(t+1,0,0) = t*R.at(n+1)(t-1,0,0) + PC(0)*R.at(n+1)(t,0,0);
-//            }
-//        }
-//    }
-
-//    for (int u = 0; u < tMax; u++){
-//        for (int n = 0; n < nMax - u; n++){
-//            if (u == 0){
-//                R.at(n)(0,u+1,0) = PC(1)*R.at(n+1)(0,u,0);
-//            } else {
-//                R.at(n)(0,u+1,0) = u*R.at(n+1)(0,u-1,0) + PC(1)*R.at(n+1)(0,u,0);
-//            }
-//        }
-//    }
-
-//    for (int u = 0; u < tMax+1; u++){
-//        for (int v = 0; v < tMax; v++){
-//            for (int n = 0; n < nMax - v; n++){
-//                if (v == 0){
-//                    R.at(n)(0,u,v+1) = PC(2)*R.at(n+1)(t,u,v);
-//                } else {
-//                    R.at(n)(0,u,v+1) = v*R.at(n+1)(t,u,v-1) + PC(2)*R.at(n+1)(t,u,v);
-//                }
-//            }
-//        }
-//    }
-
-
-
-//    for(int tuv = 0; tuv < nMax+1; tuv++){
-//        for(int n = 0; n < nMax; n++){
-//            for(int t = 0; t < tMax; t++){
-//                for(int u = 0; u < tMax; u++){
-//                    for(int v = 0; v < tMax; v++){
-//                        if(t + u + v == tuv){
-
-//                            if(t == 0){
-//                                R.at(n)(t+1,u,v) = PC(0)*R.at(n+1)(t,u,v);
-//                            } else {
-//                                R.at(n)(t+1,u,v) = t*R.at(n+1)(t-1,u,v) + PC(0)*R.at(n+1)(t,u,v);
-//                            }
-
-//                            if(u == 0){
-//                                R.at(n)(t,u+1,v) = PC(1)*R.at(n+1)(t,u,v);
-//                            } else {
-//                                R.at(n)(t,u+1,v) = u*R.at(n+1)(t,u-1,v) + PC(1)*R.at(n+1)(t,u,v);
-//                            }
-
-//                            if(v == 0){
-//                                R.at(n)(t,u,v+1) = PC(2)*R.at(n+1)(t,u,v);
-//                            } else {
-//                                R.at(n)(t,u,v+1) = v*R.at(n+1)(t,u,v-1) + PC(2)*R.at(n+1)(t,u,v);
-//                            }
-
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
 }
 
 double Integrator::overlap(int i, int j, int k, int l, int m, int n)
