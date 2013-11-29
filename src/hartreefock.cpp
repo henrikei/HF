@@ -176,4 +176,6 @@ void HartreeFock::solveSingle()
     P = 2*C*C.t();
 
     fockEnergy = eigVal(0);
+
+    cout << eigVal << endl;
 }
