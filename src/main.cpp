@@ -98,7 +98,7 @@ int main()
     clock_t end = clock();
     cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
-
+//    test
 //    clock_t begin = clock();
 
 //    rowvec posA = {0.0, 0.0, 0.0};
