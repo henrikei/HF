@@ -12,27 +12,23 @@ class HartreeFock
 {
 public:
     HartreeFock(System *newSystem);
-    void solve();
+    virtual void solve()=0;
     double getEnergy();
-    mat getCoeff();
-private:
+    virtual mat getCoeff()=0;
+protected:
     System *system;
 
     mat h;
     double**** Q;
-    mat F;
     mat S;
-    mat C;
-    mat P;
     int matDim;
     int nElectrons;
-    double fockEnergy;
     double energy;
     double toler;
 
-    void buildMatrix();
+    virtual void buildMatrix()=0;
     void calcIntegrals();
-    void solveSingle();
+    void solveSingle(const mat &Fock, mat &Coeffs, mat &P, double &fockEnergy);
 };
 
 #endif // HARTREEFOCK_H

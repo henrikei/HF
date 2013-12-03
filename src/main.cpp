@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <fstream>
 #include "hartreefock.h"
+#include "rhf.h"
+#include "uhf.h"
 #include "system.h"
 #include "integrator.h"
 #include "boysfunction.h"
@@ -62,39 +64,39 @@ int main()
 
 
 
-//    clock_t begin = clock();
+    clock_t begin = clock();
 
-//    double d = 2.28;
-//    rowvec posA = {-d/2, 0.0, 0.0};
-//    rowvec posB = {d/2, 0.0, 0.0};
-//    rowvec charges = {8.0, 8.0};
-//    int nElectrons = 16;
+    double d = 2.05;
+    rowvec posA = {-d/2, 0.0, 0.0};
+    rowvec posB = {d/2, 0.0, 0.0};
+    rowvec charges = {7.0, 7.0};
+    int nElectrons = 14;
 
-//    mat nucleiPositions = zeros<mat>(2,3);
-//    nucleiPositions.row(0) = posA;
-//    nucleiPositions.row(1) = posB;
+    mat nucleiPositions = zeros<mat>(2,3);
+    nucleiPositions.row(0) = posA;
+    nucleiPositions.row(1) = posB;
 
-//    BasisHandler* basisHandler = new BasisHandler;
+    BasisHandler* basisHandler = new BasisHandler;
 
-//    BasisFunctions* basis;
-//    basis = new O_431G;
-//    basis->setPosition(posA);
-//    basisHandler->addBasisFunctions(basis);
+    BasisFunctions* basis;
+    basis = new N_431G;
+    basis->setPosition(posA);
+    basisHandler->addBasisFunctions(basis);
 
-//    basis = new O_431G;
-//    basis->setPosition(posB);
-//    basisHandler->addBasisFunctions(basis);
+    basis = new N_431G;
+    basis->setPosition(posB);
+    basisHandler->addBasisFunctions(basis);
 
 
-//    System *system;
-//    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+    System *system;
+    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
 
-//    HartreeFock solver(system);
-//    solver.solve();
-//    cout << "Energy: " << solver.getEnergy() << endl;
+    RHF solver(system);
+    solver.solve();
+    cout << "Energy: " << solver.getEnergy() << endl;
 
-//    clock_t end = clock();
-//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+    clock_t end = clock();
+    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
 
 //    clock_t begin = clock();
