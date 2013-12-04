@@ -69,7 +69,7 @@ void HartreeFock::calcIntegrals()
 //----------------------------------------------------------------------------------------------------------------
 // Solves the Hartree-Fock equations (single iteration) and stores the Fock energy in double fockEnergy
 // and coefficients in vec C;
-void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, double &fockEnergy)
+void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy)
 {
     vec eigVal;
     mat eigVec;
@@ -77,7 +77,6 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, double &fock
     mat F2 = zeros<mat>(matDim, matDim);
 
     // Diagonalize overlap matrix S and calculate matrix V such that h2 = V.t()*h*V and C = V*C2
-
     eig_sym(eigVal, eigVec, S);
 
     for (int i = 0; i < matDim; i++){
@@ -88,20 +87,19 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, double &fock
     F2 = V.t()*Fock*V;
 
     // Diagonalize matrix h2
-
     eig_sym(eigVal, eigVec, F2);
-    Coeffs = V*eigVec.cols(0, nElectrons/2-1);
+    Coeffs = V*eigVec;
 
     // Normalize vector C
-
     double norm;
-    for (int i = 0; i < nElectrons/2; i++){
+    for (int i = 0; i < matDim; i++){
         norm = dot(Coeffs.col(i), S*Coeffs.col(i));
         Coeffs.col(i) = Coeffs.col(i)/sqrt(norm);
     }
 
     // Compute density matrix
-    P = 2*Coeffs*Coeffs.t();
+    mat Ptemp = 2*Coeffs.cols(0, nElectrons/2-1)*Coeffs.cols(0, nElectrons/2-1).t();
+    P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix
 
-    fockEnergy = eigVal(0);
+    fockEnergy = eigVal;
 }

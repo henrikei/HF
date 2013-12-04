@@ -17,8 +17,8 @@ private:
     mat Cdown;
     mat Pup;
     mat Pdown;
-    double fockEnergyUp;
-    double fockEnergyDown;
+    colvec fockEnergyUp;
+    colvec fockEnergyDown;
 
     void buildMatrix();
 };

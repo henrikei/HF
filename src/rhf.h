@@ -13,7 +13,7 @@ private:
     mat F;
     mat C;
     mat P;
-    double fockEnergy;
+    colvec fockEnergy;
 
     void buildMatrix();
 };

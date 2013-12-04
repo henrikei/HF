@@ -4,12 +4,13 @@ UHF::UHF(System *newSystem):HartreeFock(newSystem)
 {
     Fup = zeros<mat>(matDim, matDim);
     Fdown = zeros<mat>(matDim, matDim);
-    Cup = zeros<mat>(matDim, nElectrons/2);
-    Cdown = zeros<mat>(matDim, nElectrons/2);
-    Pup = ones<mat>(matDim, matDim);
+    Cup = zeros<mat>(matDim, matDim);
+    Cdown = zeros<mat>(matDim, matDim);
+    Pup = zeros<mat>(matDim, matDim)/(matDim*matDim);
+    Pup(0,1)=0.1; // Introduce an assymetry between the spin up and spin down orbitals
     Pdown = zeros<mat>(matDim, matDim);
-    fockEnergyUp = 1.0E6;
-    fockEnergyDown = 1.0E6;
+    fockEnergyUp = ones<colvec>(matDim)*1.0E6;
+    fockEnergyDown = ones<colvec>(matDim)*1.0E6;
 }
 
 
@@ -55,19 +56,16 @@ void UHF::solve()
     double energyDiff = 1.0;
 
     // Calculate integrals
-    Cup = ones<mat>(matDim, nElectrons/2);
-    Cdown = zeros<mat>(matDim, nElectrons/2);
-
     calcIntegrals();
 
     // Iterate until the fock energy has converged
     while (energyDiff > toler){
-        fockEnergyUpOld = fockEnergyUp;
-        fockEnergyDownOld = fockEnergyDown;
+        fockEnergyUpOld = fockEnergyUp(0);
+        fockEnergyDownOld = fockEnergyDown(0);
         buildMatrix();
         solveSingle(Fup, Cup, Pup, fockEnergyUp);
         solveSingle(Fdown, Cdown, Pdown, fockEnergyDown);
-        energyDiff = fabs(fockEnergyUpOld + fockEnergyDownOld - fockEnergyUp - fockEnergyDown);
+        energyDiff = fabs(fockEnergyUpOld + fockEnergyDownOld - fockEnergyUp(0) - fockEnergyDown(0));
     }
 
     // Calculate energy (not equal to Fock energy)
@@ -85,4 +83,35 @@ void UHF::solve()
         }
     }
     energy += system->getNucleiPotential();
+
+    // Second order perturbation
+    double energyTemp1, energyTemp2, energyTemp3, energyTemp4;
+    for (int i = 0; i < nElectrons/2; i++){
+        for (int j = 0; j < nElectrons/2; j++){
+            for (int a = nElectrons/2; a < matDim; a++){
+                for (int b = nElectrons/2; b < matDim; b++){
+                    energyTemp1 = 0;
+                    energyTemp2 = 0;
+                    energyTemp3 = 0;
+                    energyTemp4 = 0;
+                    for (int p = 0; p < matDim; p++){
+                        for (int q = 0; q < matDim; q++){
+                            for (int r = 0; r < matDim; r++){
+                                for (int s = 0; s < matDim; s++){
+                                    energyTemp1 += Cup(p,i)*Cup(r,a)*Cup(q,j)*Cup(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+                                    energyTemp2 += Cdown(p,i)*Cdown(r,a)*Cup(q,j)*Cup(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+                                    energyTemp3 += Cup(p,i)*Cup(r,a)*Cdown(q,j)*Cdown(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+                                    energyTemp4 += Cdown(p,i)*Cdown(r,a)*Cdown(q,j)*Cdown(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+                                }
+                            }
+                        }
+                    }
+                    energy += (energyTemp1*energyTemp1/(fockEnergyUp(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyUp(b))
+                             + energyTemp2*energyTemp2/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyUp(j) - fockEnergyUp(b))
+                             + energyTemp3*energyTemp3/(fockEnergyUp(i) - fockEnergyUp(a) + fockEnergyDown(j) - fockEnergyDown(b))
+                             + energyTemp4*energyTemp4/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyDown(j) - fockEnergyDown(b)))/4;
+                }
+            }
+        }
+    }
 }

@@ -3,9 +3,9 @@
 RHF::RHF(System* newSystem):HartreeFock(newSystem)
 {
     F = zeros<mat>(matDim, matDim);
-    C = zeros<mat>(matDim, nElectrons/2);
+    C = zeros<mat>(matDim, matDim);
     P = zeros<mat>(matDim, matDim);
-    fockEnergy = 1.0E6;
+    fockEnergy = ones<colvec>(matDim)*1.0E6;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -23,10 +23,10 @@ void RHF::solve()
 
     // Iterate until the fock energy has converged
     while (energyDiff > toler){
-        fockEnergyOld = fockEnergy;
+        fockEnergyOld = fockEnergy(0);
         buildMatrix();
         solveSingle(F, C, P, fockEnergy);
-        energyDiff = fabs(fockEnergyOld - fockEnergy);
+        energyDiff = fabs(fockEnergyOld - fockEnergy(0));
     }
 
     // Calculate energy (not equal to Fock energy)

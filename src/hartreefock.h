@@ -28,7 +28,7 @@ protected:
 
     virtual void buildMatrix()=0;
     void calcIntegrals();
-    void solveSingle(const mat &Fock, mat &Coeffs, mat &P, double &fockEnergy);
+    void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy);
 };
 
 #endif // HARTREEFOCK_H

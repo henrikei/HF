@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     basisfunctions/n_431g.cpp \
     basisfunctions/o_431g.cpp \
     rhf.cpp \
-    uhf.cpp
+    uhf.cpp \
+    basisfunctions/h_6311gss.cpp
 
 HEADERS += \
     hartreefock.h \
@@ -37,6 +38,7 @@ HEADERS += \
     basisfunctions/n_431g.h \
     basisfunctions/o_431g.h \
     rhf.h \
-    uhf.h
+    uhf.h \
+    basisfunctions/h_6311gss.h
 
 include(defaults.pri)
