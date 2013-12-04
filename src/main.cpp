@@ -21,49 +21,53 @@ using namespace std;
 
 int main()
 {
-//    clock_t begin = clock();
+    //    clock_t begin = clock();
 
-//    rowvec posO = {0.0, 0.0, 0.0};
-//    rowvec posH1 = {1.797, 0.0, 0.0};
-//    rowvec posH2 = {-0.448, 1.740, 0.0};
-//    rowvec charges = {8.0, 1.0, 1.0};
-//    int nElectrons = 10;
+    //    rowvec posO = {0.0, 0.0, 0.0};
+    //    rowvec posH1 = {1.797, 0.0, 0.0};
+    //    rowvec posH2 = {-0.448, 1.740, 0.0};
+    //    rowvec charges = {8.0, 1.0, 1.0};
+    //    int nElectrons = 10;
 
-//    mat nucleiPositions = zeros<mat>(3,3);
-//    nucleiPositions.row(0) = posO;
-//    nucleiPositions.row(1) = posH1;
-//    nucleiPositions.row(2) = posH2;
+    //    mat nucleiPositions = zeros<mat>(3,3);
+    //    nucleiPositions.row(0) = posO;
+    //    nucleiPositions.row(1) = posH1;
+    //    nucleiPositions.row(2) = posH2;
 
-//    BasisHandler* basisHandler = new BasisHandler;
+    //    BasisHandler* basisHandler = new BasisHandler;
 
-//    BasisFunctions* basis;
-//    basis = new O_431G;
-//    basis->setPosition(posO);
-//    basisHandler->addBasisFunctions(basis);
+    //    BasisFunctions* basis;
+    //    basis = new O_431G;
+    //    basis->setPosition(posO);
+    //    basisHandler->addBasisFunctions(basis);
 
-//    basis = new H_431G;
-//    basis->setPosition(posH1);
-//    basisHandler->addBasisFunctions(basis);
+    //    basis = new H_431G;
+    //    basis->setPosition(posH1);
+    //    basisHandler->addBasisFunctions(basis);
 
-//    basis = new H_431G;
-//    basis->setPosition(posH2);
-//    basisHandler->addBasisFunctions(basis);
-
-
-//    System *system;
-//    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
-
-//    HartreeFock solver(system);
-//    solver.solve();
-//    cout << "Energy: " << solver.getEnergy() << endl;
-
-//    clock_t end = clock();
-//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+    //    basis = new H_431G;
+    //    basis->setPosition(posH2);
+    //    basisHandler->addBasisFunctions(basis);
 
 
+    //    System *system;
+    //    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+
+    //    HartreeFock solver(system);
+    //    solver.solve();
+    //    cout << "Energy: " << solver.getEnergy() << endl;
+
+    //    clock_t end = clock();
+    //    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
 
+    //    double dMin = 0.2;
+    //    double dMax = 20.0;
+    //    int nPoints = 200;
+    //    double dDelta = (dMax - dMin)/(double (nPoints-1));
 
+    fstream ofile;
+    ofile.open("../out/H2_RHF.dat");
     clock_t begin = clock();
 
     double d = 2.05;
@@ -93,37 +97,41 @@ int main()
 
     RHF solver(system);
     solver.solve();
-    cout << "Energy: " << solver.getEnergy() << endl;
+    cout << d << "  " << solver.getEnergy() << endl;
 
+    delete basisHandler;
+    delete basis;
+    delete system;
+    ofile.close();
     clock_t end = clock();
     cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
-//    test
-//    clock_t begin = clock();
+    //    test
+    //    clock_t begin = clock();
 
-//    rowvec posA = {0.0, 0.0, 0.0};
-//    rowvec charges = {8.0};
-//    int nElectrons = 8;
+    //    rowvec posA = {0.0, 0.0, 0.0};
+    //    rowvec charges = {8.0};
+    //    int nElectrons = 8;
 
-//    mat nucleiPositions = zeros<mat>(1,3);
-//    nucleiPositions.row(0) = posA;
+    //    mat nucleiPositions = zeros<mat>(1,3);
+    //    nucleiPositions.row(0) = posA;
 
-//    BasisHandler* basisHandler = new BasisHandler;
+    //    BasisHandler* basisHandler = new BasisHandler;
 
-//    BasisFunctions* basis;
-//    basis = new O_431G;
-//    basis->setPosition(posA);
-//    basisHandler->addBasisFunctions(basis);
+    //    BasisFunctions* basis;
+    //    basis = new O_431G;
+    //    basis->setPosition(posA);
+    //    basisHandler->addBasisFunctions(basis);
 
-//    System *system;
-//    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+    //    System *system;
+    //    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
 
-//    HartreeFock solver(system);
-//    solver.solve();
-//    cout << "Energy: " << solver.getEnergy() << endl;
+    //    HartreeFock solver(system);
+    //    solver.solve();
+    //    cout << "Energy: " << solver.getEnergy() << endl;
 
-//    clock_t end = clock();
-//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+    //    clock_t end = clock();
+    //    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
     return 0;
 }

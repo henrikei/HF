@@ -6,7 +6,7 @@ UHF::UHF(System *newSystem):HartreeFock(newSystem)
     Fdown = zeros<mat>(matDim, matDim);
     Cup = zeros<mat>(matDim, nElectrons/2);
     Cdown = zeros<mat>(matDim, nElectrons/2);
-    Pup = zeros<mat>(matDim, matDim);
+    Pup = ones<mat>(matDim, matDim);
     Pdown = zeros<mat>(matDim, matDim);
     fockEnergyUp = 1.0E6;
     fockEnergyDown = 1.0E6;
@@ -55,7 +55,7 @@ void UHF::solve()
     double energyDiff = 1.0;
 
     // Calculate integrals
-    Cup = zeros<mat>(matDim, nElectrons/2);
+    Cup = ones<mat>(matDim, nElectrons/2);
     Cdown = zeros<mat>(matDim, nElectrons/2);
 
     calcIntegrals();
@@ -78,8 +78,8 @@ void UHF::solve()
             energy += 0.5*(Pup(i,j) + Pdown(i,j))*h(i, j);
             for (int k = 0; k < matDim; k++){
                 for (int l = 0; l < matDim; l++){
-                    energy += 0.25*Pup(i,j)*Pup(l,k)*(Q[i][k][j][l] - Q[i][k][l][j]) + 0.25*Pup(i,j)*Pdown(l,k)*Q[i][k][j][l]
-                            + 0.25*Pdown(i,j)*Pdown(l,k)*(Q[i][k][j][l] - Q[i][k][l][j]) + 0.25*Pdown(i,j)*Pup(l,k)*Q[i][k][j][l];
+                    energy += 0.5*(0.25*Pup(i,j)*Pup(l,k)*(Q[i][k][j][l] - Q[i][k][l][j]) + 0.25*Pup(i,j)*Pdown(l,k)*Q[i][k][j][l]
+                            + 0.25*Pdown(i,j)*Pdown(l,k)*(Q[i][k][j][l] - Q[i][k][l][j]) + 0.25*Pdown(i,j)*Pup(l,k)*Q[i][k][j][l]);
                 }
             }
         }
