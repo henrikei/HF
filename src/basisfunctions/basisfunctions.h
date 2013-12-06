@@ -29,6 +29,7 @@ protected:
     int angMom;
 
     void normalizeCoeffs();
+    int factorial(int n);
 };
 
 #endif // BASISFUNCTIONS_H

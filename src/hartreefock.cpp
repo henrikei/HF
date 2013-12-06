@@ -83,7 +83,6 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
         V.col(i) = eigVec.col(i)/sqrt(eigVal(i));
     }
 
-
     F2 = V.t()*Fock*V;
 
     // Diagonalize matrix h2

@@ -86,6 +86,7 @@ void UHF::solve()
 
     // Second order perturbation
     double energyTemp1, energyTemp2, energyTemp3, energyTemp4;
+    double deltaEnergy = 0;
     for (int i = 0; i < nElectrons/2; i++){
         for (int j = 0; j < nElectrons/2; j++){
             for (int a = nElectrons/2; a < matDim; a++){
@@ -99,19 +100,21 @@ void UHF::solve()
                             for (int r = 0; r < matDim; r++){
                                 for (int s = 0; s < matDim; s++){
                                     energyTemp1 += Cup(p,i)*Cup(r,a)*Cup(q,j)*Cup(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
-                                    energyTemp2 += Cdown(p,i)*Cdown(r,a)*Cup(q,j)*Cup(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
-                                    energyTemp3 += Cup(p,i)*Cup(r,a)*Cdown(q,j)*Cdown(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
-                                    energyTemp4 += Cdown(p,i)*Cdown(r,a)*Cdown(q,j)*Cdown(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+                                    energyTemp2 += Cdown(p,i)*Cdown(r,a)*Cup(q,j)*Cup(s,b)*Q[p][q][r][s];
+                                    energyTemp3 += Cdown(p,i)*Cdown(r,a)*Cdown(q,j)*Cdown(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+                                    energyTemp4 += -Cdown(p,i)*Cup(r,a)*Cup(q,j)*Cdown(s,b)*Q[p][q][s][r];
                                 }
                             }
                         }
                     }
-                    energy += (energyTemp1*energyTemp1/(fockEnergyUp(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyUp(b))
-                             + energyTemp2*energyTemp2/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyUp(j) - fockEnergyUp(b))
-                             + energyTemp3*energyTemp3/(fockEnergyUp(i) - fockEnergyUp(a) + fockEnergyDown(j) - fockEnergyDown(b))
-                             + energyTemp4*energyTemp4/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyDown(j) - fockEnergyDown(b)))/4;
+                    deltaEnergy += (energyTemp1*energyTemp1/(fockEnergyUp(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyUp(b))
+                             + 2*energyTemp2*energyTemp2/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyUp(j) - fockEnergyUp(b))
+                             + energyTemp3*energyTemp3/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyDown(j) - fockEnergyDown(b))
+                             + 2*energyTemp4*energyTemp4/(fockEnergyDown(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyDown(b)))/4;
                 }
             }
         }
     }
+    energy += deltaEnergy;
+    cout << deltaEnergy << endl;
 }
