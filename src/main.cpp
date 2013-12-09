@@ -115,14 +115,13 @@ int main()
 
 
 
-
     clock_t begin = clock();
 
-    double d = 2.050;
+    double d = 1.4;
     rowvec posA = {-d/2, 0.0, 0.0};
     rowvec posB = {d/2, 0.0, 0.0};
-    rowvec charges = {7.0, 7.0};
-    int nElectrons = 14;
+    rowvec charges = {1.0, 1.0};
+    int nElectrons = 2;
 
     mat nucleiPositions = zeros<mat>(2,3);
     nucleiPositions.row(0) = posA;
@@ -131,18 +130,18 @@ int main()
     BasisHandler* basisHandler = new BasisHandler;
 
     BasisFunctions* basis;
-    basis = new N_431G;
+    basis = new H_6311Gss;
     basis->setPosition(posA);
     basisHandler->addBasisFunctions(basis);
 
-    basis = new N_431G;
+    basis = new H_6311Gss;
     basis->setPosition(posB);
     basisHandler->addBasisFunctions(basis);
 
     System *system;
     system = new System(basisHandler, nucleiPositions, charges, nElectrons);
 
-    UHF solver(system);
+    UHF solver(system, 2);
     solver.solve();
     cout << "Energy: " << solver.getEnergy() << endl;
 

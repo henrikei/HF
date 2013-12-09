@@ -8,6 +8,7 @@ class UHF : public HartreeFock
 {
 public:
     UHF(System *newSystem);
+    UHF(System *newSystem, int newPerturbOrder);
     void solve();
     mat getCoeff();
 private:
@@ -21,6 +22,7 @@ private:
     colvec fockEnergyDown;
 
     void buildMatrix();
+    double perturbation2order();
 };
 
 #endif // UHF_H

@@ -6,7 +6,18 @@ RHF::RHF(System* newSystem):HartreeFock(newSystem)
     C = zeros<mat>(matDim, matDim);
     P = zeros<mat>(matDim, matDim);
     fockEnergy = ones<colvec>(matDim)*1.0E6;
+    perturbOrder = 1;
 }
+
+RHF::RHF(System* newSystem, int newPerturbOrder):HartreeFock(newSystem)
+{
+    F = zeros<mat>(matDim, matDim);
+    C = zeros<mat>(matDim, matDim);
+    P = zeros<mat>(matDim, matDim);
+    fockEnergy = ones<colvec>(matDim)*1.0E6;
+    perturbOrder = newPerturbOrder;
+}
+
 
 //-------------------------------------------------------------------------------------------------------
 // Solves the Hartree-Fock equations (iterated), stores the energy in double energy and the coefficients
@@ -43,6 +54,15 @@ void RHF::solve()
         }
     }
     energy += system->getNucleiPotential();
+
+    // Perturbative terms
+    if (perturbOrder == 2){
+        energy += perturbation2order();
+    } else if (perturbOrder == 1) {
+    } else {
+        cout << "Error. Only first and second order perturbation has been implemented." << endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -70,4 +90,37 @@ void RHF::buildMatrix()
             }
         }
     }
+}
+
+
+//--------------------------------------------------------------------------------------------------------------------
+// Second order perturbation
+double RHF::perturbation2order(){
+    double energyTemp1, energyTemp2, energyTemp3;
+    double deltaEnergy = 0;
+    for (int i = 0; i < nElectrons/2; i++){
+        for (int j = 0; j < nElectrons/2; j++){
+            for (int a = nElectrons/2; a < matDim; a++){
+                for (int b = nElectrons/2; b < matDim; b++){
+                    energyTemp1 = 0;
+                    energyTemp2 = 0;
+                    energyTemp3 = 0;
+                    for (int p = 0; p < matDim; p++){
+                        for (int q = 0; q < matDim; q++){
+                            for (int r = 0; r < matDim; r++){
+                                for (int s = 0; s < matDim; s++){
+                                    energyTemp1 += C(p,i)*C(r,a)*C(q,j)*C(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+                                    energyTemp2 += C(p,i)*C(r,a)*C(q,j)*C(s,b)*Q[p][q][r][s];
+                                    energyTemp3 += -C(p,i)*C(r,a)*C(q,j)*C(s,b)*Q[p][q][s][r];
+                                }
+                            }
+                        }
+                    }
+                    deltaEnergy += (energyTemp1*energyTemp1 + energyTemp2*energyTemp2 + energyTemp3*energyTemp3)
+                                     /(2*(fockEnergy(i) - fockEnergy(a) + fockEnergy(j) - fockEnergy(b)));
+                }
+            }
+        }
+    }
+    return deltaEnergy;
 }

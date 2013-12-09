@@ -17,7 +17,6 @@ public:
     virtual mat getCoeff()=0;
 protected:
     System *system;
-
     mat h;
     double**** Q;
     mat S;
@@ -25,10 +24,12 @@ protected:
     int nElectrons;
     double energy;
     double toler;
+    int perturbOrder;
 
     virtual void buildMatrix()=0;
     void calcIntegrals();
     void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy);
+    virtual double perturbation2order()=0;
 };
 
 #endif // HARTREEFOCK_H
