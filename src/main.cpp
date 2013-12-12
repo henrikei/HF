@@ -39,16 +39,15 @@ int main()
 
 //    BasisHandler* basisHandler = new BasisHandler;
 
-//    BasisFunctions* basis;
-//    basis = new O_431G;
+//    BasisFunctions* basis = new BasisFunctions("O_431G.dat");
 //    basis->setPosition(posO);
 //    basisHandler->addBasisFunctions(basis);
 
-//    basis = new H_431G;
+//    basis = new BasisFunctions("H_431G.dat");
 //    basis->setPosition(posH1);
 //    basisHandler->addBasisFunctions(basis);
 
-//    basis = new H_431G;
+//    basis = new BasisFunctions("H_431G.dat");
 //    basis->setPosition(posH2);
 //    basisHandler->addBasisFunctions(basis);
 
@@ -117,11 +116,11 @@ int main()
 
     clock_t begin = clock();
 
-    double d = 1.4;
+    double d = 1.88972613392*1.0;
     rowvec posA = {-d/2, 0.0, 0.0};
     rowvec posB = {d/2, 0.0, 0.0};
-    rowvec charges = {1.0, 1.0};
-    int nElectrons = 2;
+    rowvec charges = {1.0, 9.0};
+    int nElectrons = 10;
 
     mat nucleiPositions = zeros<mat>(2,3);
     nucleiPositions.row(0) = posA;
@@ -129,12 +128,11 @@ int main()
 
     BasisHandler* basisHandler = new BasisHandler;
 
-    BasisFunctions* basis;
-    basis = new H_6311Gss;
+    BasisFunctions* basis = new BasisFunctions("H_631Gss.dat");
     basis->setPosition(posA);
     basisHandler->addBasisFunctions(basis);
 
-    basis = new H_6311Gss;
+    basis = new BasisFunctions("F_631Gss.dat");
     basis->setPosition(posB);
     basisHandler->addBasisFunctions(basis);
 
@@ -143,7 +141,8 @@ int main()
 
     UHF solver(system, 2);
     solver.solve();
-    cout << "Energy: " << solver.getEnergy() << endl;
+    cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+    cout << "Error: " << setprecision(9) << (100.195856 + solver.getEnergy()) << endl;
 
     clock_t end = clock();
     cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;

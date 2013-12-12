@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-LIBS += -llapack -larmadillo
+LIBS += -llapack -larmadillo -lboost_regex
 
 QMAKE_CXXFLAGS += -std=c++0x
 QMAKE_CXXFLAGS_RELEASE += -std=c++0x

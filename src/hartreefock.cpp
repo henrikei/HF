@@ -9,12 +9,18 @@ HartreeFock::HartreeFock(System *newSystem)
     h = zeros<mat>(matDim, matDim);
     S = zeros<mat>(matDim, matDim);
     energy = 1.0E6;
+    energyMP2 = 0.0;
     toler = 1.0E-10;
 }
 
 //----------------------------------------------------------------------------------------------------------------
 double HartreeFock::getEnergy(){
     return energy;
+}
+
+double HartreeFock::getEnergyMP2()
+{
+    return energyMP2;
 }
 
 //----------------------------------------------------------------------------------------------------------------

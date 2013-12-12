@@ -97,7 +97,6 @@ void RHF::buildMatrix()
 // Second order perturbation
 double RHF::perturbation2order(){
     double energyTemp1, energyTemp2, energyTemp3;
-    double deltaEnergy = 0;
     for (int i = 0; i < nElectrons/2; i++){
         for (int j = 0; j < nElectrons/2; j++){
             for (int a = nElectrons/2; a < matDim; a++){
@@ -116,11 +115,11 @@ double RHF::perturbation2order(){
                             }
                         }
                     }
-                    deltaEnergy += (energyTemp1*energyTemp1 + energyTemp2*energyTemp2 + energyTemp3*energyTemp3)
+                    energyMP2 += (energyTemp1*energyTemp1 + energyTemp2*energyTemp2 + energyTemp3*energyTemp3)
                                      /(2*(fockEnergy(i) - fockEnergy(a) + fockEnergy(j) - fockEnergy(b)));
                 }
             }
         }
     }
-    return deltaEnergy;
+    return energyMP2;
 }

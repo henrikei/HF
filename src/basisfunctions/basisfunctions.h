@@ -3,16 +3,18 @@
 
 #include <vector>
 #include <armadillo>
+#include <boost/regex.hpp>
 
 using namespace std;
 using namespace arma;
-
+using namespace boost;
 
 
 class BasisFunctions
 {
 public:
     BasisFunctions();
+    BasisFunctions(string inFileName);
     void setPosition(rowvec newPosition);
     rowvec3 getPosition();
     rowvec getExponents(int p);

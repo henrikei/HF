@@ -5,6 +5,113 @@ BasisFunctions::BasisFunctions()
 {
 }
 
+BasisFunctions::BasisFunctions(string inFileName)
+{
+    //---------------------------------------------------------------------------------------------------------------------------
+    // Read exponents, coefficients and powers from input file in format TurboMole (taken from https://bse.pnl.gov/bse/portal)
+    irowvec pow1 = {0, 0, 0};
+    irowvec pow2 = {1, 0, 0};
+    irowvec pow3 = {0, 1, 0};
+    irowvec pow4 = {0, 0, 1};
+    irowvec pow5 = {2, 0, 0};
+    irowvec pow6 = {0, 2, 0};
+    irowvec pow7 = {0, 0, 2};
+    irowvec pow8 = {1, 1, 0};
+    irowvec pow9 = {1, 0, 1};
+    irowvec pow10 = {0, 1, 1};
+
+    string line, stringToSearch;
+    fstream file;
+    file.open(inFileName);
+    if (file.is_open()){
+        while (getline(file, line)){
+            stringToSearch += line +"\n";
+        }
+        file.close();
+    } else {
+        cout << "Error: Could not open file." << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // search1: Search for groups of contracted basis sets
+    regex search1("([0-9]\\s+[spd])((\\s+-?[0-9]+\\.[0-9]+)+)");
+    sregex_iterator pos1(stringToSearch.begin(), stringToSearch.end(), search1);
+    sregex_iterator end1;
+    for(; pos1!=end1; pos1++){
+        string subString = pos1->str(2).c_str();
+        // search2: Search for groups of (exponent and coefficient) for each primitive
+        regex search2("(-?[0-9]+\\.[0-9]+)\\s+(-?[0-9]+\\.[0-9]+)\\s*");
+        sregex_iterator pos2(subString.begin(), subString.end(), search2);
+        sregex_iterator end2;
+        vector<double> temp1;
+        vector<double> temp2;
+        for(; pos2!=end2; pos2++){
+            temp1.push_back(atof(pos2->str(1).c_str()));
+            temp2.push_back(atof(pos2->str(2).c_str()));
+        }
+        rowvec exp = zeros<rowvec>(temp1.size());
+        rowvec c = zeros<rowvec>(temp1.size());
+        // Fill exp and c with exponents and coefficients of current basis
+        for(uint i = 0; i < temp1.size(); i++){
+            exp(i) = temp1.at(i);
+            c(i) = temp2.at(i);
+        }
+
+        // Check type of orbital (s, p, d)
+        string orbitalType = pos1->str(1).c_str();
+        regex searchs("[0-9]\\s+s");
+        regex searchp("[0-9]\\s+p");
+        regex searchd("[0-9]\\s+d");
+        if(regex_match(orbitalType, searchs)){
+            exponents.push_back(exp);
+            coeffs.push_back(c);
+            powers.push_back(pow1);
+        }
+        if(regex_match(orbitalType, searchp)){
+            exponents.push_back(exp);
+            exponents.push_back(exp);
+            exponents.push_back(exp);
+            coeffs.push_back(c);
+            coeffs.push_back(c);
+            coeffs.push_back(c);
+            powers.push_back(pow2);
+            powers.push_back(pow3);
+            powers.push_back(pow4);
+        }
+        if(regex_match(orbitalType, searchd)){
+            exponents.push_back(exp);
+            exponents.push_back(exp);
+            exponents.push_back(exp);
+            exponents.push_back(exp);
+            exponents.push_back(exp);
+            exponents.push_back(exp);
+            coeffs.push_back(c);
+            coeffs.push_back(c);
+            coeffs.push_back(c);
+            coeffs.push_back(c);
+            coeffs.push_back(c);
+            coeffs.push_back(c);
+            powers.push_back(pow5);
+            powers.push_back(pow6);
+            powers.push_back(pow7);
+            powers.push_back(pow8);
+            powers.push_back(pow9);
+            powers.push_back(pow10);
+        }
+    }
+    //----------------------------------------------------------------------------------------------------------------------------
+
+    normalizeCoeffs();
+
+    // Find max angular momentum of basis set.
+    angMom = 0;
+    for (uint i = 0; i < powers.size(); i++){
+        if(angMom < sum(powers.at(i))){
+            angMom = sum(powers.at(i));
+        }
+    }
+}
+
 
 void BasisFunctions::setPosition(rowvec newPosition)
 {

@@ -14,6 +14,7 @@ public:
     HartreeFock(System *newSystem);
     virtual void solve()=0;
     double getEnergy();
+    double getEnergyMP2();
     virtual mat getCoeff()=0;
 protected:
     System *system;
@@ -23,6 +24,7 @@ protected:
     int matDim;
     int nElectrons;
     double energy;
+    double energyMP2;
     double toler;
     int perturbOrder;
 
