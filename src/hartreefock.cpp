@@ -52,22 +52,32 @@ void HartreeFock::calcIntegrals()
     }
 
     for (int i = 0; i < matDim; i++){
-        for (int j = 0; j < i+1; j++){
-            for (int k = 0; k < i+1; k++){
-                for (int l = 0; l < j+1; l++){
+        for (int j = 0; j < matDim; j++){
+            for (int k = 0; k < matDim; k++){
+                for (int l = 0; l < matDim; l++){
                     Q[i][j][k][l] = system->getTwoElectronIntegral(i, j, k, l);
-                    Q[k][j][i][l] = Q[i][j][k][l];
-                    Q[i][l][k][j] = Q[i][j][k][l];
-                    Q[k][l][i][j] = Q[i][j][k][l];
-
-                    Q[j][i][l][k] = Q[i][j][k][l];
-                    Q[j][k][l][i] = Q[i][j][k][l];
-                    Q[l][i][j][k] = Q[i][j][k][l];
-                    Q[l][k][j][i] = Q[i][j][k][l];
                 }
             }
         }
     }
+
+//    for (int i = 0; i < matDim; i++){
+//        for (int j = 0; j < i+1; j++){
+//            for (int k = 0; k < i+1; k++){
+//                for (int l = 0; l < j+1; l++){
+//                    Q[i][j][k][l] = system->getTwoElectronIntegral(i, j, k, l);
+//                    Q[k][j][i][l] = Q[i][j][k][l];
+//                    Q[i][l][k][j] = Q[i][j][k][l];
+//                    Q[k][l][i][j] = Q[i][j][k][l];
+
+//                    Q[j][i][l][k] = Q[i][j][k][l];
+//                    Q[j][k][l][i] = Q[i][j][k][l];
+//                    Q[l][i][j][k] = Q[i][j][k][l];
+//                    Q[l][k][j][i] = Q[i][j][k][l];
+//                }
+//            }
+//        }
+//    }
 }
 
 

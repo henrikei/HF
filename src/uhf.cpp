@@ -116,9 +116,9 @@ void UHF::solve()
 double UHF::perturbation2order(){
     double energyTemp1, energyTemp2, energyTemp3, energyTemp4;
     for (int i = 0; i < nElectrons/2; i++){
-        for (int j = 0; j < nElectrons/2; j++){
+        for (int j = i+1; j < nElectrons/2; j++){
             for (int a = nElectrons/2; a < matDim; a++){
-                for (int b = nElectrons/2; b < matDim; b++){
+                for (int b = a+1; b < matDim; b++){
                     energyTemp1 = 0;
                     energyTemp2 = 0;
                     energyTemp3 = 0;
@@ -138,7 +138,7 @@ double UHF::perturbation2order(){
                     energyMP2 += (energyTemp1*energyTemp1/(fockEnergyUp(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyUp(b))
                                     + 2*energyTemp2*energyTemp2/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyUp(j) - fockEnergyUp(b))
                                     + energyTemp3*energyTemp3/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyDown(j) - fockEnergyDown(b))
-                                    + 2*energyTemp4*energyTemp4/(fockEnergyDown(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyDown(b)))/4;
+                                    + 2*energyTemp4*energyTemp4/(fockEnergyDown(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyDown(b)));
                 }
             }
         }

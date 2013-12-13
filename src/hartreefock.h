@@ -19,8 +19,8 @@ public:
 protected:
     System *system;
     mat h;
-    double**** Q;
     mat S;
+    double**** Q;
     int matDim;
     int nElectrons;
     double energy;
