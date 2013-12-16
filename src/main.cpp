@@ -139,7 +139,7 @@ int main()
     System *system;
     system = new System(basisHandler, nucleiPositions, charges, nElectrons);
 
-    RHF solver(system,2);
+    UHF solver(system,2);
     solver.solve();
     cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
     cout << "Error: " << setprecision(9) << (100.195856 + solver.getEnergy()) << endl;

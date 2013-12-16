@@ -29,7 +29,7 @@ BasisFunctions::BasisFunctions(string inFileName)
         }
         file.close();
     } else {
-        cout << "Error: Could not open file." << endl;
+        cout << "Error: Could not open file "<< inFileName << endl;
         exit(EXIT_FAILURE);
     }
 
