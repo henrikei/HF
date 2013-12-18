@@ -52,10 +52,18 @@ void HartreeFock::calcIntegrals()
     }
 
     for (int i = 0; i < matDim; i++){
-        for (int j = 0; j < matDim; j++){
-            for (int k = 0; k < matDim; k++){
-                for (int l = 0; l < matDim; l++){
+        for (int j = 0; j < i+1; j++){
+            for (int k = 0; k < i+1; k++){
+                for (int l = 0; l < j+1; l++){
                     Q[i][j][k][l] = system->getTwoElectronIntegral(i, j, k, l);
+                    Q[k][j][i][l] = Q[i][j][k][l];
+                    Q[i][l][k][j] = Q[i][j][k][l];
+                    Q[k][l][i][j] = Q[i][j][k][l];
+
+                    Q[j][i][l][k] = Q[i][j][k][l];
+                    Q[j][k][l][i] = Q[i][j][k][l];
+                    Q[l][i][j][k] = Q[i][j][k][l];
+                    Q[l][k][j][i] = Q[i][j][k][l];
                 }
             }
         }
@@ -65,39 +73,22 @@ void HartreeFock::calcIntegrals()
 //        for (int j = 0; j < matDim; j++){
 //            for (int k = 0; k < matDim; k++){
 //                for (int l = 0; l < matDim; l++){
-//                    if (fabs(Q[i][j][k][l] - Q[k][j][i][l]) > 1.0E-8){
+//                    if (fabs((Q[i][j][k][l] - Q[k][j][i][l])/Q[i][j][k][l]) > 1.0E-12){
 //                        cout << "Q not symmetric! 1" << endl;
-//                    } else if (fabs(Q[i][j][k][l] - Q[i][l][k][j]) > 1.0E-8){
+//                    } else if (fabs((Q[i][j][k][l] - Q[i][l][k][j])/Q[i][j][k][l]) > 1.0E-14){
 //                        cout << "Q not symmetric! 2" << endl;
-//                    } else if (fabs(Q[i][j][k][l] - Q[k][l][i][j]) > 1.0E-8){
-//                        cout << "Q not symmetric! 2" << endl;
-//                    } else if (fabs(Q[i][j][k][l] - Q[j][i][l][k]) > 1.0E-8){
-//                        cout << "Q not symmetric! 2" << endl;
-//                    }  else if (fabs(Q[i][j][k][l] - Q[l][i][j][k]) > 1.0E-8){
-//                        cout << "Q not symmetric! 2" << endl;
-//                    }  else if (fabs(Q[i][j][k][l] - Q[j][k][l][i]) > 1.0E-8){
-//                        cout << "Q not symmetric! 2" << endl;
-//                    }  else if (fabs(Q[i][j][k][l] - Q[l][k][j][i]) > 1.0E-8){
-//                        cout << "Q not symmetric! 2" << endl;
+//                    } else if (fabs((Q[i][j][k][l] - Q[k][l][i][j])/Q[i][j][k][l]) > 1.0E-14){
+//                        cout << "Q not symmetric! 3" << endl;
+//                    } else if (fabs((Q[i][j][k][l] - Q[j][i][l][k])/Q[i][j][k][l]) > 1.0E-14){
+//                        cout << "Q not symmetric! 4" << endl;
+//                        cout << fabs((Q[i][j][k][l] - Q[j][i][l][k])/Q[i][j][k][l]) << endl;
+//                    } else if (fabs((Q[i][j][k][l] - Q[l][i][j][k])/Q[i][j][k][l]) > 1.0E-14){
+//                        cout << "Q not symmetric! 5" << endl;
+//                    } else if (fabs((Q[i][j][k][l] - Q[j][k][l][i])/Q[i][j][k][l]) > 1.0E-14){
+//                        cout << "Q not symmetric! 6" << endl;
+//                    } else if (fabs((Q[i][j][k][l] - Q[l][k][j][i])/Q[i][j][k][l]) > 1.0E-14){
+//                        cout << "Q not symmetric! 7" << endl;
 //                    }
-//                }
-//            }
-//        }
-//    }
-
-//    for (int i = 0; i < matDim; i++){
-//        for (int j = 0; j < i+1; j++){
-//            for (int k = 0; k < i+1; k++){
-//                for (int l = 0; l < j+1; l++){
-//                    Q[i][j][k][l] = system->getTwoElectronIntegral(i, j, k, l);
-//                    Q[k][j][i][l] = Q[i][j][k][l];
-//                    Q[i][l][k][j] = Q[i][j][k][l];
-//                    Q[k][l][i][j] = Q[i][j][k][l];
-
-//                    Q[j][i][l][k] = Q[i][j][k][l];
-//                    Q[j][k][l][i] = Q[i][j][k][l];
-//                    Q[l][i][j][k] = Q[i][j][k][l];
-//                    Q[l][k][j][i] = Q[i][j][k][l];
 //                }
 //            }
 //        }
