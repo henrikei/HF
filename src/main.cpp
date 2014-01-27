@@ -116,11 +116,11 @@ int main()
 
     clock_t begin = clock();
 
-    double d = 1.88972613392*1.0;
+    double d = 1.4;
     rowvec posA = {-d/2, 0.0, 0.0};
     rowvec posB = {d/2, 0.0, 0.0};
-    rowvec charges = {1.0, 9.0};
-    int nElectrons = 10;
+    rowvec charges = {1.0, 1.0};
+    int nElectrons = 2;
 
     mat nucleiPositions = zeros<mat>(2,3);
     nucleiPositions.row(0) = posA;
@@ -128,21 +128,21 @@ int main()
 
     BasisHandler* basisHandler = new BasisHandler;
 
-    BasisFunctions* basis = new BasisFunctions("../inFiles/H_631Gss.dat");
+    BasisFunctions* basis = new BasisFunctions("../inFiles/H_431G.dat");
     basis->setPosition(posA);
     basisHandler->addBasisFunctions(basis);
 
-    basis = new BasisFunctions("../inFiles/F_631Gss.dat");
+    basis = new BasisFunctions("../inFiles/H_431G.dat");
     basis->setPosition(posB);
     basisHandler->addBasisFunctions(basis);
 
     System *system;
     system = new System(basisHandler, nucleiPositions, charges, nElectrons);
 
-    UHF solver(system,2);
+    RHF solver(system,2);
     solver.solve();
     cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
-    cout << "Error: " << setprecision(9) << (100.195856 + solver.getEnergy()) << endl;
+    cout << "MP2 correction: " << setprecision(9) << solver.getEnergyMP2() << endl;
 
     clock_t end = clock();
     cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
