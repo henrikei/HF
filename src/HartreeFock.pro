@@ -2,7 +2,7 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= qt
 
-LIBS += -llapack -larmadillo -lboost_regex
+LIBS += -llapack -larmadillo -lboost_regex -lconfig++
 
 QMAKE_CXXFLAGS += -std=c++0x
 QMAKE_CXXFLAGS_RELEASE += -std=c++0x
@@ -46,3 +46,5 @@ HEADERS += \
     basisfunctions/o_6311g.h
 
 include(defaults.pri)
+
+OTHER_FILES +=

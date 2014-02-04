@@ -2,6 +2,7 @@
 #include <time.h>
 #include <iomanip>
 #include <fstream>
+#include <libconfig.h++>
 #include "hartreefock.h"
 #include "rhf.h"
 #include "uhf.h"
@@ -10,20 +11,65 @@
 #include "boysfunction.h"
 #include "basishandler.h"
 #include "basisfunctions/basisfunctions.h"
-#include "basisfunctions/h_321g.h"
-#include "basisfunctions/h_431g.h"
-#include "basisfunctions/h_theijssen.h"
-#include "basisfunctions/h_6311gss.h"
-#include "basisfunctions/o_321g.h"
-#include "basisfunctions/o_431g.h"
-#include "basisfunctions/o_6311g.h"
-#include "basisfunctions/o_6311gss.h"
-#include "basisfunctions/n_431g.h"
+
 
 using namespace std;
+using namespace arma;
+using namespace libconfig;
 
 int main()
 {
+    Config cfg;
+    cfg.readFile("../inFiles/configFiles/CH4_631Gs.cfg");
+    string name = cfg.lookup("name");
+
+    // Initialise basis functions and add them to basisHandler
+    Setting& root = cfg.getRoot();
+    Setting& atoms = root["atoms"];
+    int nAtoms = atoms.getLength();
+    rowvec position = zeros<rowvec>(3);
+    mat nucleiPositions = zeros<mat>(nAtoms, 3);
+    rowvec charges = zeros<rowvec>(nAtoms);
+    string basis;
+    BasisFunctions* basisfunctions;
+    BasisHandler* basisHandler = new BasisHandler;
+    for(int i = 0; i < nAtoms; i++){
+        Setting& atom = atoms[i];
+        atom.lookupValue("posX", position(0));
+        atom.lookupValue("posY", position(1));
+        atom.lookupValue("posZ", position(2));
+        nucleiPositions.row(i) = position;
+        atom.lookupValue("charge", charges(i));
+        atom.lookupValue("basis", basis);
+        basisfunctions = new BasisFunctions("../inFiles/basisSets/"+basis);
+        basisfunctions->setPosition(position);
+        basisHandler->addBasisFunctions(basisfunctions);
+    }
+
+    // Initialise system
+    int nElectrons = cfg.lookup("nElectrons");
+    System* system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+
+    // Solver type (RHF/UHF) and perturbation theory (true/false)
+    HartreeFock* solver;
+    string method = cfg.lookup("method");
+    int pert = 1;
+    if (cfg.lookup("perturbation")){
+        pert = 2;}
+    if (method == "RHF"){
+        solver = new RHF(system, pert);
+    } else if (method == "UHF"){
+        solver = new UHF(system, pert);
+    } else {
+        cout << "Invalid choice of method" << endl;
+    }
+    solver->solve();
+    cout << "Analysis of: " << name << endl;
+    cout << "Energy: " << solver->getEnergy() << endl;
+
+
+
+
 //    clock_t begin = clock();
 
 //    rowvec posO = {0.0, 0.0, 0.0};
@@ -39,15 +85,15 @@ int main()
 
 //    BasisHandler* basisHandler = new BasisHandler;
 
-//    BasisFunctions* basis = new BasisFunctions("O_431G.dat");
+//    BasisFunctions* basis = new BasisFunctions("../inFiles/basisSets/O_431G.dat");
 //    basis->setPosition(posO);
 //    basisHandler->addBasisFunctions(basis);
 
-//    basis = new BasisFunctions("../inFiles/H_431G.dat");
+//    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
 //    basis->setPosition(posH1);
 //    basisHandler->addBasisFunctions(basis);
 
-//    basis = new BasisFunctions("../inFiles/H_431G.dat");
+//    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
 //    basis->setPosition(posH2);
 //    basisHandler->addBasisFunctions(basis);
 
@@ -64,88 +110,38 @@ int main()
 
 
 
-
-//    double dMin = 0.5;
-//    double dMax = 6.0;
-//    int nPoints = 200;
-//    double dDelta = (dMax - dMin)/(double (nPoints-1));
-
-//    fstream ofile;
-//    ofile.open("../out/H2_RHF_6311Gss.dat");
 //    clock_t begin = clock();
 
-//    for (int i = 0; i < nPoints; i++){
-//        double d = dMin + i*dDelta;
-//        rowvec posA = {-d/2, 0.0, 0.0};
-//        rowvec posB = {d/2, 0.0, 0.0};
-//        rowvec charges = {1.0, 1.0};
-//        int nElectrons = 2;
+//    double d = 1.4;
+//    rowvec posA = {-d/2, 0.0, 0.0};
+//    rowvec posB = {d/2, 0.0, 0.0};
+//    rowvec charges = {1.0, 1.0};
+//    int nElectrons = 2;
 
-//        mat nucleiPositions = zeros<mat>(2,3);
-//        nucleiPositions.row(0) = posA;
-//        nucleiPositions.row(1) = posB;
+//    mat nucleiPositions = zeros<mat>(2,3);
+//    nucleiPositions.row(0) = posA;
+//    nucleiPositions.row(1) = posB;
 
-//        BasisHandler* basisHandler = new BasisHandler;
+//    BasisHandler* basisHandler = new BasisHandler;
 
-//        BasisFunctions* basis;
-//        basis = new H_6311Gss;
-//        basis->setPosition(posA);
-//        basisHandler->addBasisFunctions(basis);
+//    BasisFunctions* basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
+//    basis->setPosition(posA);
+//    basisHandler->addBasisFunctions(basis);
 
-//        basis = new H_6311Gss;
-//        basis->setPosition(posB);
-//        basisHandler->addBasisFunctions(basis);
+//    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
+//    basis->setPosition(posB);
+//    basisHandler->addBasisFunctions(basis);
 
+//    System *system;
+//    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
 
-//        System *system;
-//        system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+//    RHF solver(system,2);
+//    solver.solve();
+//    cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+//    cout << "MP2 correction: " << setprecision(9) << solver.getEnergyMP2() << endl;
 
-//        RHF solver(system);
-//        solver.solve();
-//        ofile << d << "  " << solver.getEnergy() << endl;
-
-//        delete basisHandler;
-//        delete basis;
-//        delete system;
-//    }
-//    ofile.close();
 //    clock_t end = clock();
 //    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
-
-
-
-    clock_t begin = clock();
-
-    double d = 1.4;
-    rowvec posA = {-d/2, 0.0, 0.0};
-    rowvec posB = {d/2, 0.0, 0.0};
-    rowvec charges = {1.0, 1.0};
-    int nElectrons = 2;
-
-    mat nucleiPositions = zeros<mat>(2,3);
-    nucleiPositions.row(0) = posA;
-    nucleiPositions.row(1) = posB;
-
-    BasisHandler* basisHandler = new BasisHandler;
-
-    BasisFunctions* basis = new BasisFunctions("../inFiles/H_431G.dat");
-    basis->setPosition(posA);
-    basisHandler->addBasisFunctions(basis);
-
-    basis = new BasisFunctions("../inFiles/H_431G.dat");
-    basis->setPosition(posB);
-    basisHandler->addBasisFunctions(basis);
-
-    System *system;
-    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
-
-    RHF solver(system,2);
-    solver.solve();
-    cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
-    cout << "MP2 correction: " << setprecision(9) << solver.getEnergyMP2() << endl;
-
-    clock_t end = clock();
-    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
     return 0;
 }
