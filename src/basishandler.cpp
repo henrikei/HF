@@ -11,6 +11,8 @@ void BasisHandler::addBasisFunctions(BasisFunctions *basis)
     allBasisFunctions.push_back(basis);
     int n = basis->getNumOfBasisFunc();
 
+    // maps takes basis function number (i.e. matrix index) and returns the nucleus number
+    // at which this basis is centered.
     for (int i = 0; i < n; i++){
         map.push_back(nucleiNumber);
     }

@@ -8,6 +8,7 @@ HartreeFock::HartreeFock(System *newSystem)
     nElectrons = system->getNumOfElectrons();
     h = zeros<mat>(matDim, matDim);
     S = zeros<mat>(matDim, matDim);
+    Q = 0;
     energy = 1.0E6;
     energyMP2 = 0.0;
     toler = 1.0E-10;
@@ -40,13 +41,15 @@ void HartreeFock::calcIntegrals()
     }
 
     // The electron-electron integrals
-    Q = new double***[matDim];
-    for (int i = 0; i < matDim; i++){
-        Q[i] = new double**[matDim];
-        for (int j = 0; j < matDim; j++){
-            Q[i][j] = new double*[matDim];
-            for (int k = 0; k < matDim; k++){
-                Q[i][j][k] = new double[matDim];
+    if(Q == 0){
+        Q = new double***[matDim];
+        for (int i = 0; i < matDim; i++){
+            Q[i] = new double**[matDim];
+            for (int j = 0; j < matDim; j++){
+                Q[i][j] = new double*[matDim];
+                for (int k = 0; k < matDim; k++){
+                    Q[i][j][k] = new double[matDim];
+                }
             }
         }
     }
@@ -69,30 +72,30 @@ void HartreeFock::calcIntegrals()
         }
     }
 
-//    for (int i = 0; i < matDim; i++){
-//        for (int j = 0; j < matDim; j++){
-//            for (int k = 0; k < matDim; k++){
-//                for (int l = 0; l < matDim; l++){
-//                    if (fabs((Q[i][j][k][l] - Q[k][j][i][l])/Q[i][j][k][l]) > 1.0E-12){
-//                        cout << "Q not symmetric! 1" << endl;
-//                    } else if (fabs((Q[i][j][k][l] - Q[i][l][k][j])/Q[i][j][k][l]) > 1.0E-14){
-//                        cout << "Q not symmetric! 2" << endl;
-//                    } else if (fabs((Q[i][j][k][l] - Q[k][l][i][j])/Q[i][j][k][l]) > 1.0E-14){
-//                        cout << "Q not symmetric! 3" << endl;
-//                    } else if (fabs((Q[i][j][k][l] - Q[j][i][l][k])/Q[i][j][k][l]) > 1.0E-14){
-//                        cout << "Q not symmetric! 4" << endl;
-//                        cout << fabs((Q[i][j][k][l] - Q[j][i][l][k])/Q[i][j][k][l]) << endl;
-//                    } else if (fabs((Q[i][j][k][l] - Q[l][i][j][k])/Q[i][j][k][l]) > 1.0E-14){
-//                        cout << "Q not symmetric! 5" << endl;
-//                    } else if (fabs((Q[i][j][k][l] - Q[j][k][l][i])/Q[i][j][k][l]) > 1.0E-14){
-//                        cout << "Q not symmetric! 6" << endl;
-//                    } else if (fabs((Q[i][j][k][l] - Q[l][k][j][i])/Q[i][j][k][l]) > 1.0E-14){
-//                        cout << "Q not symmetric! 7" << endl;
-//                    }
-//                }
-//            }
-//        }
-//    }
+    //    for (int i = 0; i < matDim; i++){
+    //        for (int j = 0; j < matDim; j++){
+    //            for (int k = 0; k < matDim; k++){
+    //                for (int l = 0; l < matDim; l++){
+    //                    if (fabs((Q[i][j][k][l] - Q[k][j][i][l])/Q[i][j][k][l]) > 1.0E-12){
+    //                        cout << "Q not symmetric! 1" << endl;
+    //                    } else if (fabs((Q[i][j][k][l] - Q[i][l][k][j])/Q[i][j][k][l]) > 1.0E-14){
+    //                        cout << "Q not symmetric! 2" << endl;
+    //                    } else if (fabs((Q[i][j][k][l] - Q[k][l][i][j])/Q[i][j][k][l]) > 1.0E-14){
+    //                        cout << "Q not symmetric! 3" << endl;
+    //                    } else if (fabs((Q[i][j][k][l] - Q[j][i][l][k])/Q[i][j][k][l]) > 1.0E-14){
+    //                        cout << "Q not symmetric! 4" << endl;
+    //                        cout << fabs((Q[i][j][k][l] - Q[j][i][l][k])/Q[i][j][k][l]) << endl;
+    //                    } else if (fabs((Q[i][j][k][l] - Q[l][i][j][k])/Q[i][j][k][l]) > 1.0E-14){
+    //                        cout << "Q not symmetric! 5" << endl;
+    //                    } else if (fabs((Q[i][j][k][l] - Q[j][k][l][i])/Q[i][j][k][l]) > 1.0E-14){
+    //                        cout << "Q not symmetric! 6" << endl;
+    //                    } else if (fabs((Q[i][j][k][l] - Q[l][k][j][i])/Q[i][j][k][l]) > 1.0E-14){
+    //                        cout << "Q not symmetric! 7" << endl;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
 }
 
 
@@ -107,7 +110,7 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
     mat V = zeros<mat>(matDim, matDim);
     mat F2 = zeros<mat>(matDim, matDim);
 
-    // Diagonalize overlap matrix S and calculate matrix V such that h2 = V.t()*h*V and C = V*C2
+    // Diagonalize overlap matrix S and calculate matrix V such that V.t()*S*V = I. Then set F2 = V.t()*F*V and C = V*C2.
     eig_sym(eigVal, eigVec, S);
 
     for (int i = 0; i < matDim; i++){
@@ -120,7 +123,7 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
     eig_sym(eigVal, eigVec, F2);
     Coeffs = V*eigVec;
 
-    // Normalize vector C
+    // Normalize the orbitals (phi = sum_p(C_p chi_p)). For vector C this means:
     double norm;
     for (int i = 0; i < matDim; i++){
         norm = dot(Coeffs.col(i), S*Coeffs.col(i));
@@ -129,7 +132,7 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
 
     // Compute density matrix
     mat Ptemp = 2*Coeffs.cols(0, nElectrons/2-1)*Coeffs.cols(0, nElectrons/2-1).t();
-    P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix
+    P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix. Sometimes needed in order to achieve correct convergence.
 
     fockEnergy = eigVal;
 }

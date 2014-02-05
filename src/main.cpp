@@ -20,7 +20,7 @@ using namespace libconfig;
 int main()
 {
     Config cfg;
-    cfg.readFile("../inFiles/configFiles/CH4_631Gs.cfg");
+    cfg.readFile("../inFiles/configFiles/CH4_631Gs_UHF.cfg");
     string name = cfg.lookup("name");
 
     // Initialise basis functions and add them to basisHandler
@@ -62,10 +62,11 @@ int main()
         solver = new UHF(system, pert);
     } else {
         cout << "Invalid choice of method" << endl;
+        exit(EXIT_FAILURE);
     }
     solver->solve();
-    cout << "Analysis of: " << name << endl;
-    cout << "Energy: " << solver->getEnergy() << endl;
+    cout << name << endl;
+    cout << "Energy: " << setprecision(10) << solver->getEnergy() << endl;
 
 
 

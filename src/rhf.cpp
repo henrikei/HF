@@ -24,15 +24,14 @@ RHF::RHF(System* newSystem, int newPerturbOrder):HartreeFock(newSystem)
 // in vec C
 void RHF::solve()
 {
-    double fockEnergyOld;
-    double energyDiff = 1.0;
-
     // Calculate integrals
     C = zeros<mat>(matDim, nElectrons/2);
     calcIntegrals();
 
 
     // Iterate until the fock energy has converged
+    double fockEnergyOld;
+    double energyDiff = 1.0;
     while (energyDiff > toler){
         fockEnergyOld = fockEnergy(0);
         buildMatrix();
