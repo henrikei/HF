@@ -20,7 +20,7 @@ using namespace libconfig;
 int main()
 {
     Config cfg;
-    cfg.readFile("../inFiles/configFiles/CH4_631Gs_UHF.cfg");
+    cfg.readFile("../inFiles/configFiles/CH4_631Gs_RHFvsUHF.cfg");
     string name = cfg.lookup("name");
 
     // Initialise basis functions and add them to basisHandler
