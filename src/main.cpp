@@ -20,7 +20,7 @@ using namespace libconfig;
 int main()
 {
     Config cfg;
-    cfg.readFile("../inFiles/configFiles/CH4_631Gs_RHFvsUHF.cfg");
+    cfg.readFile("../inFiles/configFiles/H2_631Gss.cfg");
     string name = cfg.lookup("name");
 
     // Initialise basis functions and add them to basisHandler
@@ -67,7 +67,9 @@ int main()
     solver->solve();
     cout << name << endl;
     cout << "Energy: " << setprecision(10) << solver->getEnergy() << endl;
-
+    if (pert == 2){
+        cout << "MP2 correlation energy: " << solver->getEnergyMP2() << endl;
+    }
 
 
 
