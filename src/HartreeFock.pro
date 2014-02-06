@@ -52,4 +52,5 @@ OTHER_FILES += \
     ../inFiles/configFiles/CH4_631Gs_UHF.cfg \
     ../inFiles/configFiles/CH4_631Gs.cfg \
     ../inFiles/configFiles/CH4_431G.cfg \
-    ../inFiles/boys_tabulated.dat
+    ../inFiles/boys_tabulated.dat \
+    ../inFiles/configFiles/CH4_631Gs_RHFvsUHF.cfg
