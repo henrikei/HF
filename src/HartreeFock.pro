@@ -47,4 +47,9 @@ HEADERS += \
 
 include(defaults.pri)
 
-OTHER_FILES +=
+OTHER_FILES += \
+    ../inFiles/configFiles/H2O_431G.cfg \
+    ../inFiles/configFiles/CH4_631Gs_UHF.cfg \
+    ../inFiles/configFiles/CH4_631Gs.cfg \
+    ../inFiles/configFiles/CH4_431G.cfg \
+    ../inFiles/boys_tabulated.dat

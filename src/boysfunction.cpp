@@ -84,7 +84,7 @@ double BoysFunction::factorial2(int n)
 
 void BoysFunction::readFromFile()
 {
-    Ftabulated.load("boys_tabulated.dat");
+    Ftabulated.load("../inFiles/boys_tabulated.dat");
     nx = Ftabulated.n_rows;
     nN = Ftabulated.n_cols;
 }
