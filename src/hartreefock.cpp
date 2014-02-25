@@ -72,30 +72,29 @@ void HartreeFock::calcIntegrals()
         }
     }
 
-    //    for (int i = 0; i < matDim; i++){
-    //        for (int j = 0; j < matDim; j++){
-    //            for (int k = 0; k < matDim; k++){
-    //                for (int l = 0; l < matDim; l++){
-    //                    if (fabs((Q[i][j][k][l] - Q[k][j][i][l])/Q[i][j][k][l]) > 1.0E-12){
-    //                        cout << "Q not symmetric! 1" << endl;
-    //                    } else if (fabs((Q[i][j][k][l] - Q[i][l][k][j])/Q[i][j][k][l]) > 1.0E-14){
-    //                        cout << "Q not symmetric! 2" << endl;
-    //                    } else if (fabs((Q[i][j][k][l] - Q[k][l][i][j])/Q[i][j][k][l]) > 1.0E-14){
-    //                        cout << "Q not symmetric! 3" << endl;
-    //                    } else if (fabs((Q[i][j][k][l] - Q[j][i][l][k])/Q[i][j][k][l]) > 1.0E-14){
-    //                        cout << "Q not symmetric! 4" << endl;
-    //                        cout << fabs((Q[i][j][k][l] - Q[j][i][l][k])/Q[i][j][k][l]) << endl;
-    //                    } else if (fabs((Q[i][j][k][l] - Q[l][i][j][k])/Q[i][j][k][l]) > 1.0E-14){
-    //                        cout << "Q not symmetric! 5" << endl;
-    //                    } else if (fabs((Q[i][j][k][l] - Q[j][k][l][i])/Q[i][j][k][l]) > 1.0E-14){
-    //                        cout << "Q not symmetric! 6" << endl;
-    //                    } else if (fabs((Q[i][j][k][l] - Q[l][k][j][i])/Q[i][j][k][l]) > 1.0E-14){
-    //                        cout << "Q not symmetric! 7" << endl;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
+//        for (int i = 0; i < matDim; i++){
+//            for (int j = 0; j < matDim; j++){
+//                for (int k = 0; k < matDim; k++){
+//                    for (int l = 0; l < matDim; l++){
+//                        if ((Q[i][j][k][l] != Q[k][j][i][l])){
+//                            cout << "Q not symmetric! 1" << endl;
+//                        } else if (Q[i][j][k][l] != Q[i][l][k][j]){
+//                            cout << "Q not symmetric! 2" << endl;
+//                        } else if (Q[i][j][k][l] != Q[k][l][i][j]){
+//                            cout << "Q not symmetric! 3" << endl;
+//                        } else if(Q[i][j][k][l] != Q[j][i][l][k]){
+//                            cout << "Q not symmetric! 4" << endl;
+//                        } else if (Q[i][j][k][l] != Q[l][i][j][k]){
+//                            cout << "Q not symmetric! 5" << endl;
+//                        } else if (Q[i][j][k][l] != Q[j][k][l][i]){
+//                            cout << "Q not symmetric! 6" << endl;
+//                        } else if (Q[i][j][k][l] != Q[l][k][j][i]){
+//                            cout << "Q not symmetric! 7" << endl;
+//                        }
+//                    }
+//                }
+//            }
+//        }
 }
 
 

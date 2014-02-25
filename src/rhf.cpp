@@ -95,30 +95,39 @@ void RHF::buildMatrix()
 //--------------------------------------------------------------------------------------------------------------------
 // Second order perturbation
 double RHF::perturbation2order(){
-    double energyTemp1, energyTemp2, energyTemp3;
-    for (int i = 0; i < nElectrons/2; i++){
-        for (int j = 0; j < nElectrons/2; j++){
-            for (int a = nElectrons/2; a < matDim; a++){
-                for (int b = nElectrons/2; b < matDim; b++){
-                    energyTemp1 = 0;
-                    energyTemp2 = 0;
-                    energyTemp3 = 0;
+    int nHStates = nElectrons/2;
+    int nPStates = matDim - nElectrons/2;
+    field<mat> orbitalIntegrals(nHStates, nHStates);               // orbitalIntegral = <ij|g|ab>
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            orbitalIntegrals(i,j) = zeros(nPStates, nPStates);
+            for (int a = 0; a < nPStates; a++){
+                for (int b = 0; b < nPStates; b++){
                     for (int p = 0; p < matDim; p++){
                         for (int q = 0; q < matDim; q++){
                             for (int r = 0; r < matDim; r++){
                                 for (int s = 0; s < matDim; s++){
-                                    energyTemp1 += C(p,i)*C(r,a)*C(q,j)*C(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
-                                    energyTemp2 += C(p,i)*C(r,a)*C(q,j)*C(s,b)*Q[p][q][r][s];
-                                    energyTemp3 += -C(p,i)*C(r,a)*C(q,j)*C(s,b)*Q[p][q][s][r];
+                                    orbitalIntegrals(i,j)(a,b) += C(p,i)*C(q,j)*C(r,a+nHStates)*C(s,b+nHStates)*Q[p][q][r][s];
                                 }
                             }
                         }
                     }
-                    energyMP2 += (energyTemp1*energyTemp1 + energyTemp2*energyTemp2 + energyTemp3*energyTemp3)
-                                     /(2*(fockEnergy(i) - fockEnergy(a) + fockEnergy(j) - fockEnergy(b)));
                 }
             }
         }
     }
+
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            for (int a = 0; a < nPStates; a++){
+                for (int b = 0; b < nPStates; b++){
+                    energyMP2 += orbitalIntegrals(i,j)(a,b)*(2*orbitalIntegrals(i,j)(a,b) - orbitalIntegrals(j,i)(a,b))
+                                /(fockEnergy(i) + fockEnergy(j) - fockEnergy(a+nHStates) - fockEnergy(b+nHStates));
+                }
+            }
+        }
+    }
+
     return energyMP2;
+
 }
