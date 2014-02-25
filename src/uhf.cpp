@@ -114,47 +114,95 @@ void UHF::solve()
 
 
 double UHF::perturbation2order(){
-    double energyTemp1, energyTemp2, energyTemp3, energyTemp4;
-    for (int i = 0; i < nElectrons/2; i++){
-        for (int j = 0; j < nElectrons/2; j++){
-            for (int a = nElectrons/2; a < matDim; a++){
-                for (int b = nElectrons/2; b < matDim; b++){
-                    energyTemp1 = 0;
-                    energyTemp2 = 0;
-                    energyTemp3 = 0;
-                    energyTemp4 = 0;
-                    if (a == b || i == j){
-                        for (int p = 0; p < matDim; p++){
-                            for (int q = 0; q < matDim; q++){
-                                for (int r = 0; r < matDim; r++){
-                                    for (int s = 0; s < matDim; s++){
-                                        energyTemp2 += Cdown(p,i)*Cdown(r,a)*Cup(q,j)*Cup(s,b)*Q[p][q][r][s];
-                                        energyTemp4 += -Cdown(p,i)*Cup(r,a)*Cup(q,j)*Cdown(s,b)*Q[p][q][s][r];
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        for (int p = 0; p < matDim; p++){
-                            for (int q = 0; q < matDim; q++){
-                                for (int r = 0; r < matDim; r++){
-                                    for (int s = 0; s < matDim; s++){
-                                        energyTemp1 += Cup(p,i)*Cup(r,a)*Cup(q,j)*Cup(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
-                                        energyTemp2 += Cdown(p,i)*Cdown(r,a)*Cup(q,j)*Cup(s,b)*Q[p][q][r][s];
-                                        energyTemp3 += Cdown(p,i)*Cdown(r,a)*Cdown(q,j)*Cdown(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
-                                        energyTemp4 += -Cdown(p,i)*Cup(r,a)*Cup(q,j)*Cdown(s,b)*Q[p][q][s][r];
-                                    }
+    int nHStates = nElectrons/2;     // later: divide between nElectronsUp and nElectronsDown
+    int nPStates = matDim - nElectrons/2;
+    field<mat> orbitalIntegralsUU(nHStates, nHStates);
+    field<mat> orbitalIntegralsDD(nHStates, nHStates);
+    field<mat> orbitalIntegralsUD(nHStates, nHStates);
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            orbitalIntegralsUU(i,j) = zeros(nPStates, nPStates);
+            orbitalIntegralsDD(i,j) = zeros(nPStates, nPStates);
+            orbitalIntegralsUD(i,j) = zeros(nPStates, nPStates);
+            for (int a = 0; a < nPStates; a++){
+                for (int b = 0; b < nPStates; b++){
+                    for (int p = 0; p < matDim; p++){
+                        for (int q = 0; q < matDim; q++){
+                            for (int r = 0; r < matDim; r++){
+                                for (int s = 0; s < matDim; s++){
+                                    orbitalIntegralsUU(i,j)(a,b) += Cup(p,i)*Cup(q,j)*Cup(r,a+nHStates)*Cup(s,b+nHStates)*Q[p][q][r][s];
+                                    orbitalIntegralsDD(i,j)(a,b) += Cdown(p,i)*Cdown(q,j)*Cdown(r,a+nHStates)*Cdown(s,b+nHStates)*Q[p][q][r][s];
+                                    orbitalIntegralsUD(i,j)(a,b) += Cup(p,i)*Cdown(q,j)*Cup(r,a+nHStates)*Cdown(s,b+nHStates)*Q[p][q][r][s];
                                 }
                             }
                         }
                     }
-                    energyMP2 += (energyTemp1*energyTemp1/(fockEnergyUp(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyUp(b))
-                                  + 2*energyTemp2*energyTemp2/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyUp(j) - fockEnergyUp(b))
-                                  + energyTemp3*energyTemp3/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyDown(j) - fockEnergyDown(b))
-                                  + 2*energyTemp4*energyTemp4/(fockEnergyDown(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyDown(b)))/4;
                 }
             }
         }
     }
+
+    double energyTemp1 = 0;
+    double energyTemp2 = 0;
+    double energyTemp3 = 0;
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            for (int a = 0; a < nPStates; a++){
+                for (int b = 0; b < nPStates; b++){
+                    energyTemp1 += 0.25*(orbitalIntegralsUU(i,j)(a,b) - orbitalIntegralsUU(i,j)(b,a))*(orbitalIntegralsUU(i,j)(a,b) - orbitalIntegralsUU(i,j)(b,a))/
+                                       (fockEnergyUp(i) + fockEnergyUp(j) - fockEnergyUp(a+nHStates) - fockEnergyUp(b+nHStates));
+                    energyTemp2 += 0.25*(orbitalIntegralsDD(i,j)(a,b) - orbitalIntegralsDD(i,j)(b,a))*(orbitalIntegralsDD(i,j)(a,b) - orbitalIntegralsDD(i,j)(b,a))/
+                                        (fockEnergyDown(i) + fockEnergyDown(j) - fockEnergyDown(a+nHStates) - fockEnergyDown(b+nHStates));
+                    energyTemp3 += orbitalIntegralsUD(i,j)(a,b)*orbitalIntegralsUD(i,j)(a,b)/
+                                        (fockEnergyUp(i) + fockEnergyDown(j) - fockEnergyUp(a+nHStates) - fockEnergyDown(b+nHStates));
+                }
+            }
+        }
+    }
+    energyMP2 = energyTemp1 + energyTemp2 + energyTemp3;
     return energyMP2;
+
+    //    double energyTemp1, energyTemp2, energyTemp3, energyTemp4;
+//    for (int i = 0; i < nElectrons/2; i++){
+//        for (int j = 0; j < nElectrons/2; j++){
+//            for (int a = nElectrons/2; a < matDim; a++){
+//                for (int b = nElectrons/2; b < matDim; b++){
+//                    energyTemp1 = 0;
+//                    energyTemp2 = 0;
+//                    energyTemp3 = 0;
+//                    energyTemp4 = 0;
+//                    if (a == b || i == j){
+//                        for (int p = 0; p < matDim; p++){
+//                            for (int q = 0; q < matDim; q++){
+//                                for (int r = 0; r < matDim; r++){
+//                                    for (int s = 0; s < matDim; s++){
+//                                        energyTemp2 += Cdown(p,i)*Cdown(r,a)*Cup(q,j)*Cup(s,b)*Q[p][q][r][s];
+//                                        energyTemp4 += -Cdown(p,i)*Cup(r,a)*Cup(q,j)*Cdown(s,b)*Q[p][q][s][r];
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        for (int p = 0; p < matDim; p++){
+//                            for (int q = 0; q < matDim; q++){
+//                                for (int r = 0; r < matDim; r++){
+//                                    for (int s = 0; s < matDim; s++){
+//                                        energyTemp1 += Cup(p,i)*Cup(r,a)*Cup(q,j)*Cup(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+//                                        energyTemp2 += Cdown(p,i)*Cdown(r,a)*Cup(q,j)*Cup(s,b)*Q[p][q][r][s];
+//                                        energyTemp3 += Cdown(p,i)*Cdown(r,a)*Cdown(q,j)*Cdown(s,b)*(Q[p][q][r][s] - Q[p][q][s][r]);
+//                                        energyTemp4 += -Cdown(p,i)*Cup(r,a)*Cup(q,j)*Cdown(s,b)*Q[p][q][s][r];
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    energyMP2 += (energyTemp1*energyTemp1/(fockEnergyUp(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyUp(b))
+//                                  + 2*energyTemp2*energyTemp2/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyUp(j) - fockEnergyUp(b))
+//                                  + energyTemp3*energyTemp3/(fockEnergyDown(i) - fockEnergyDown(a) + fockEnergyDown(j) - fockEnergyDown(b))
+//                                  + 2*energyTemp4*energyTemp4/(fockEnergyDown(i) - fockEnergyUp(a) + fockEnergyUp(j) - fockEnergyDown(b)))/4;
+//                }
+//            }
+//        }
+//    }
+//    return energyMP2;
 }

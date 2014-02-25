@@ -25,9 +25,7 @@ RHF::RHF(System* newSystem, int newPerturbOrder):HartreeFock(newSystem)
 void RHF::solve()
 {
     // Calculate integrals
-    C = zeros<mat>(matDim, nElectrons/2);
     calcIntegrals();
-
 
     // Iterate until the fock energy has converged
     double fockEnergyOld;
