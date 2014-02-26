@@ -469,6 +469,57 @@ TEST(CH4_431G_UHF){
     CHECK_CLOSE(energy, -40.140, 1.0E-3);
 }
 
+TEST(CH4_631Gss_RHF){
+    // Simulation of CH4 molecule.
+    // Bond length (2.043) taken from Peter Atkins' book "Molecular Quantum Mechanics".
+    // C-atom is placed at the origin. Direction vectors for the H-atoms are:
+    // [1, 1, 1], [-1, -1, 1], [1, -1, -1], [-1, 1, -1]
+    // Energy given by Atkins: -40.140.
+
+    double d = 1.1795265999544056;
+    rowvec posC = {0.0, 0.0, 0.0};
+    rowvec posH1 = {d, d, d};
+    rowvec posH2 = {-d, -d, d};
+    rowvec posH3 = {d, -d, -d};
+    rowvec posH4 = {-d, d, -d};
+    rowvec charges = {6.0, 1.0, 1.0, 1.0, 1.0};
+    int nElectrons = 10;
+
+    mat nucleiPositions = zeros<mat>(5,3);
+    nucleiPositions.row(0) = posC;
+    nucleiPositions.row(1) = posH1;
+    nucleiPositions.row(2) = posH2;
+    nucleiPositions.row(3) = posH3;
+    nucleiPositions.row(4) = posH4;
+
+    BasisHandler* basisHandler = new BasisHandler;
+
+    BasisFunctions* basis = new BasisFunctions("../inFiles/basisSets/C_631Gs.dat");
+    basis->setPosition(posC);
+    basisHandler->addBasisFunctions(basis);
+    basis = new BasisFunctions("../inFiles/basisSets/H_631Gss.dat");
+    basis->setPosition(posH1);
+    basisHandler->addBasisFunctions(basis);
+    basis = new BasisFunctions("../inFiles/basisSets/H_631Gss.dat");
+    basis->setPosition(posH2);
+    basisHandler->addBasisFunctions(basis);
+    basis = new BasisFunctions("../inFiles/basisSets/H_631Gss.dat");
+    basis->setPosition(posH3);
+    basisHandler->addBasisFunctions(basis);
+    basis = new BasisFunctions("../inFiles/basisSets/H_631Gss.dat");
+    basis->setPosition(posH4);
+    basisHandler->addBasisFunctions(basis);
+
+    System *system;
+    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+
+    RHF solver(system);
+    solver.solve();
+    double energy = solver.getEnergy();
+
+    CHECK_CLOSE(energy, -40.202, 1.0E-3);
+}
+
 int main()
 {
     return UnitTest::RunAllTests();

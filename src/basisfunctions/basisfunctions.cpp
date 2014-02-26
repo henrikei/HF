@@ -151,19 +151,12 @@ int BasisFunctions::getNumOfBasisFunc()
 
 void BasisFunctions::normalizeCoeffs(){
     for (int i = 0; i < (int)coeffs.size(); i++){
-        int l = sum(powers.at(i));
         for (int j = 0; j < (int)coeffs.at(i).n_elem; j++){
-            if (l == 0){
-                coeffs.at(i)(j) *= pow(2*exponents.at(i)(j)/M_PI, 0.75);
-            } else if (l == 1){
-                coeffs.at(i)(j) *= pow(2*exponents.at(i)(j)/M_PI, 0.75)*2*sqrt(exponents.at(i)(j));
-            } else if (l == 2){
-                int lx = powers.at(i)(0);
-                int ly = powers.at(i)(1);
-                int lz = powers.at(i)(2);
-                coeffs.at(i)(j) *= pow(2*exponents.at(i)(j)/M_PI, 0.75)*sqrt(pow(8*exponents.at(i)(j),lx+ly+lz)
-                                   *factorial(2*lx)*factorial(2*ly)*factorial(2*lz)/(factorial(2*lx)*factorial(2*ly)*factorial(2*lz)));
-            }
+            int lx = powers.at(i)(0);
+            int ly = powers.at(i)(1);
+            int lz = powers.at(i)(2);
+            coeffs.at(i)(j) *= pow(2*exponents.at(i)(j)/M_PI, 0.75)*sqrt(pow(8*exponents.at(i)(j),lx+ly+lz)
+                                                                *factorial(lx)*factorial(ly)*factorial(lz)/(factorial(2*lx)*factorial(2*ly)*factorial(2*lz)));
         }
     }
 }

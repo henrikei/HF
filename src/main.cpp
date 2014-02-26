@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 #include <time.h>
 #include <iomanip>
 #include <fstream>
@@ -19,57 +20,57 @@ using namespace libconfig;
 
 int main()
 {
-//    Config cfg;
-//    cfg.readFile("../inFiles/configFiles/H2_631Gss.cfg");
-//    string name = cfg.lookup("name");
+    Config cfg;
+    cfg.readFile("../inFiles/configFiles/CH4_631Gs_RHFvsUHF.cfg");
+    string name = cfg.lookup("name");
 
-//    // Initialise basis functions and add them to basisHandler
-//    Setting& root = cfg.getRoot();
-//    Setting& atoms = root["atoms"];
-//    int nAtoms = atoms.getLength();
-//    rowvec position = zeros<rowvec>(3);
-//    mat nucleiPositions = zeros<mat>(nAtoms, 3);
-//    rowvec charges = zeros<rowvec>(nAtoms);
-//    string basis;
-//    BasisFunctions* basisfunctions;
-//    BasisHandler* basisHandler = new BasisHandler;
-//    for(int i = 0; i < nAtoms; i++){
-//        Setting& atom = atoms[i];
-//        atom.lookupValue("posX", position(0));
-//        atom.lookupValue("posY", position(1));
-//        atom.lookupValue("posZ", position(2));
-//        nucleiPositions.row(i) = position;
-//        atom.lookupValue("charge", charges(i));
-//        atom.lookupValue("basis", basis);
-//        basisfunctions = new BasisFunctions("../inFiles/basisSets/"+basis);
-//        basisfunctions->setPosition(position);
-//        basisHandler->addBasisFunctions(basisfunctions);
-//    }
+    // Initialise basis functions and add them to basisHandler
+    Setting& root = cfg.getRoot();
+    Setting& atoms = root["atoms"];
+    int nAtoms = atoms.getLength();
+    rowvec position = zeros<rowvec>(3);
+    mat nucleiPositions = zeros<mat>(nAtoms, 3);
+    rowvec charges = zeros<rowvec>(nAtoms);
+    string basis;
+    BasisFunctions* basisfunctions;
+    BasisHandler* basisHandler = new BasisHandler;
+    for(int i = 0; i < nAtoms; i++){
+        Setting& atom = atoms[i];
+        atom.lookupValue("posX", position(0));
+        atom.lookupValue("posY", position(1));
+        atom.lookupValue("posZ", position(2));
+        nucleiPositions.row(i) = position;
+        atom.lookupValue("charge", charges(i));
+        atom.lookupValue("basis", basis);
+        basisfunctions = new BasisFunctions("../inFiles/basisSets/"+basis);
+        basisfunctions->setPosition(position);
+        basisHandler->addBasisFunctions(basisfunctions);
+    }
 
-//    // Initialise system
-//    int nElectrons = cfg.lookup("nElectrons");
-//    System* system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+    // Initialise system
+    int nElectrons = cfg.lookup("nElectrons");
+    System* system = new System(basisHandler, nucleiPositions, charges, nElectrons);
 
-//    // Solver type (RHF/UHF) and perturbation theory (true/false)
-//    HartreeFock* solver;
-//    string method = cfg.lookup("method");
-//    int pert = 1;
-//    if (cfg.lookup("perturbation")){
-//        pert = 2;}
-//    if (method == "RHF"){
-//        solver = new RHF(system, pert);
-//    } else if (method == "UHF"){
-//        solver = new UHF(system, pert);
-//    } else {
-//        cout << "Invalid choice of method" << endl;
-//        exit(EXIT_FAILURE);
-//    }
-//    solver->solve();
-//    cout << name << endl;
-//    cout << "Energy: " << setprecision(10) << solver->getEnergy() << endl;
-//    if (pert == 2){
-//        cout << "MP2 correlation energy: " << solver->getEnergyMP2() << endl;
-//    }
+    // Solver type (RHF/UHF) and perturbation theory (true/false)
+    HartreeFock* solver;
+    string method = cfg.lookup("method");
+    int pert = 1;
+    if (cfg.lookup("perturbation")){
+        pert = 2;}
+    if (method == "RHF"){
+        solver = new RHF(system, pert);
+    } else if (method == "UHF"){
+        solver = new UHF(system, pert);
+    } else {
+        cout << "Invalid choice of method" << endl;
+        exit(EXIT_FAILURE);
+    }
+    solver->solve();
+    cout << name << endl;
+    cout << "Energy: " << setprecision(10) << solver->getEnergy() << endl;
+    if (pert == 2){
+        cout << "MP2 correlation energy: " << solver->getEnergyMP2() << endl;
+    }
 
 
 
