@@ -28,7 +28,7 @@ protected:
     double toler;
     int perturbOrder;
 
-    virtual void buildMatrix()=0;
+    virtual void buildFockMatrix()=0;
     void calcIntegrals();
     void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy);
     virtual double perturbation2order()=0;

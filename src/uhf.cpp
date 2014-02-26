@@ -35,7 +35,7 @@ UHF::UHF(System *newSystem, int newPerturbOrder):HartreeFock(newSystem)
 //-----------------------------------------------------------------------------------------------------------------
 // Builds F+ and F- matrices (kinetic part, nuclear attraction part and electron-electron repulsion part, i.e.left hand side)
 
-void UHF::buildMatrix()
+void UHF::buildFockMatrix()
 {
     for (int i = 0; i < matDim; i++){
         for (int j = 0; j < matDim; j++){
@@ -78,7 +78,7 @@ void UHF::solve()
     while (energyDiff > toler){
         fockEnergyUpOld = fockEnergyUp(0);
         fockEnergyDownOld = fockEnergyDown(0);
-        buildMatrix();
+        buildFockMatrix();
         solveSingle(Fup, Cup, Pup, fockEnergyUp);
         solveSingle(Fdown, Cdown, Pdown, fockEnergyDown);
         energyDiff = fabs(fockEnergyUpOld + fockEnergyDownOld - fockEnergyUp(0) - fockEnergyDown(0));
@@ -89,15 +89,7 @@ void UHF::solve()
 
     for (int i = 0; i < matDim; i++){
         for (int j = 0; j < matDim; j++){
-            energy += 0.5*(Pup(i,j) + Pdown(i,j))*h(i, j);
-            for (int k = 0; k < matDim; k++){
-                for (int l = 0; l < matDim; l++){
-//                    energy += 0.5*(0.25*Pup(i,j)*Pup(l,k)*(Q[i][k][j][l] - Q[i][k][l][j]) + 0.25*Pup(i,j)*Pdown(l,k)*Q[i][k][j][l]
-//                            + 0.25*Pdown(i,j)*Pdown(l,k)*(Q[i][k][j][l] - Q[i][k][l][j]) + 0.25*Pdown(i,j)*Pup(l,k)*Q[i][k][j][l]);
-                    energy += ((Q[i][k][j][l] - Q[i][k][l][j])*(Pup(i,j)*Pup(l,k) + Pdown(i,j)*Pdown(l,k))
-                               + 2*Q[i][k][j][l]*Pup(i,j)*Pdown(l,k))/8;
-                }
-            }
+            energy += 0.25*((Pup(i,j) + Pdown(i,j))*h(i, j) + Fup(i,j)*Pup(i,j) + Fdown(i,j)*Pdown(i,j));
         }
     }
     energy += system->getNucleiPotential();

@@ -32,7 +32,7 @@ void RHF::solve()
     double energyDiff = 1.0;
     while (energyDiff > toler){
         fockEnergyOld = fockEnergy(0);
-        buildMatrix();
+        buildFockMatrix();
         solveSingle(F, C, P, fockEnergy);
         energyDiff = fabs(fockEnergyOld - fockEnergy(0));
     }
@@ -42,12 +42,7 @@ void RHF::solve()
 
     for (int i = 0; i < matDim; i++){
         for (int j = 0; j < matDim; j++){
-            energy += P(i,j)*h(i, j);
-            for (int k = 0; k < matDim; k++){
-                for (int l = 0; l < matDim; l++){
-                    energy += 0.5*P(i,j)*P(l,k)*(Q[i][k][j][l] - 0.5*Q[i][k][l][j]);
-                }
-            }
+            energy += 0.5*(h(i,j) + F(i,j))*P(i,j);
         }
     }
     energy += system->getNucleiPotential();
@@ -71,7 +66,7 @@ mat RHF::getCoeff(){
 //-----------------------------------------------------------------------------------------------------------------
 // Builds F matrix (kinetic part, nuclear attraction part and electron-electron repulsion part, i.e.left hand side)
 
-void RHF::buildMatrix()
+void RHF::buildFockMatrix()
 {
     for (int i = 0; i < matDim; i++){
         for (int j = 0; j < matDim; j++){

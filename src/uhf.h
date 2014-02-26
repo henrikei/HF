@@ -21,7 +21,7 @@ private:
     colvec fockEnergyUp;
     colvec fockEnergyDown;
 
-    void buildMatrix();
+    void buildFockMatrix();
     double perturbation2order();
 };
 
