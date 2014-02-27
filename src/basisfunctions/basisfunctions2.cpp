@@ -8,17 +8,49 @@ void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
 {
     //---------------------------------------------------------------------------------------------------------------------------
     // Read exponents, coefficients and powers from input file in format TurboMole (taken from https://bse.pnl.gov/bse/portal)
-    imat pows = zeros<imat>(10,3);
-    pows(0,0) = 0; pows(0,1) = 0; pows(0,2) = 0;
-    pows(1,0) = 1; pows(1,1) = 0; pows(1,2) = 0;
-    pows(2,0) = 0; pows(2,1) = 1; pows(2,2) = 0;
-    pows(3,0) = 0; pows(3,1) = 0; pows(3,2) = 1;
-    pows(4,0) = 2; pows(4,1) = 0; pows(4,2) = 0;
-    pows(5,0) = 0; pows(5,1) = 2; pows(5,2) = 0;
-    pows(6,0) = 0; pows(6,1) = 0; pows(6,2) = 2;
-    pows(7,0) = 1; pows(7,1) = 1; pows(7,2) = 0;
-    pows(8,0) = 1; pows(8,1) = 0; pows(8,2) = 1;
-    pows(9,0) = 0; pows(9,1) = 1; pows(9,2) = 1;
+    field <imat> pows_s(1,1);
+    field <imat> pows_p(3,1);
+    field <imat> pows_d(6,1);
+    field <rowvec> prefactor_d(6,1);
+    pows_s(0,0) = {0,0,0};
+    pows_p(0,0) = {1,0,0};
+    pows_p(1,0) = {0,1,0};
+    pows_p(2,0) = {0,0,1};
+    pows_d(0,0) = {2,0,0};
+    pows_d(1,0) = {0,2,0};
+    pows_d(2,0) = {0,0,2};
+    pows_d(3,0) = {1,1,0};
+    pows_d(4,0) = {1,0,1};
+    pows_d(5,0) = {0,1,1};
+    prefactor_d(0,0) = {1.0};
+    prefactor_d(1,0) = {1.0};
+    prefactor_d(2,0) = {1.0};
+    prefactor_d(3,0) = {1.0};
+    prefactor_d(4,0) = {1.0};
+    prefactor_d(5,0) = {1.0};
+
+//    field <imat> pows_s(1,1);
+//    field <imat> pows_p(3,1);
+//    field <imat> pows_d(5,1);
+//    field <rowvec> prefactor_d(5,1);
+//    pows_s(0,0) = {0,0,0};
+//    pows_p(0,0) = {1,0,0};
+//    pows_p(1,0) = {0,1,0};
+//    pows_p(2,0) = {0,0,1};
+//    pows_d(0,0) = {1,1,0};
+//    pows_d(1,0) = {1,0,1};
+//    pows_d(2,0) = {0,1,1};
+//    imat pows_dTemp = zeros<imat>(3,3);
+//    pows_dTemp(0,0) = 2;
+//    pows_dTemp(1,1) = 2;
+//    pows_dTemp(2,2) = 2;
+//    pows_d(3,0) = pows_dTemp.rows(0,1);
+//    pows_d(4,0) = pows_dTemp.rows(0,2);
+//    prefactor_d(0,0) = {1.0};
+//    prefactor_d(1,0) = {1.0};
+//    prefactor_d(2,0) = {1.0};
+//    prefactor_d(3,0) = {1.0, -1,0};
+//    prefactor_d(4,0) = {-1.0, -1.0, 2.0};
 
     string line, stringToSearch;
     fstream file;
@@ -61,8 +93,8 @@ void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
             vector<Primitive*> primitives;
             while (counter < (int)exp.size()){
                 double coeffn = coeff.at(counter);
-                normalizeCoeff(exp.at(counter), coeffn, pows.row(0));
-                Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows.row(0), position);
+                normalizeCoeff(exp.at(counter), coeffn, pows_s(0,0));
+                Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows_s(0,0), position);
                 primitives.push_back(primitive);
                 counter += 1;
             }
@@ -70,13 +102,13 @@ void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
             m_contracteds.push_back(contracted);
         }
         if(regex_match(orbitalType, searchp)){
-            for (int i = 1; i < 4; i++){
+            for (int i = 0; i < (int)pows_p.n_rows; i++){
                 int counter = 0;
                 vector<Primitive*> primitives;
                 while (counter < (int)exp.size()){
                     double coeffn = coeff.at(counter);
-                    normalizeCoeff(exp.at(counter), coeffn, pows.row(i));
-                    Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows.row(i), position);
+                    normalizeCoeff(exp.at(counter), coeffn, pows_p(i,0));
+                    Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows_p(i,0), position);
                     primitives.push_back(primitive);
                     counter += 1;
                 }
@@ -85,15 +117,18 @@ void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
             }
         }
         if(regex_match(orbitalType, searchd)){
-            for (int i = 4; i < 10; i++){
-                int counter = 0;
+            for (int i = 0; i < (int)pows_d.n_rows; i++){
                 vector<Primitive*> primitives;
-                while (counter < (int)exp.size()){
-                    double coeffn = coeff.at(counter);
-                    normalizeCoeff(exp.at(counter), coeffn, pows.row(i));
-                    Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows.row(i), position);
-                    primitives.push_back(primitive);
-                    counter += 1;
+                for (int j = 0; j < (int)pows_d(i,0).n_rows; j++){
+                    int counter = 0;
+                    while (counter < (int)exp.size()){
+                        double coeffn = coeff.at(counter);
+                        normalizeCoeff(exp.at(counter), coeffn, pows_d(i,0).row(j));
+                        coeffn *= prefactor_d(i,0)(j);
+                        Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows_d(i,0).row(j), position);
+                        primitives.push_back(primitive);
+                        counter += 1;
+                    }
                 }
                 Contracted *contracted = new Contracted(primitives);
                 m_contracteds.push_back(contracted);
