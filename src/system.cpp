@@ -2,10 +2,10 @@
 
 
 
-System::System(BasisHandler *newBasisHandler, mat newNucleiPositions, rowvec newCharges, int newNElectrons)
+System::System(BasisFunctions2* basisFunctions, mat newNucleiPositions, rowvec newCharges, int newNElectrons)
 {
-    basisHandler = newBasisHandler;
-    integrator = new Integrator(basisHandler->getAngMomMax());
+    m_basisFunctions = basisFunctions;
+    integrator = new Integrator(basisFunctions->getAngMomMax());
     nucleiPositions = newNucleiPositions;
     numberOfNuclei = nucleiPositions.n_rows;
     charges = newCharges;
@@ -20,50 +20,34 @@ System::System(BasisHandler *newBasisHandler, mat newNucleiPositions, rowvec new
 // 2nd component = kinetic energy + potential energy
 rowvec2 System::getOneElectronIntegrals(int p, int q)
 {
-    rowvec expA = basisHandler->getExponents(p);
-    rowvec expB = basisHandler->getExponents(q);
+    Contracted* contractedA = m_basisFunctions->getContracted(p);
+    Contracted* contractedB = m_basisFunctions->getContracted(q);
 
-    rowvec coeffsA = basisHandler->getCoeffs(p);
-    rowvec coeffsB = basisHandler->getCoeffs(q);
-
-    irowvec powersA = basisHandler->getPowers(p);
-    irowvec powersB = basisHandler->getPowers(q);
-
-    rowvec3 positionA = basisHandler->getPosition(p);
-    rowvec3 positionB = basisHandler->getPosition(q);
-
-    int nPrimitivesA = expA.n_elem;
-    int nPrimitivesB = expB.n_elem;
-
-    integrator->setPositionA(positionA);
-    integrator->setPositionB(positionB);
-
-    int i = powersA(0);
-    int j = powersB(0);
-    int k = powersA(1);
-    int l = powersB(1);
-    int m = powersA(2);
-    int n = powersB(2);
+    int nPrimitivesA = contractedA->getNumOfPrimitives();
+    int nPrimitivesB = contractedB->getNumOfPrimitives();
 
     double overlap = 0;
     double energy = 0;
 
     for (int v = 0; v < nPrimitivesA ; v++){
+        Primitive* primitiveA = contractedA->getPrimitive(v);
         for (int w = 0; w < nPrimitivesB; w++){
+            Primitive* primitiveB = contractedB->getPrimitive(w);
 
-            integrator->setAlpha(expA(v));
-            integrator->setBeta(expB(w));
+            integrator->setPrimitiveA(primitiveA);
+            integrator->setPrimitiveB(primitiveB);
+
             integrator->setE_AB("oneParticle");
 
-            energy += integrator->kinetic(i,j,k,l,m,n)*coeffsA(v)*coeffsB(w);
+            energy += integrator->kinetic()*primitiveA->getCoeff()*primitiveB->getCoeff();
 
             for (int x = 0; x < numberOfNuclei; x++){
 
-                integrator->setPositionC(nucleiPositions.row(x));
-                energy += -integrator->coulomb1(i,j,k,l,m,n)*charges(x)*coeffsA(v)*coeffsB(w);
+                integrator->setNucleusPosition(nucleiPositions.row(x));
+                energy += -integrator->coulomb1()*charges(x)*primitiveA->getCoeff()*primitiveB->getCoeff();
             }
 
-            overlap += integrator->overlap(i,j,k,l,m,n)*coeffsA(v)*coeffsB(w);
+            overlap += integrator->overlap()*primitiveA->getCoeff()*primitiveB->getCoeff();
         }
     }
 
@@ -77,64 +61,36 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
 // Returns two-electron integral
 double System::getTwoElectronIntegral(int p, int q, int r, int s)
 {
-    rowvec expA = basisHandler->getExponents(p);
-    rowvec expB = basisHandler->getExponents(r);
-    rowvec expC = basisHandler->getExponents(q);
-    rowvec expD = basisHandler->getExponents(s);
+    Contracted* contractedA = m_basisFunctions->getContracted(p);
+    Contracted* contractedB = m_basisFunctions->getContracted(r);
+    Contracted* contractedC = m_basisFunctions->getContracted(q);
+    Contracted* contractedD = m_basisFunctions->getContracted(s);
 
-    rowvec coeffsA = basisHandler->getCoeffs(p);
-    rowvec coeffsB = basisHandler->getCoeffs(r);
-    rowvec coeffsC = basisHandler->getCoeffs(q);
-    rowvec coeffsD = basisHandler->getCoeffs(s);
-
-    irowvec powersA = basisHandler->getPowers(p);
-    irowvec powersB = basisHandler->getPowers(r);
-    irowvec powersC = basisHandler->getPowers(q);
-    irowvec powersD = basisHandler->getPowers(s);
-
-    rowvec3 positionA = basisHandler->getPosition(p);
-    rowvec3 positionB = basisHandler->getPosition(r);
-    rowvec3 positionC = basisHandler->getPosition(q);
-    rowvec3 positionD = basisHandler->getPosition(s);
-
-    int nPrimitivesA = expA.n_elem;
-    int nPrimitivesB = expB.n_elem;
-    int nPrimitivesC = expC.n_elem;
-    int nPrimitivesD = expD.n_elem;
-
-    integrator->setPositionA(positionA);
-    integrator->setPositionB(positionB);
-    integrator->setPositionC(positionC);
-    integrator->setPositionD(positionD);
-
-    int i1 = powersA(0);
-    int j1 = powersB(0);
-    int k1 = powersA(1);
-    int l1 = powersB(1);
-    int m1 = powersA(2);
-    int n1 = powersB(2);
-    int i2 = powersC(0);
-    int j2 = powersD(0);
-    int k2 = powersC(1);
-    int l2 = powersD(1);
-    int m2 = powersC(2);
-    int n2 = powersD(2);
+    int nPrimitivesA = contractedA->getNumOfPrimitives();
+    int nPrimitivesB = contractedB->getNumOfPrimitives();
+    int nPrimitivesC = contractedC->getNumOfPrimitives();
+    int nPrimitivesD = contractedD->getNumOfPrimitives();
 
     double value = 0;
 
     for (int v = 0; v < nPrimitivesA; v++){
+        Primitive* primitiveA = contractedA->getPrimitive(v);
         for (int w = 0; w < nPrimitivesB; w++){
+            Primitive* primitiveB = contractedB->getPrimitive(w);
             for (int x = 0; x < nPrimitivesC; x++){
+                Primitive* primitiveC = contractedC->getPrimitive(x);
                 for (int y = 0; y < nPrimitivesD; y++){
+                    Primitive* primitiveD = contractedD->getPrimitive(y);
 
-                    integrator->setAlpha(expA(v));
-                    integrator->setBeta(expB(w));
-                    integrator->setGamma(expC(x));
-                    integrator->setDelta(expD(y));
+                    integrator->setPrimitiveA(primitiveA);
+                    integrator->setPrimitiveB(primitiveB);
+                    integrator->setPrimitiveC(primitiveC);
+                    integrator->setPrimitiveD(primitiveD);
+
                     integrator->setE_AB("twoParticle");
                     integrator->setE_CD("twoParticle");
-                    value += integrator->coulomb2(i1,j1,k1,l1,m1,n1,i2,j2,k2,l2,m2,n2)
-                            *coeffsA(v)*coeffsB(w)*coeffsC(x)*coeffsD(y);
+                    value += integrator->coulomb2()
+                            *primitiveA->getCoeff()*primitiveB->getCoeff()*primitiveC->getCoeff()*primitiveD->getCoeff();
                 }
             }
         }
@@ -162,7 +118,7 @@ double System::getNucleiPotential()
 
 int System::getTotalNumOfBasisFunc()
 {
-    return basisHandler->getTotalNumOfBasisFunc();
+    return m_basisFunctions->getNumOfContracteds();
 }
 
 

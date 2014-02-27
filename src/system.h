@@ -3,7 +3,9 @@
 
 #include <armadillo>
 #include "integrator.h"
-#include "basishandler.h"
+#include "basisfunctions/basisfunctions2.h"
+#include "basisfunctions/contracted.h"
+#include "basisfunctions/primitive.h"
 
 using namespace std;
 using namespace arma;
@@ -13,7 +15,7 @@ using namespace arma;
 class System
 {
 public:
-    System(BasisHandler* newBasisHandler, mat newNucleiPositions, rowvec newCharges, int newNElectrons);
+    System(BasisFunctions2* m_basisFunctions, mat newNucleiPositions, rowvec newCharges, int newNElectrons);
     rowvec2 getOneElectronIntegrals(int p, int q);
     double getTwoElectronIntegral(int p, int q, int r, int s);
     double getNucleiPotential();
@@ -24,7 +26,7 @@ private:
     mat nucleiPositions;
     rowvec charges;
     int nElectrons;
-    BasisHandler* basisHandler;
+    BasisFunctions2* m_basisFunctions;
     Integrator* integrator;
 };
 

@@ -4,6 +4,7 @@
 #include <armadillo>
 #include <vector>
 #include "boysfunction.h"
+#include "basisfunctions/primitive.h"
 
 using namespace arma;
 using namespace std;
@@ -16,31 +17,29 @@ public:
     Integrator(int angMomMax);
     ~Integrator();
 
-    void setAlpha(double newAlpha);
-    void setBeta(double newBeta);
-    void setGamma(double newGamma);
-    void setDelta(double newDelta);
-    void setPositionA(rowvec3 RA);
-    void setPositionB(rowvec3 RB);
-    void setPositionC(rowvec3 RC);
-    void setPositionD(rowvec3 RD);
+    void setNucleusPosition(rowvec3 RC);
+    void setPrimitiveA(Primitive* primitiveA);
+    void setPrimitiveB(Primitive* primitiveB);
+    void setPrimitiveC(Primitive* primitiveC);
+    void setPrimitiveD(Primitive* primitiveD);
     void setE_AB(string intType);
     void setE_CD(string intType);
-    void setR(double a, rowvec3 A, int tMax, int uMax, int vMax);
-    double overlap(int i, int j, int k, int l, int m, int n);
-    double kinetic(int i, int j, int k, int l, int m, int n);
-    double coulomb1(int i, int j, int k, int l, int m, int n);
-    double coulomb2(int i1, int j1, int k1, int l1, int m1, int n1, int i2, int j2, int k2, int l2, int m2, int n2);
+    double overlap();
+    double kinetic();
+    double coulomb1();
+    double coulomb2();
 
+private:
+    Primitive *m_primitiveA, *m_primitiveB, *m_primitiveC, *m_primitiveD;
     cube E_AB[3];
     cube E_CD[3];
     vector<cube> R;
-
-private:
     BoysFunction *boys;
-    mat Rnuclei;
-    double alpha, beta, gamma, delta;
+    rowvec3 nucleusPosition;
     double angMom;
+
+    void setE(cube E[], Primitive *primitive1, Primitive *primitive2, string intType);
+    void setR(double a, rowvec3 A, int tMax, int uMax, int vMax);
 };
 
 #endif // INTEGRATOR_H

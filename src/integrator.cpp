@@ -3,13 +3,7 @@
 Integrator::Integrator(int angMomMax)
 {
     boys = new BoysFunction(angMomMax);
-
-    Rnuclei = zeros(4,3);
-
-    alpha = 0;
-    beta = 0;
-    gamma = 0;
-    delta = 0;
+    nucleusPosition = zeros<rowvec>(3);
     angMom = angMomMax;
 }
 
@@ -17,149 +11,41 @@ Integrator::~Integrator()
 {
 }
 
-void Integrator::setAlpha(double newAlpha)
+void Integrator::setNucleusPosition(rowvec3 RC)
 {
-    alpha = newAlpha;
+    nucleusPosition = RC;
 }
 
-void Integrator::setBeta(double newBeta)
+void Integrator::setPrimitiveA(Primitive *primitiveA)
 {
-    beta = newBeta;
+    m_primitiveA = primitiveA;
 }
 
-void Integrator::setGamma(double newGamma)
+void Integrator::setPrimitiveB(Primitive *primitiveB)
 {
-    gamma = newGamma;
+    m_primitiveB = primitiveB;
 }
 
-void Integrator::setDelta(double newDelta)
+void Integrator::setPrimitiveC(Primitive *primitiveC)
 {
-    delta = newDelta;
+    m_primitiveC = primitiveC;
 }
 
-void Integrator::setPositionA(rowvec3 RA)
+void Integrator::setPrimitiveD(Primitive *primitiveD)
 {
-    Rnuclei.row(0) = RA;
-}
-
-void Integrator::setPositionB(rowvec3 RB)
-{
-    Rnuclei.row(1) = RB;
-}
-
-void Integrator::setPositionC(rowvec3 RC)
-{
-    Rnuclei.row(2) = RC;
-}
-
-void Integrator::setPositionD(rowvec3 RD)
-{
-    Rnuclei.row(3) = RD;
+    m_primitiveD = primitiveD;
 }
 
 void Integrator::setE_AB(string intType)
 {
-    double p = alpha + beta;
-    rowvec3 P = (alpha*Rnuclei.row(0) + beta*Rnuclei.row(1))/p;
-    rowvec3 AB = Rnuclei.row(0) - Rnuclei.row(1);
-    rowvec3 PA = P - Rnuclei.row(0);
-    rowvec3 PB = P - Rnuclei.row(1);
-
-    E_AB[0] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
-    E_AB[1] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
-    E_AB[2] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
-
-    int iMax;
-    if (intType == "oneParticle"){
-        iMax = angMom + 2;
-    } else if (intType == "twoParticle"){
-        iMax = angMom;
-    } else {
-        cout << "Error: Integration type for E-coeffs not specified" << endl;
-        exit(EXIT_FAILURE);
-    }
-
-
-    // Loop over x-, y- and z- coordinates
-
-    for(int dir = 0; dir < 3; dir++){
-
-        // First loop over t and i with j = 0
-
-        E_AB[dir](0,0,0) = exp(-alpha*beta*AB(dir)*AB(dir)/p);
-        for (int i = 0; i < iMax; i++){
-            // Treat the case t=0 separately due to (t-1) term
-            E_AB[dir](i+1,0,0) = PA(dir)*E_AB[dir](i,0,0) + E_AB[dir](i,0,1);
-            for (int t = 1; t <= i + 0 + 1; t++){
-                E_AB[dir](i+1,0,t) = E_AB[dir](i,0,t-1)/(2*p) + PA(dir)*E_AB[dir](i,0,t) + (t+1)*E_AB[dir](i,0,t+1);
-            }
-        }
-
-        // Second loop over t and j and i
-
-        // Must here let i <= l because the forward loop is on index j
-        for (int i = 0; i <= iMax; i++){
-            for (int j = 0; j < iMax; j++){
-                E_AB[dir](i,j+1,0) = PB(dir)*E_AB[dir](i,j,0) + E_AB[dir](i,j,1);
-                for (int t = 1; t <= i + j + 1; t++){
-                    E_AB[dir](i,j+1,t) = E_AB[dir](i,j,t-1)/(2*p) + PB(dir)*E_AB[dir](i,j,t) + (t+1)*E_AB[dir](i,j,t+1);
-                }
-            }
-        }
-    }
+    setE(E_AB, m_primitiveA, m_primitiveB, intType);
 }
 
 
 
 void Integrator::setE_CD(string intType)
 {
-    double q = gamma + delta;
-    rowvec3 Q = (gamma*Rnuclei.row(2) + delta*Rnuclei.row(3))/q;
-    rowvec3 CD = Rnuclei.row(2) - Rnuclei.row(3);
-    rowvec3 QC = Q - Rnuclei.row(2);
-    rowvec3 QD = Q - Rnuclei.row(3);
-
-    E_CD[0] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
-    E_CD[1] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
-    E_CD[2] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
-
-    int iMax;
-    if (intType == "oneParticle"){
-        iMax = angMom + 2;
-    } else if (intType == "twoParticle"){
-        iMax = angMom;
-    } else {
-        cout << "Error: Integration type for E-coeffs not specified" << endl;
-        exit(EXIT_FAILURE);
-    }
-
-    // Loop over x-, y- and z- coordinates
-
-    for(int dir = 0; dir < 3; dir++){
-
-        // First loop over t and i with j = 0
-
-        E_CD[dir](0,0,0) = exp(-gamma*delta*CD(dir)*CD(dir)/q);
-        for (int i = 0; i < iMax; i++){
-            // Treat the case t=0 separately due to (t-1) term
-            E_CD[dir](i+1,0,0) = QC(dir)*E_CD[dir](i,0,0) + E_CD[dir](i,0,1);
-            for (int t = 1; t <= i + 0 + 1; t++){
-                E_CD[dir](i+1,0,t) = E_CD[dir](i,0,t-1)/(2*q) + QC(dir)*E_CD[dir](i,0,t) + (t+1)*E_CD[dir](i,0,t+1);
-            }
-        }
-
-        // Second loop over t and j and i
-
-        // Must here let i <= l because the forward loop is on index j
-        for (int i = 0; i <= iMax; i++){
-            for (int j = 0; j < iMax; j++){
-                E_CD[dir](i,j+1,0) = QD(dir)*E_CD[dir](i,j,0) + E_CD[dir](i,j,1);
-                for (int t = 1; t <= i + j + 1; t++){
-                    E_CD[dir](i,j+1,t) = E_CD[dir](i,j,t-1)/(2*q) + QD(dir)*E_CD[dir](i,j,t) + (t+1)*E_CD[dir](i,j,t+1);
-                }
-            }
-        }
-    }
+    setE(E_CD, m_primitiveC, m_primitiveD, intType);
 }
 
 
@@ -217,16 +103,30 @@ void Integrator::setR(double a, rowvec3 A, int tMax, int uMax, int vMax)
     }
 }
 
-double Integrator::overlap(int i, int j, int k, int l, int m, int n)
+double Integrator::overlap()
 {
-    double p = alpha + beta;
+    double p = m_primitiveA->getExp() + m_primitiveB->getExp();
+    int i = m_primitiveA->getPow()(0);
+    int j = m_primitiveB->getPow()(0);
+    int k = m_primitiveA->getPow()(1);
+    int l = m_primitiveB->getPow()(1);
+    int m = m_primitiveA->getPow()(2);
+    int n = m_primitiveB->getPow()(2);
     return E_AB[0](i,j,0)*E_AB[1](k,l,0)*E_AB[2](m,n,0)*pow(M_PI/p, 1.5);
 }
 
-double Integrator::kinetic(int i, int j, int k, int l, int m, int n)
+double Integrator::kinetic()
 {
     double Tij, Tkl, Tmn, kinetic;
+    double alpha = m_primitiveA->getExp();
+    double beta = m_primitiveB->getExp();
     double p = alpha + beta;
+    int i = m_primitiveA->getPow()(0);
+    int j = m_primitiveB->getPow()(0);
+    int k = m_primitiveA->getPow()(1);
+    int l = m_primitiveB->getPow()(1);
+    int m = m_primitiveA->getPow()(2);
+    int n = m_primitiveB->getPow()(2);
 
     if (j < 2){
         Tij = 4*beta*beta*E_AB[0](i,j+2,0) - 2*beta*(2*j + 1)*E_AB[0](i,j,0);
@@ -251,16 +151,27 @@ double Integrator::kinetic(int i, int j, int k, int l, int m, int n)
     return kinetic;
 }
 
-
-double Integrator::coulomb1(int i, int j, int k, int l, int m, int n)
+double Integrator::coulomb1()
 {
+    int i = m_primitiveA->getPow()(0);
+    int j = m_primitiveB->getPow()(0);
+    int k = m_primitiveA->getPow()(1);
+    int l = m_primitiveB->getPow()(1);
+    int m = m_primitiveA->getPow()(2);
+    int n = m_primitiveB->getPow()(2);
+
     int tMax = i + j;
     int uMax = k + l;
     int vMax = m + n;
 
+    rowvec3 A = m_primitiveA->getPos();
+    rowvec3 B = m_primitiveB->getPos();
+
+    double alpha = m_primitiveA->getExp();
+    double beta = m_primitiveB->getExp();
     double p = alpha + beta;
-    rowvec3 P = (alpha*Rnuclei.row(0) + beta*Rnuclei.row(1))/p;
-    rowvec3 PC = P - Rnuclei.row(2); // tests coulomb1 for the particular case 1/rc = 1/Rnuclei.row(2)
+    rowvec3 P = (alpha*A + beta*B)/p;
+    rowvec3 PC = P - nucleusPosition; // tests coulomb1 for the particular case 1/rc = 1/Rnuclei.row(2)
 
     setR(p, PC, tMax, uMax, vMax);
 
@@ -279,9 +190,21 @@ double Integrator::coulomb1(int i, int j, int k, int l, int m, int n)
     return value;
 }
 
-
-double Integrator::coulomb2(int i1, int j1, int k1, int l1, int m1, int n1, int i2, int j2, int k2, int l2, int m2, int n2)
+double Integrator::coulomb2()
 {
+    int i1 = m_primitiveA->getPow()(0);
+    int j1 = m_primitiveB->getPow()(0);
+    int k1 = m_primitiveA->getPow()(1);
+    int l1 = m_primitiveB->getPow()(1);
+    int m1 = m_primitiveA->getPow()(2);
+    int n1 = m_primitiveB->getPow()(2);
+    int i2 = m_primitiveC->getPow()(0);
+    int j2 = m_primitiveD->getPow()(0);
+    int k2 = m_primitiveC->getPow()(1);
+    int l2 = m_primitiveD->getPow()(1);
+    int m2 = m_primitiveC->getPow()(2);
+    int n2 = m_primitiveD->getPow()(2);
+
     int tMax = i1 + j1;
     int uMax = k1 + l1;
     int vMax = m1 + n1;
@@ -289,10 +212,20 @@ double Integrator::coulomb2(int i1, int j1, int k1, int l1, int m1, int n1, int 
     int nyMax = k2 + l2;
     int phiMax = m2 + n2;
 
+    double alpha = m_primitiveA->getExp();
+    double beta = m_primitiveB->getExp();
+    double gamma = m_primitiveC->getExp();
+    double delta = m_primitiveD->getExp();
+
+    rowvec A = m_primitiveA->getPos();
+    rowvec B = m_primitiveB->getPos();
+    rowvec C = m_primitiveC->getPos();
+    rowvec D = m_primitiveD->getPos();
+
     double p = alpha + beta;
     double q = gamma + delta;
-    rowvec3 P = (alpha*Rnuclei.row(0) + beta*Rnuclei.row(1))/p;
-    rowvec3 Q = (gamma*Rnuclei.row(2) + delta*Rnuclei.row(3))/q;
+    rowvec3 P = (alpha*A + beta*B)/p;
+    rowvec3 Q = (gamma*C + delta*D)/q;
     rowvec PQ = P - Q;
     double a = p*q/(p + q);
 
@@ -307,7 +240,7 @@ double Integrator::coulomb2(int i1, int j1, int k1, int l1, int m1, int n1, int 
                     for (int ny = 0; ny < nyMax+1; ny++){
                         for (int phi = 0; phi < phiMax+1; phi++){
                             value += (1 - 2*((tau + ny + phi)%2))*E_AB[0](i1,j1,t)*E_AB[1](k1,l1,u)*E_AB[2](m1,n1,v)
-                                     *E_CD[0](i2,j2,tau)*E_CD[1](k2,l2,ny)*E_CD[2](m2,n2,phi)*R.at(0)(t+tau,u+ny,v+phi);
+                                    *E_CD[0](i2,j2,tau)*E_CD[1](k2,l2,ny)*E_CD[2](m2,n2,phi)*R.at(0)(t+tau,u+ny,v+phi);
                         }
                     }
                 }
@@ -318,4 +251,61 @@ double Integrator::coulomb2(int i1, int j1, int k1, int l1, int m1, int n1, int 
     value *= 2*pow(M_PI, 2.5)/(p*q*sqrt(p + q));
 
     return value;
+}
+
+void Integrator::setE(cube E[], Primitive *primitive1, Primitive *primitive2, string intType)
+{
+    double alpha = primitive1->getExp();
+    double beta = primitive2->getExp();
+
+    rowvec3 A = primitive1->getPos();
+    rowvec3 B = primitive2->getPos();
+
+    double p = alpha + beta;
+    rowvec3 P = (alpha*A + beta*B)/p;
+    rowvec3 AB = A - B;
+    rowvec3 PA = P - A;
+    rowvec3 PB = P - B;
+
+    E[0] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+    E[1] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+    E[2] = zeros<cube>(angMom+3,angMom+3,2*(angMom+2)+2);
+
+    // Loop over x-, y- and z- coordinates
+
+    for(int dir = 0; dir < 3; dir++){
+
+        int iMax;
+        if (intType == "oneParticle"){
+            iMax = angMom + 2;
+        } else if (intType == "twoParticle"){
+            iMax = angMom;
+        } else {
+            cout << "Error: Integration type for E-coeffs not specified" << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // First loop over t and i with j = 0
+
+        E[dir](0,0,0) = exp(-alpha*beta*AB(dir)*AB(dir)/p);
+        for (int i = 0; i < iMax; i++){
+            // Treat the case t=0 separately due to (t-1) term
+            E[dir](i+1,0,0) = PA(dir)*E[dir](i,0,0) + E[dir](i,0,1);
+            for (int t = 1; t <= i + 0 + 1; t++){
+                E[dir](i+1,0,t) = E[dir](i,0,t-1)/(2*p) + PA(dir)*E[dir](i,0,t) + (t+1)*E[dir](i,0,t+1);
+            }
+        }
+
+        // Second loop over t and j and i
+
+        // Must here let i <= l because the forward loop is on index j
+        for (int i = 0; i <= iMax; i++){
+            for (int j = 0; j < iMax; j++){
+                E[dir](i,j+1,0) = PB(dir)*E[dir](i,j,0) + E[dir](i,j,1);
+                for (int t = 1; t <= i + j + 1; t++){
+                    E[dir](i,j+1,t) = E[dir](i,j,t-1)/(2*p) + PB(dir)*E[dir](i,j,t) + (t+1)*E[dir](i,j,t+1);
+                }
+            }
+        }
+    }
 }
