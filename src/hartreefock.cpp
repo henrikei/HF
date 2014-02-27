@@ -1,27 +1,27 @@
 #include "hartreefock.h"
 
-HartreeFock::HartreeFock(System *newSystem)
+HartreeFock::HartreeFock(System *system)
 {
-    system = newSystem;
+    m_system = system;
 
-    matDim = system->getTotalNumOfBasisFunc();
-    nElectrons = system->getNumOfElectrons();
-    h = zeros<mat>(matDim, matDim);
-    S = zeros<mat>(matDim, matDim);
-    Q = 0;
-    energy = 1.0E6;
-    energyMP2 = 0.0;
-    toler = 1.0E-10;
+    m_matDim = m_system->getTotalNumOfBasisFunc();
+    m_nElectrons = m_system->getNumOfElectrons();
+    m_h = zeros<mat>(m_matDim, m_matDim);
+    m_S = zeros<mat>(m_matDim, m_matDim);
+    m_Q = 0;
+    m_energy = 1.0E6;
+    m_energyMP2 = 0.0;
+    m_toler = 1.0E-10;
 }
 
 //----------------------------------------------------------------------------------------------------------------
 double HartreeFock::getEnergy(){
-    return energy;
+    return m_energy;
 }
 
 double HartreeFock::getEnergyMP2()
 {
-    return energyMP2;
+    return m_energyMP2;
 }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -30,43 +30,43 @@ void HartreeFock::calcIntegrals()
 {
     // The one-electron integrals (matrix h) and overlap inegrals (matrix S)
     rowvec oneElectronIntegrals;
-    for (int i = 0; i < matDim; i++){
-        for (int j = i; j < matDim; j++){
-            oneElectronIntegrals = system->getOneElectronIntegrals(i,j);
-            S(i,j) = oneElectronIntegrals(0);
-            S(j,i) = S(i,j);
-            h(i,j) = oneElectronIntegrals(1);
-            h(j,i) = h(i,j);
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = i; j < m_matDim; j++){
+            oneElectronIntegrals = m_system->getOneElectronIntegrals(i,j);
+            m_S(i,j) = oneElectronIntegrals(0);
+            m_S(j,i) = m_S(i,j);
+            m_h(i,j) = oneElectronIntegrals(1);
+            m_h(j,i) = m_h(i,j);
         }
     }
 
     // The electron-electron integrals
-    if(Q == 0){
-        Q = new double***[matDim];
-        for (int i = 0; i < matDim; i++){
-            Q[i] = new double**[matDim];
-            for (int j = 0; j < matDim; j++){
-                Q[i][j] = new double*[matDim];
-                for (int k = 0; k < matDim; k++){
-                    Q[i][j][k] = new double[matDim];
+    if(m_Q == 0){
+        m_Q = new double***[m_matDim];
+        for (int i = 0; i < m_matDim; i++){
+            m_Q[i] = new double**[m_matDim];
+            for (int j = 0; j < m_matDim; j++){
+                m_Q[i][j] = new double*[m_matDim];
+                for (int k = 0; k < m_matDim; k++){
+                    m_Q[i][j][k] = new double[m_matDim];
                 }
             }
         }
     }
 
-    for (int i = 0; i < matDim; i++){
+    for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){
             for (int k = 0; k < i+1; k++){
                 for (int l = 0; l < j+1; l++){
-                    Q[i][j][k][l] = system->getTwoElectronIntegral(i, j, k, l);
-                    Q[k][j][i][l] = Q[i][j][k][l];
-                    Q[i][l][k][j] = Q[i][j][k][l];
-                    Q[k][l][i][j] = Q[i][j][k][l];
+                    m_Q[i][j][k][l] = m_system->getTwoElectronIntegral(i, j, k, l);
+                    m_Q[k][j][i][l] = m_Q[i][j][k][l];
+                    m_Q[i][l][k][j] = m_Q[i][j][k][l];
+                    m_Q[k][l][i][j] = m_Q[i][j][k][l];
 
-                    Q[j][i][l][k] = Q[i][j][k][l];
-                    Q[j][k][l][i] = Q[i][j][k][l];
-                    Q[l][i][j][k] = Q[i][j][k][l];
-                    Q[l][k][j][i] = Q[i][j][k][l];
+                    m_Q[j][i][l][k] = m_Q[i][j][k][l];
+                    m_Q[j][k][l][i] = m_Q[i][j][k][l];
+                    m_Q[l][i][j][k] = m_Q[i][j][k][l];
+                    m_Q[l][k][j][i] = m_Q[i][j][k][l];
                 }
             }
         }
@@ -106,13 +106,13 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
 {
     vec eigVal;
     mat eigVec;
-    mat V = zeros<mat>(matDim, matDim);
-    mat F2 = zeros<mat>(matDim, matDim);
+    mat V = zeros<mat>(m_matDim, m_matDim);
+    mat F2 = zeros<mat>(m_matDim, m_matDim);
 
     // Diagonalize overlap matrix S and calculate matrix V such that V.t()*S*V = I. Then set F2 = V.t()*F*V and C = V*C2.
-    eig_sym(eigVal, eigVec, S);
+    eig_sym(eigVal, eigVec, m_S);
 
-    for (int i = 0; i < matDim; i++){
+    for (int i = 0; i < m_matDim; i++){
         V.col(i) = eigVec.col(i)/sqrt(eigVal(i));
     }
 
@@ -124,13 +124,13 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
 
     // Normalize the orbitals (phi = sum_p(C_p chi_p)). For vector C this means:
     double norm;
-    for (int i = 0; i < matDim; i++){
-        norm = dot(Coeffs.col(i), S*Coeffs.col(i));
+    for (int i = 0; i < m_matDim; i++){
+        norm = dot(Coeffs.col(i), m_S*Coeffs.col(i));
         Coeffs.col(i) = Coeffs.col(i)/sqrt(norm);
     }
 
     // Compute density matrix
-    mat Ptemp = 2*Coeffs.cols(0, nElectrons/2-1)*Coeffs.cols(0, nElectrons/2-1).t();
+    mat Ptemp = 2*Coeffs.cols(0, m_nElectrons/2-1)*Coeffs.cols(0, m_nElectrons/2-1).t();
     P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix. Sometimes needed in order to achieve correct convergence.
 
     fockEnergy = eigVal;

@@ -1,21 +1,21 @@
 #include "rhf.h"
 
-RHF::RHF(System* newSystem):HartreeFock(newSystem)
+RHF::RHF(System* system):HartreeFock(system)
 {
-    F = zeros<mat>(matDim, matDim);
-    C = zeros<mat>(matDim, matDim);
-    P = zeros<mat>(matDim, matDim);
-    fockEnergy = ones<colvec>(matDim)*1.0E6;
-    perturbOrder = 1;
+    m_F = zeros<mat>(m_matDim, m_matDim);
+    m_C = zeros<mat>(m_matDim, m_matDim);
+    m_P = zeros<mat>(m_matDim, m_matDim);
+    m_fockEnergy = ones<colvec>(m_matDim)*1.0E6;
+    m_perturbOrder = 1;
 }
 
-RHF::RHF(System* newSystem, int newPerturbOrder):HartreeFock(newSystem)
+RHF::RHF(System* system, int perturbOrder):HartreeFock(system)
 {
-    F = zeros<mat>(matDim, matDim);
-    C = zeros<mat>(matDim, matDim);
-    P = zeros<mat>(matDim, matDim);
-    fockEnergy = ones<colvec>(matDim)*1.0E6;
-    perturbOrder = newPerturbOrder;
+    m_F = zeros<mat>(m_matDim, m_matDim);
+    m_C = zeros<mat>(m_matDim, m_matDim);
+    m_P = zeros<mat>(m_matDim, m_matDim);
+    m_fockEnergy = ones<colvec>(m_matDim)*1.0E6;
+    m_perturbOrder = perturbOrder;
 }
 
 
@@ -30,27 +30,27 @@ void RHF::solve()
     // Iterate until the fock energy has converged
     double fockEnergyOld;
     double energyDiff = 1.0;
-    while (energyDiff > toler){
-        fockEnergyOld = fockEnergy(0);
+    while (energyDiff > m_toler){
+        fockEnergyOld = m_fockEnergy(0);
         buildFockMatrix();
-        solveSingle(F, C, P, fockEnergy);
-        energyDiff = fabs(fockEnergyOld - fockEnergy(0));
+        solveSingle(m_F, m_C, m_P, m_fockEnergy);
+        energyDiff = fabs(fockEnergyOld - m_fockEnergy(0));
     }
 
     // Calculate energy (not equal to Fock energy)
-    energy = 0;
+    m_energy = 0;
 
-    for (int i = 0; i < matDim; i++){
-        for (int j = 0; j < matDim; j++){
-            energy += 0.5*(h(i,j) + F(i,j))*P(i,j);
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < m_matDim; j++){
+            m_energy += 0.5*(m_h(i,j) + m_F(i,j))*m_P(i,j);
         }
     }
-    energy += system->getNucleiPotential();
+    m_energy += m_system->getNucleiPotential();
 
     // Perturbative terms
-    if (perturbOrder == 2){
-        energy += perturbation2order();
-    } else if (perturbOrder == 1) {
+    if (m_perturbOrder == 2){
+        m_energy += perturbation2order();
+    } else if (m_perturbOrder == 1) {
     } else {
         cout << "Error. Only first and second order perturbation has been implemented." << endl;
         exit(EXIT_FAILURE);
@@ -59,7 +59,7 @@ void RHF::solve()
 
 //----------------------------------------------------------------------------------------------------------------
 mat RHF::getCoeff(){
-    return C;
+    return m_C;
 }
 
 
@@ -68,16 +68,16 @@ mat RHF::getCoeff(){
 
 void RHF::buildFockMatrix()
 {
-    for (int i = 0; i < matDim; i++){
-        for (int j = 0; j < matDim; j++){
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < m_matDim; j++){
 
             // One-electron integrals
-            F(i,j) = h(i,j);
+            m_F(i,j) = m_h(i,j);
 
             // Add two-electron integrals
-            for (int k = 0; k < matDim; k++){
-                for (int l = 0; l < matDim; l++){
-                    F(i,j) += 0.5*P(l,k)*(2*Q[i][k][j][l] - Q[i][k][l][j]);
+            for (int k = 0; k < m_matDim; k++){
+                for (int l = 0; l < m_matDim; l++){
+                    m_F(i,j) += 0.5*m_P(l,k)*(2*m_Q[i][k][j][l] - m_Q[i][k][l][j]);
                 }
             }
         }
@@ -88,19 +88,19 @@ void RHF::buildFockMatrix()
 //--------------------------------------------------------------------------------------------------------------------
 // Second order perturbation
 double RHF::perturbation2order(){
-    int nHStates = nElectrons/2;
-    int nPStates = matDim - nElectrons/2;
+    int nHStates = m_nElectrons/2;
+    int nPStates = m_matDim - m_nElectrons/2;
     field<mat> orbitalIntegrals(nHStates, nHStates);               // orbitalIntegral = <ij|g|ab>
     for (int i = 0; i < nHStates; i++){
         for (int j = 0; j < nHStates; j++){
             orbitalIntegrals(i,j) = zeros(nPStates, nPStates);
             for (int a = 0; a < nPStates; a++){
                 for (int b = 0; b < nPStates; b++){
-                    for (int p = 0; p < matDim; p++){
-                        for (int q = 0; q < matDim; q++){
-                            for (int r = 0; r < matDim; r++){
-                                for (int s = 0; s < matDim; s++){
-                                    orbitalIntegrals(i,j)(a,b) += C(p,i)*C(q,j)*C(r,a+nHStates)*C(s,b+nHStates)*Q[p][q][r][s];
+                    for (int p = 0; p < m_matDim; p++){
+                        for (int q = 0; q < m_matDim; q++){
+                            for (int r = 0; r < m_matDim; r++){
+                                for (int s = 0; s < m_matDim; s++){
+                                    orbitalIntegrals(i,j)(a,b) += m_C(p,i)*m_C(q,j)*m_C(r,a+nHStates)*m_C(s,b+nHStates)*m_Q[p][q][r][s];
                                 }
                             }
                         }
@@ -114,13 +114,13 @@ double RHF::perturbation2order(){
         for (int j = 0; j < nHStates; j++){
             for (int a = 0; a < nPStates; a++){
                 for (int b = 0; b < nPStates; b++){
-                    energyMP2 += orbitalIntegrals(i,j)(a,b)*(2*orbitalIntegrals(i,j)(a,b) - orbitalIntegrals(j,i)(a,b))
-                                /(fockEnergy(i) + fockEnergy(j) - fockEnergy(a+nHStates) - fockEnergy(b+nHStates));
+                    m_energyMP2 += orbitalIntegrals(i,j)(a,b)*(2*orbitalIntegrals(i,j)(a,b) - orbitalIntegrals(j,i)(a,b))
+                                /(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a+nHStates) - m_fockEnergy(b+nHStates));
                 }
             }
         }
     }
 
-    return energyMP2;
+    return m_energyMP2;
 
 }

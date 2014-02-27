@@ -1,34 +1,32 @@
 #include "uhf.h"
 
-UHF::UHF(System *newSystem):HartreeFock(newSystem)
+UHF::UHF(System *system):HartreeFock(system)
 {
-    Fup = zeros<mat>(matDim, matDim);
-    Fdown = zeros<mat>(matDim, matDim);
-    Cup = zeros<mat>(matDim, matDim);
-    Cdown = zeros<mat>(matDim, matDim);
-    Pup = zeros<mat>(matDim, matDim);
-    Pup(0,1)=0.1; // Introduce an assymetry between the spin up and spin down orbitals
-    Pdown = zeros<mat>(matDim, matDim);
-    fockEnergyUp = ones<colvec>(matDim)*1.0E6;
-    fockEnergyDown = ones<colvec>(matDim)*1.0E6;
-    perturbOrder = 1;
+    m_Fup = zeros<mat>(m_matDim, m_matDim);
+    m_Fdown = zeros<mat>(m_matDim, m_matDim);
+    m_Cup = zeros<mat>(m_matDim, m_matDim);
+    m_Cdown = zeros<mat>(m_matDim, m_matDim);
+    m_Pup = zeros<mat>(m_matDim, m_matDim);
+    m_Pup(0,1)=0.1; // Introduce an assymetry between the spin up and spin down orbitals
+    m_Pdown = zeros<mat>(m_matDim, m_matDim);
+    m_fockEnergyUp = ones<colvec>(m_matDim)*1.0E6;
+    m_fockEnergyDown = ones<colvec>(m_matDim)*1.0E6;
+    m_perturbOrder = 1;
 }
 
-UHF::UHF(System *newSystem, int newPerturbOrder):HartreeFock(newSystem)
+UHF::UHF(System *system, int perturbOrder):HartreeFock(system)
 {
-    Fup = zeros<mat>(matDim, matDim);
-    Fdown = zeros<mat>(matDim, matDim);
-    Cup = zeros<mat>(matDim, matDim);
-    Cdown = zeros<mat>(matDim, matDim);
-    Pup = zeros<mat>(matDim, matDim);
-    Pup(0,1)=0.1; // Introduce an assymetry between the spin up and spin down orbitals
-    Pdown = zeros<mat>(matDim, matDim);
-    fockEnergyUp = ones<colvec>(matDim)*1.0E6;
-    fockEnergyDown = ones<colvec>(matDim)*1.0E6;
-    perturbOrder = newPerturbOrder;
+    m_Fup = zeros<mat>(m_matDim, m_matDim);
+    m_Fdown = zeros<mat>(m_matDim, m_matDim);
+    m_Cup = zeros<mat>(m_matDim, m_matDim);
+    m_Cdown = zeros<mat>(m_matDim, m_matDim);
+    m_Pup = zeros<mat>(m_matDim, m_matDim);
+    m_Pup(0,1)=0.1; // Introduce an assymetry between the spin up and spin down orbitals
+    m_Pdown = zeros<mat>(m_matDim, m_matDim);
+    m_fockEnergyUp = ones<colvec>(m_matDim)*1.0E6;
+    m_fockEnergyDown = ones<colvec>(m_matDim)*1.0E6;
+    m_perturbOrder = perturbOrder;
 }
-
-
 
 
 
@@ -37,18 +35,18 @@ UHF::UHF(System *newSystem, int newPerturbOrder):HartreeFock(newSystem)
 
 void UHF::buildFockMatrix()
 {
-    for (int i = 0; i < matDim; i++){
-        for (int j = 0; j < matDim; j++){
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < m_matDim; j++){
 
             // One-electron integrals
-            Fup(i,j) = h(i,j);
-            Fdown(i,j) = h(i,j);
+            m_Fup(i,j) = m_h(i,j);
+            m_Fdown(i,j) = m_h(i,j);
 
             // Add two-electron integrals
-            for (int k = 0; k < matDim; k++){
-                for (int l = 0; l < matDim; l++){
-                    Fup(i,j) += 0.5*Pup(l,k)*(Q[i][k][j][l] - Q[i][k][l][j]) + 0.5*Pdown(l,k)*Q[i][k][j][l];
-                    Fdown(i,j) += 0.5*Pdown(l,k)*(Q[i][k][j][l] - Q[i][k][l][j]) + 0.5*Pup(l,k)*Q[i][k][j][l];
+            for (int k = 0; k < m_matDim; k++){
+                for (int l = 0; l < m_matDim; l++){
+                    m_Fup(i,j) += 0.5*m_Pup(l,k)*(m_Q[i][k][j][l] - m_Q[i][k][l][j]) + 0.5*m_Pdown(l,k)*m_Q[i][k][j][l];
+                    m_Fdown(i,j) += 0.5*m_Pdown(l,k)*(m_Q[i][k][j][l] - m_Q[i][k][l][j]) + 0.5*m_Pup(l,k)*m_Q[i][k][j][l];
                 }
             }
         }
@@ -58,7 +56,7 @@ void UHF::buildFockMatrix()
 
 //----------------------------------------------------------------------------------------------------------------
 mat UHF::getCoeff(){
-    return Cup;
+    return m_Cup;
 }
 
 
@@ -75,29 +73,29 @@ void UHF::solve()
     calcIntegrals();
 
     // Iterate until the fock energy has converged
-    while (energyDiff > toler){
-        fockEnergyUpOld = fockEnergyUp(0);
-        fockEnergyDownOld = fockEnergyDown(0);
+    while (energyDiff > m_toler){
+        fockEnergyUpOld = m_fockEnergyUp(0);
+        fockEnergyDownOld = m_fockEnergyDown(0);
         buildFockMatrix();
-        solveSingle(Fup, Cup, Pup, fockEnergyUp);
-        solveSingle(Fdown, Cdown, Pdown, fockEnergyDown);
-        energyDiff = fabs(fockEnergyUpOld + fockEnergyDownOld - fockEnergyUp(0) - fockEnergyDown(0));
+        solveSingle(m_Fup, m_Cup, m_Pup, m_fockEnergyUp);
+        solveSingle(m_Fdown, m_Cdown, m_Pdown, m_fockEnergyDown);
+        energyDiff = fabs(fockEnergyUpOld + fockEnergyDownOld - m_fockEnergyUp(0) - m_fockEnergyDown(0));
     }
 
     // Calculate energy (not equal to Fock energy)
-    energy = 0;
+    m_energy = 0;
 
-    for (int i = 0; i < matDim; i++){
-        for (int j = 0; j < matDim; j++){
-            energy += 0.25*((Pup(i,j) + Pdown(i,j))*h(i, j) + Fup(i,j)*Pup(i,j) + Fdown(i,j)*Pdown(i,j));
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < m_matDim; j++){
+            m_energy += 0.25*((m_Pup(i,j) + m_Pdown(i,j))*m_h(i, j) + m_Fup(i,j)*m_Pup(i,j) + m_Fdown(i,j)*m_Pdown(i,j));
         }
     }
-    energy += system->getNucleiPotential();
+    m_energy += m_system->getNucleiPotential();
 
     // Perturbative terms
-    if (perturbOrder == 2){
-        energy += perturbation2order();
-    } else if (perturbOrder == 1) {
+    if (m_perturbOrder == 2){
+        m_energy += perturbation2order();
+    } else if (m_perturbOrder == 1) {
     } else {
         cout << "Error. Only first and second order perturbation has been implemented." << endl;
         exit(EXIT_FAILURE);
@@ -106,8 +104,8 @@ void UHF::solve()
 
 
 double UHF::perturbation2order(){
-    int nHStates = nElectrons/2;     // later: divide between nElectronsUp and nElectronsDown
-    int nPStates = matDim - nElectrons/2;
+    int nHStates = m_nElectrons/2;     // later: divide between nElectronsUp and nElectronsDown
+    int nPStates = m_matDim - m_nElectrons/2;
     field<mat> orbitalIntegralsUU(nHStates, nHStates);
     field<mat> orbitalIntegralsDD(nHStates, nHStates);
     field<mat> orbitalIntegralsUD(nHStates, nHStates);
@@ -118,13 +116,13 @@ double UHF::perturbation2order(){
             orbitalIntegralsUD(i,j) = zeros(nPStates, nPStates);
             for (int a = 0; a < nPStates; a++){
                 for (int b = 0; b < nPStates; b++){
-                    for (int p = 0; p < matDim; p++){
-                        for (int q = 0; q < matDim; q++){
-                            for (int r = 0; r < matDim; r++){
-                                for (int s = 0; s < matDim; s++){
-                                    orbitalIntegralsUU(i,j)(a,b) += Cup(p,i)*Cup(q,j)*Cup(r,a+nHStates)*Cup(s,b+nHStates)*Q[p][q][r][s];
-                                    orbitalIntegralsDD(i,j)(a,b) += Cdown(p,i)*Cdown(q,j)*Cdown(r,a+nHStates)*Cdown(s,b+nHStates)*Q[p][q][r][s];
-                                    orbitalIntegralsUD(i,j)(a,b) += Cup(p,i)*Cdown(q,j)*Cup(r,a+nHStates)*Cdown(s,b+nHStates)*Q[p][q][r][s];
+                    for (int p = 0; p < m_matDim; p++){
+                        for (int q = 0; q < m_matDim; q++){
+                            for (int r = 0; r < m_matDim; r++){
+                                for (int s = 0; s < m_matDim; s++){
+                                    orbitalIntegralsUU(i,j)(a,b) += m_Cup(p,i)*m_Cup(q,j)*m_Cup(r,a+nHStates)*m_Cup(s,b+nHStates)*m_Q[p][q][r][s];
+                                    orbitalIntegralsDD(i,j)(a,b) += m_Cdown(p,i)*m_Cdown(q,j)*m_Cdown(r,a+nHStates)*m_Cdown(s,b+nHStates)*m_Q[p][q][r][s];
+                                    orbitalIntegralsUD(i,j)(a,b) += m_Cup(p,i)*m_Cdown(q,j)*m_Cup(r,a+nHStates)*m_Cdown(s,b+nHStates)*m_Q[p][q][r][s];
                                 }
                             }
                         }
@@ -142,17 +140,17 @@ double UHF::perturbation2order(){
             for (int a = 0; a < nPStates; a++){
                 for (int b = 0; b < nPStates; b++){
                     energyTemp1 += 0.25*(orbitalIntegralsUU(i,j)(a,b) - orbitalIntegralsUU(i,j)(b,a))*(orbitalIntegralsUU(i,j)(a,b) - orbitalIntegralsUU(i,j)(b,a))/
-                                       (fockEnergyUp(i) + fockEnergyUp(j) - fockEnergyUp(a+nHStates) - fockEnergyUp(b+nHStates));
+                                       (m_fockEnergyUp(i) + m_fockEnergyUp(j) - m_fockEnergyUp(a+nHStates) - m_fockEnergyUp(b+nHStates));
                     energyTemp2 += 0.25*(orbitalIntegralsDD(i,j)(a,b) - orbitalIntegralsDD(i,j)(b,a))*(orbitalIntegralsDD(i,j)(a,b) - orbitalIntegralsDD(i,j)(b,a))/
-                                        (fockEnergyDown(i) + fockEnergyDown(j) - fockEnergyDown(a+nHStates) - fockEnergyDown(b+nHStates));
+                                        (m_fockEnergyDown(i) + m_fockEnergyDown(j) - m_fockEnergyDown(a+nHStates) - m_fockEnergyDown(b+nHStates));
                     energyTemp3 += orbitalIntegralsUD(i,j)(a,b)*orbitalIntegralsUD(i,j)(a,b)/
-                                        (fockEnergyUp(i) + fockEnergyDown(j) - fockEnergyUp(a+nHStates) - fockEnergyDown(b+nHStates));
+                                        (m_fockEnergyUp(i) + m_fockEnergyDown(j) - m_fockEnergyUp(a+nHStates) - m_fockEnergyDown(b+nHStates));
                 }
             }
         }
     }
-    energyMP2 = energyTemp1 + energyTemp2 + energyTemp3;
-    return energyMP2;
+    m_energyMP2 = energyTemp1 + energyTemp2 + energyTemp3;
+    return m_energyMP2;
 
     //    double energyTemp1, energyTemp2, energyTemp3, energyTemp4;
 //    for (int i = 0; i < nElectrons/2; i++){

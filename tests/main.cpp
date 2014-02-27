@@ -3,8 +3,8 @@
 #include <unittest++/UnitTest++.h>
 #include <src/integrator.h>
 #include <src/boysfunction.h>
-#include <src/basisfunctions/basisfunctions.h>
-#include <src/basishandler.h>
+#include <src/basisfunctions/basisfunctions2.h>
+#include <src/basisfunctions/primitive.h>
 #include <src/hartreefock.h>
 #include <src/rhf.h>
 #include <src/uhf.h>
@@ -14,13 +14,19 @@ using namespace arma;
 
 
 TEST(OverlapIntegrals){
-    Integrator integrator(2);
+    double alpha = 0.2;
+    double beta = 0.3;
+    double coeffA = 1.0;
+    double coeffB = 1.0;
+    irowvec3 powA = {0,0,0};
+    irowvec3 powB = {0,0,0};
     rowvec3 RA = {1.2, 2.3, 3.4};
-    integrator.setPositionA(RA);
     rowvec3 RB = {-1.3, 1.4, -2.4};
-    integrator.setPositionB(RB);
-    integrator.setAlpha(0.2);
-    integrator.setBeta(0.3);
+    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, RA);
+    Primitive *primitiveB = new Primitive(beta, coeffB, powB, RB);
+    Integrator integrator(2);
+    integrator.setPrimitiveA(primitiveA);
+    integrator.setPrimitiveB(primitiveB);
 
     integrator.setE_AB("oneParticle");
     CHECK_CLOSE(integrator.overlap(0, 0, 0, 0, 0, 0), 0.119172363581, 0.00001);
@@ -42,13 +48,19 @@ TEST(OverlapIntegrals){
 }
 
 TEST(KineticIntegrals){
-    Integrator integrator(2);
+    double alpha = 0.2;
+    double beta = 0.3;
+    double coeffA = 1.0;
+    double coeffB = 1.0;
+    irowvec3 powA = {0,0,0};
+    irowvec3 powB = {0,0,0};
     rowvec3 RA = {1.2, 2.3, 3.4};
-    integrator.setPositionA(RA);
     rowvec3 RB = {-1.3, 1.4, -2.4};
-    integrator.setPositionB(RB);
-    integrator.setAlpha(0.2);
-    integrator.setBeta(0.3);
+    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, RA);
+    Primitive *primitiveB = new Primitive(beta, coeffB, powB, RB);
+    Integrator integrator(2);
+    integrator.setPrimitiveA(primitiveA);
+    integrator.setPrimitiveB(primitiveB);
 
     integrator.setE_AB("oneParticle");
     CHECK_CLOSE(integrator.kinetic(0, 0, 0, 0, 0, 0), -0.0967870268058, 0.00001);
@@ -165,20 +177,22 @@ TEST(BoysIntegrals){
 
 
 TEST(Coulomb1){
-
-    Integrator integrator(2);
-
+    double alpha = 0.2;
+    double beta = 0.3;
+    double coeffA = 1.0;
+    double coeffB = 1.0;
+    irowvec3 powA = {0,0,0};
+    irowvec3 powB = {0,0,0};
     rowvec3 RA = {1.2, 2.3, 3.4};
     rowvec3 RB = {-1.3, 1.4, -2.4};
     rowvec3 RC = {2.3, 0.9, 3.2};
-    double alpha = 0.2;
-    double beta = 0.3;
+    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, RA);
+    Primitive *primitiveB = new Primitive(beta, coeffB, powB, RB);
+    Integrator integrator(2);
+    integrator.setPrimitiveA(primitiveA);
+    integrator.setPrimitiveB(primitiveB);
+    integrator.setNucleusPosition(RC);
 
-    integrator.setPositionA(RA);
-    integrator.setPositionB(RB);
-    integrator.setPositionC(RC);
-    integrator.setAlpha(alpha);
-    integrator.setBeta(beta);
     integrator.setE_AB("oneParticle");
 
     CHECK_CLOSE(2.788948987251e-02, integrator.coulomb1(0,0,0,0,0,0), 1e-5);
@@ -300,23 +314,13 @@ TEST(H20_431G_RHF){
     nucleiPositions.row(1) = posH1;
     nucleiPositions.row(2) = posH2;
 
-    BasisHandler* basisHandler = new BasisHandler;
-
-    BasisFunctions* basis = new BasisFunctions("../inFiles/basisSets/O_431G.dat");
-    basis->setPosition(posO);
-    basisHandler->addBasisFunctions(basis);
-
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH1);
-    basisHandler->addBasisFunctions(basis);
-
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH2);
-    basisHandler->addBasisFunctions(basis);
-
+    BasisFunctions2 *basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", posO);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
 
     System *system;
-    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
     RHF solver(system);
     solver.solve();
@@ -342,25 +346,15 @@ TEST(H20_431G_UHF){
     nucleiPositions.row(1) = posH1;
     nucleiPositions.row(2) = posH2;
 
-    BasisHandler* basisHandler = new BasisHandler;
-
-    BasisFunctions* basis = new BasisFunctions("../inFiles/basisSets/O_431G.dat");
-    basis->setPosition(posO);
-    basisHandler->addBasisFunctions(basis);
-
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH1);
-    basisHandler->addBasisFunctions(basis);
-
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH2);
-    basisHandler->addBasisFunctions(basis);
-
+    BasisFunctions2 *basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", posO);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
 
     System *system;
-    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-    RHF solver(system);
+    UHF solver(system);
     solver.solve();
     double energy = solver.getEnergy();
 
@@ -390,26 +384,15 @@ TEST(CH4_431G_RHF){
     nucleiPositions.row(3) = posH3;
     nucleiPositions.row(4) = posH4;
 
-    BasisHandler* basisHandler = new BasisHandler;
-
-    BasisFunctions* basis = new BasisFunctions("../inFiles/basisSets/C_431G.dat");
-    basis->setPosition(posC);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH1);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH2);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH3);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH4);
-    basisHandler->addBasisFunctions(basis);
+    BasisFunctions2 *basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/C_431G.dat", posC);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH3);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH4);
 
     System *system;
-    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
     RHF solver(system);
     solver.solve();
@@ -441,26 +424,15 @@ TEST(CH4_431G_UHF){
     nucleiPositions.row(3) = posH3;
     nucleiPositions.row(4) = posH4;
 
-    BasisHandler* basisHandler = new BasisHandler;
-
-    BasisFunctions* basis = new BasisFunctions("../inFiles/basisSets/C_431G.dat");
-    basis->setPosition(posC);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH1);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH2);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH3);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_431G.dat");
-    basis->setPosition(posH4);
-    basisHandler->addBasisFunctions(basis);
+    BasisFunctions2 *basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/C_431G.dat", posC);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH3);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH4);
 
     System *system;
-    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
     UHF solver(system);
     solver.solve();
@@ -492,26 +464,15 @@ TEST(CH4_631Gss_RHF){
     nucleiPositions.row(3) = posH3;
     nucleiPositions.row(4) = posH4;
 
-    BasisHandler* basisHandler = new BasisHandler;
-
-    BasisFunctions* basis = new BasisFunctions("../inFiles/basisSets/C_631Gs.dat");
-    basis->setPosition(posC);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_631Gss.dat");
-    basis->setPosition(posH1);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_631Gss.dat");
-    basis->setPosition(posH2);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_631Gss.dat");
-    basis->setPosition(posH3);
-    basisHandler->addBasisFunctions(basis);
-    basis = new BasisFunctions("../inFiles/basisSets/H_631Gss.dat");
-    basis->setPosition(posH4);
-    basisHandler->addBasisFunctions(basis);
+    BasisFunctions2 *basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gss.dat", posC);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH2);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH3);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH4);
 
     System *system;
-    system = new System(basisHandler, nucleiPositions, charges, nElectrons);
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
     RHF solver(system);
     solver.solve();

@@ -2,14 +2,14 @@
 
 
 
-System::System(BasisFunctions2* basisFunctions, mat newNucleiPositions, rowvec newCharges, int newNElectrons)
+System::System(BasisFunctions2* basisFunctions, mat nucleiPositions, rowvec charges, int nElectrons)
 {
     m_basisFunctions = basisFunctions;
-    integrator = new Integrator(basisFunctions->getAngMomMax());
-    nucleiPositions = newNucleiPositions;
-    numberOfNuclei = nucleiPositions.n_rows;
-    charges = newCharges;
-    nElectrons = newNElectrons;
+    m_integrator = new Integrator(basisFunctions->getAngMomMax());
+    m_nucleiPositions = nucleiPositions;
+    m_nNuclei = m_nucleiPositions.n_rows;
+    m_charges = charges;
+    m_nElectrons = nElectrons;
 }
 
 
@@ -34,20 +34,20 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
         for (int w = 0; w < nPrimitivesB; w++){
             Primitive* primitiveB = contractedB->getPrimitive(w);
 
-            integrator->setPrimitiveA(primitiveA);
-            integrator->setPrimitiveB(primitiveB);
+            m_integrator->setPrimitiveA(primitiveA);
+            m_integrator->setPrimitiveB(primitiveB);
 
-            integrator->setE_AB("oneParticle");
+            m_integrator->setE_AB("oneParticle");
 
-            energy += integrator->kinetic()*primitiveA->getCoeff()*primitiveB->getCoeff();
+            energy += m_integrator->kinetic()*primitiveA->getCoeff()*primitiveB->getCoeff();
 
-            for (int x = 0; x < numberOfNuclei; x++){
+            for (int x = 0; x < m_nNuclei; x++){
 
-                integrator->setNucleusPosition(nucleiPositions.row(x));
-                energy += -integrator->coulomb1()*charges(x)*primitiveA->getCoeff()*primitiveB->getCoeff();
+                m_integrator->setNucleusPosition(m_nucleiPositions.row(x));
+                energy += -m_integrator->coulomb1()*m_charges(x)*primitiveA->getCoeff()*primitiveB->getCoeff();
             }
 
-            overlap += integrator->overlap()*primitiveA->getCoeff()*primitiveB->getCoeff();
+            overlap += m_integrator->overlap()*primitiveA->getCoeff()*primitiveB->getCoeff();
         }
     }
 
@@ -82,14 +82,14 @@ double System::getTwoElectronIntegral(int p, int q, int r, int s)
                 for (int y = 0; y < nPrimitivesD; y++){
                     Primitive* primitiveD = contractedD->getPrimitive(y);
 
-                    integrator->setPrimitiveA(primitiveA);
-                    integrator->setPrimitiveB(primitiveB);
-                    integrator->setPrimitiveC(primitiveC);
-                    integrator->setPrimitiveD(primitiveD);
+                    m_integrator->setPrimitiveA(primitiveA);
+                    m_integrator->setPrimitiveB(primitiveB);
+                    m_integrator->setPrimitiveC(primitiveC);
+                    m_integrator->setPrimitiveD(primitiveD);
 
-                    integrator->setE_AB("twoParticle");
-                    integrator->setE_CD("twoParticle");
-                    value += integrator->coulomb2()
+                    m_integrator->setE_AB("twoParticle");
+                    m_integrator->setE_CD("twoParticle");
+                    value += m_integrator->coulomb2()
                             *primitiveA->getCoeff()*primitiveB->getCoeff()*primitiveC->getCoeff()*primitiveD->getCoeff();
                 }
             }
@@ -105,10 +105,10 @@ double System::getNucleiPotential()
     double value = 0;
     rowvec3 AB;
 
-    for (int i = 0; i < numberOfNuclei; i++){
-        for (int j = i+1; j < numberOfNuclei; j++){
-            AB = nucleiPositions.row(i) - nucleiPositions.row(j);
-            value += charges(i)*charges(j)/sqrt(dot(AB,AB));
+    for (int i = 0; i < m_nNuclei; i++){
+        for (int j = i+1; j < m_nNuclei; j++){
+            AB = m_nucleiPositions.row(i) - m_nucleiPositions.row(j);
+            value += m_charges(i)*m_charges(j)/sqrt(dot(AB,AB));
         }
     }
 
@@ -124,6 +124,6 @@ int System::getTotalNumOfBasisFunc()
 
 int System::getNumOfElectrons()
 {
-    return nElectrons;
+    return m_nElectrons;
 }
 

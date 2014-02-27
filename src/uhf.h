@@ -7,19 +7,19 @@
 class UHF : public HartreeFock
 {
 public:
-    UHF(System *newSystem);
-    UHF(System *newSystem, int newPerturbOrder);
+    UHF(System *system);
+    UHF(System *system, int perturbOrder);
     void solve();
     mat getCoeff();
 private:
-    mat Fup;
-    mat Fdown;
-    mat Cup;
-    mat Cdown;
-    mat Pup;
-    mat Pdown;
-    colvec fockEnergyUp;
-    colvec fockEnergyDown;
+    mat m_Fup;
+    mat m_Fdown;
+    mat m_Cup;
+    mat m_Cdown;
+    mat m_Pup;
+    mat m_Pdown;
+    colvec m_fockEnergyUp;
+    colvec m_fockEnergyDown;
 
     void buildFockMatrix();
     double perturbation2order();

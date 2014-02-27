@@ -15,19 +15,19 @@ using namespace arma;
 class System
 {
 public:
-    System(BasisFunctions2* m_basisFunctions, mat newNucleiPositions, rowvec newCharges, int newNElectrons);
+    System(BasisFunctions2* m_basisFunctions, mat NucleiPositions, rowvec charges, int nElectrons);
     rowvec2 getOneElectronIntegrals(int p, int q);
     double getTwoElectronIntegral(int p, int q, int r, int s);
     double getNucleiPotential();
     int getTotalNumOfBasisFunc();
     int getNumOfElectrons();
 private:
-    int numberOfNuclei;
-    mat nucleiPositions;
-    rowvec charges;
-    int nElectrons;
+    int m_nNuclei;
+    mat m_nucleiPositions;
+    rowvec m_charges;
+    int m_nElectrons;
     BasisFunctions2* m_basisFunctions;
-    Integrator* integrator;
+    Integrator* m_integrator;
 };
 
 #endif // SYSTEM_H

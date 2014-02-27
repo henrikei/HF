@@ -11,22 +11,22 @@ using namespace arma;
 class HartreeFock
 {
 public:
-    HartreeFock(System *newSystem);
+    HartreeFock(System *system);
     virtual void solve()=0;
     double getEnergy();
     double getEnergyMP2();
     virtual mat getCoeff()=0;
 protected:
-    System *system;
-    mat h;
-    mat S;
-    double**** Q;
-    int matDim;
-    int nElectrons;
-    double energy;
-    double energyMP2;
-    double toler;
-    int perturbOrder;
+    System *m_system;
+    mat m_h;
+    mat m_S;
+    double**** m_Q;
+    int m_matDim;
+    int m_nElectrons;
+    double m_energy;
+    double m_energyMP2;
+    double m_toler;
+    int m_perturbOrder;
 
     virtual void buildFockMatrix()=0;
     void calcIntegrals();

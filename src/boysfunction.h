@@ -19,11 +19,11 @@ private:
     double factorial2(int n);
     void readFromFile();
 
-    mat Ftabulated;
-    vec F;
-    int nMax;
-    int nx;
-    int nN;
+    mat m_Ftabulated;
+    vec m_F;
+    int m_nMax;
+    int m_nx;
+    int m_nN;
 };
 
 #endif // BOYSFUNCTION_H

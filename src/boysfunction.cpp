@@ -4,8 +4,8 @@
 
 BoysFunction::BoysFunction(int angMomMax)
 {
-    nMax = 4*angMomMax;
-    F = zeros<vec>(nMax+1);
+    m_nMax = 4*angMomMax;
+    m_F = zeros<vec>(m_nMax+1);
     readFromFile();
 }
 
@@ -18,7 +18,7 @@ void BoysFunction::setx(double x)
 
 double BoysFunction::returnValue(int n)
 {
-    return F(n);
+    return m_F(n);
 }
 
 
@@ -26,15 +26,15 @@ double BoysFunction::returnValue(int n)
 void BoysFunction::setFs(double x)
 {
     if (x <= 50){
-        F(nMax) = tabulated(nMax, x);
+        m_F(m_nMax) = tabulated(m_nMax, x);
     } else {
-        F(nMax) = asymptotic(nMax, x);
+        m_F(m_nMax) = asymptotic(m_nMax, x);
     }
 
     double ex = exp(-x);
 
-    for(int n = nMax; n > 0; n--){
-        F(n-1) = (2*x*F(n) + ex)/(2*n - 1);
+    for(int n = m_nMax; n > 0; n--){
+        m_F(n-1) = (2*x*m_F(n) + ex)/(2*n - 1);
     }
 }
 
@@ -42,7 +42,7 @@ void BoysFunction::setFs(double x)
 
 double BoysFunction::tabulated(int n, double x)
 {
-    double dx = 50.0/(nx - 1); // x-spacing in tabulated values
+    double dx = 50.0/(m_nx - 1); // x-spacing in tabulated values
     int xIndex = int ((x + 0.5*dx)/dx);
     double xt = xIndex*dx;     // tabulated x-value
     double Dx = x - xt;        // difference between actual and tabulated x-value
@@ -54,7 +54,7 @@ double BoysFunction::tabulated(int n, double x)
         if(k != 0){
             factorial *= k;
         }
-        value += Ftabulated(xIndex, n+k)*pow(-Dx,k)/factorial;
+        value += m_Ftabulated(xIndex, n+k)*pow(-Dx,k)/factorial;
     }
 
     return value;
@@ -84,7 +84,7 @@ double BoysFunction::factorial2(int n)
 
 void BoysFunction::readFromFile()
 {
-    Ftabulated.load("../inFiles/boys_tabulated.dat");
-    nx = Ftabulated.n_rows;
-    nN = Ftabulated.n_cols;
+    m_Ftabulated.load("../inFiles/boys_tabulated.dat");
+    m_nx = m_Ftabulated.n_rows;
+    m_nN = m_Ftabulated.n_cols;
 }
