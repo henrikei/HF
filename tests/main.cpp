@@ -52,8 +52,8 @@ TEST(KineticIntegrals){
     double beta = 0.3;
     double coeffA = 1.0;
     double coeffB = 1.0;
-    irowvec3 powA = {0,0,0};
-    irowvec3 powB = {0,0,0};
+    irowvec3 powA = {1,1,1}; // Must be set equal or higher than the highest values below
+    irowvec3 powB = {1,1,1}; // Must be set equal or higher than the highest values below
     rowvec3 RA = {1.2, 2.3, 3.4};
     rowvec3 RB = {-1.3, 1.4, -2.4};
     Primitive *primitiveA = new Primitive(alpha, coeffA, powA, RA);
@@ -446,7 +446,7 @@ TEST(CH4_631Gss_RHF){
     // Bond length (2.043) taken from Peter Atkins' book "Molecular Quantum Mechanics".
     // C-atom is placed at the origin. Direction vectors for the H-atoms are:
     // [1, 1, 1], [-1, -1, 1], [1, -1, -1], [-1, 1, -1]
-    // Energy given by Atkins: -40.140.
+    // Energy given by Atkins: -40.202.
 
     double d = 1.1795265999544056;
     rowvec posC = {0.0, 0.0, 0.0};
