@@ -465,7 +465,7 @@ TEST(CH4_631Gss_RHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gss.dat", posC);
+    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", posC);
     basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH1);
     basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH2);
     basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH3);

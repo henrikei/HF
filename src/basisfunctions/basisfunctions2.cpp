@@ -4,53 +4,73 @@ BasisFunctions2::BasisFunctions2()
 {
 }
 
+//---------------------------------------------------------------------------------------------------------------------------
+// Read exponents, coefficients and powers from input file in format TurboMole (taken from https://bse.pnl.gov/bse/portal)
+// and fills m_contracteds (vector<Contracted*> m_contracteds) with contracteds. Each contracted contains a vector of primitive.
+// Each primitive contains exponent, coefficient, powers (i,j,k) and position.
 void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
 {
-    //---------------------------------------------------------------------------------------------------------------------------
-    // Read exponents, coefficients and powers from input file in format TurboMole (taken from https://bse.pnl.gov/bse/portal)
-    field <imat> pows_s(1,1);
-    field <imat> pows_p(3,1);
-    field <imat> pows_d(6,1);
-    field <rowvec> prefactor_d(6,1);
-    pows_s(0,0) = {0,0,0};
-    pows_p(0,0) = {1,0,0};
-    pows_p(1,0) = {0,1,0};
-    pows_p(2,0) = {0,0,1};
-    pows_d(0,0) = {2,0,0};
-    pows_d(1,0) = {0,2,0};
-    pows_d(2,0) = {0,0,2};
-    pows_d(3,0) = {1,1,0};
-    pows_d(4,0) = {1,0,1};
-    pows_d(5,0) = {0,1,1};
-    prefactor_d(0,0) = {1.0};
-    prefactor_d(1,0) = {1.0};
-    prefactor_d(2,0) = {1.0};
-    prefactor_d(3,0) = {1.0};
-    prefactor_d(4,0) = {1.0};
-    prefactor_d(5,0) = {1.0};
+    // pows_s, pows_p and pows_d defines the powers which are used to form primitives. For example, i+j+k = 1 for p-orbitals.
+    // The prefactors are needed in cases where each primitive has a sum of two or more power terms, which is the case when
+    // 5 d-orbitals are used instead of 6. The 5 p-orbitals are have the following powers:
+    // xy, xz, yz, x^2 - y^2, 3*r^2 - z^2.
 
-//    field <imat> pows_s(1,1);
-//    field <imat> pows_p(3,1);
-//    field <imat> pows_d(5,1);
-//    field <rowvec> prefactor_d(5,1);
-//    pows_s(0,0) = {0,0,0};
-//    pows_p(0,0) = {1,0,0};
-//    pows_p(1,0) = {0,1,0};
-//    pows_p(2,0) = {0,0,1};
-//    pows_d(0,0) = {1,1,0};
-//    pows_d(1,0) = {1,0,1};
-//    pows_d(2,0) = {0,1,1};
-//    imat pows_dTemp = zeros<imat>(3,3);
-//    pows_dTemp(0,0) = 2;
-//    pows_dTemp(1,1) = 2;
-//    pows_dTemp(2,2) = 2;
-//    pows_d(3,0) = pows_dTemp.rows(0,1);
-//    pows_d(4,0) = pows_dTemp.rows(0,2);
-//    prefactor_d(0,0) = {1.0};
-//    prefactor_d(1,0) = {1.0};
-//    prefactor_d(2,0) = {1.0};
-//    prefactor_d(3,0) = {1.0, -1,0};
-//    prefactor_d(4,0) = {-1.0, -1.0, 2.0};
+    field <imat> pows_s(1);
+    field <imat> pows_p(3);
+    field <imat> pows_d;
+    field <rowvec> prefactor_s(1);
+    field <rowvec> prefactor_p(3);
+    field <rowvec> prefactor_d;
+
+    bool d6 = true;
+    if (d6 == true){
+        pows_s(0) = {0,0,0};
+        pows_p(0) = {1,0,0};
+        pows_p(1) = {0,1,0};
+        pows_p(2) = {0,0,1};
+        pows_d.set_size(6);
+        pows_d(0) = {2,0,0};
+        pows_d(1) = {0,2,0};
+        pows_d(2) = {0,0,2};
+        pows_d(3) = {1,1,0};
+        pows_d(4) = {1,0,1};
+        pows_d(5) = {0,1,1};
+        prefactor_s(0) = {1.0};
+        prefactor_p(0) = {1.0};
+        prefactor_p(1) = {1.0};
+        prefactor_p(2) = {1.0};
+        prefactor_d.set_size(6);
+        prefactor_d(0) = {1.0};
+        prefactor_d(1) = {1.0};
+        prefactor_d(2) = {1.0};
+        prefactor_d(3) = {1.0};
+        prefactor_d(4) = {1.0};
+        prefactor_d(5) = {1.0};
+    } else {
+        pows_s(0) = {0,0,0};
+        pows_p(0) = {1,0,0};
+        pows_p(1) = {0,1,0};
+        pows_p(2) = {0,0,1};
+        pows_d.set_size(5);
+        pows_d(0) = {1,1,0};
+        pows_d(1) = {1,0,1};
+        pows_d(2) = {0,1,1};
+        imat pows_dTemp = zeros<imat>(3,3);
+        pows_dTemp.diag() += 2;
+        pows_d(3) = pows_dTemp.rows(0,1);
+        pows_d(4) = pows_dTemp;
+        prefactor_s(0) = {1.0};
+        prefactor_p(0) = {1.0};
+        prefactor_p(1) = {1.0};
+        prefactor_p(2) = {1.0};
+        prefactor_d.set_size(5);
+        prefactor_d(0) = {1.0};
+        prefactor_d(1) = {1.0};
+        prefactor_d(2) = {1.0};
+        prefactor_d(3) = {1.0, -1.0};
+        prefactor_d(4) = {-1.0, -1.0, 2.0};
+    }
+
 
     string line, stringToSearch;
     fstream file;
@@ -85,54 +105,17 @@ void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
 
         // Check type of orbital (s, p, d)
         string orbitalType = pos1->str(1).c_str();
-        regex searchs("[0-9]\\s+s");
-        regex searchp("[0-9]\\s+p");
-        regex searchd("[0-9]\\s+d");
-        if(regex_match(orbitalType, searchs)){
-            int counter = 0;
-            vector<Primitive*> primitives;
-            while (counter < (int)exp.size()){
-                double coeffn = coeff.at(counter);
-                normalizeCoeff(exp.at(counter), coeffn, pows_s(0,0));
-                Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows_s(0,0), position);
-                primitives.push_back(primitive);
-                counter += 1;
-            }
-            Contracted *contracted = new Contracted(primitives);
-            m_contracteds.push_back(contracted);
+        regex search_s("[0-9]\\s+s");
+        regex search_p("[0-9]\\s+p");
+        regex search_d("[0-9]\\s+d");
+        if(regex_match(orbitalType, search_s)){
+            addSomeContracteds(exp, coeff, pows_s, prefactor_s, position);
         }
-        if(regex_match(orbitalType, searchp)){
-            for (int i = 0; i < (int)pows_p.n_rows; i++){
-                int counter = 0;
-                vector<Primitive*> primitives;
-                while (counter < (int)exp.size()){
-                    double coeffn = coeff.at(counter);
-                    normalizeCoeff(exp.at(counter), coeffn, pows_p(i,0));
-                    Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows_p(i,0), position);
-                    primitives.push_back(primitive);
-                    counter += 1;
-                }
-                Contracted *contracted = new Contracted(primitives);
-                m_contracteds.push_back(contracted);
-            }
+        if(regex_match(orbitalType, search_p)){
+            addSomeContracteds(exp, coeff, pows_p, prefactor_p, position);
         }
-        if(regex_match(orbitalType, searchd)){
-            for (int i = 0; i < (int)pows_d.n_rows; i++){
-                vector<Primitive*> primitives;
-                for (int j = 0; j < (int)pows_d(i,0).n_rows; j++){
-                    int counter = 0;
-                    while (counter < (int)exp.size()){
-                        double coeffn = coeff.at(counter);
-                        normalizeCoeff(exp.at(counter), coeffn, pows_d(i,0).row(j));
-                        coeffn *= prefactor_d(i,0)(j);
-                        Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows_d(i,0).row(j), position);
-                        primitives.push_back(primitive);
-                        counter += 1;
-                    }
-                }
-                Contracted *contracted = new Contracted(primitives);
-                m_contracteds.push_back(contracted);
-            }
+        if(regex_match(orbitalType, search_d)){
+            addSomeContracteds(exp, coeff, pows_d, prefactor_d, position);
         }
     }
     //----------------------------------------------------------------------------------------------------------------------------
@@ -151,12 +134,35 @@ Contracted *BasisFunctions2::getContracted(int p)
 int BasisFunctions2::getAngMomMax()
 {
     int maxAngMom = 0;
-    for (int i = 0; i < (int)m_contracteds.size(); i++){
+    for (uint i = 0; i < m_contracteds.size(); i++){
         if (maxAngMom < m_contracteds.at(i)->getAngMom()){
             maxAngMom = m_contracteds.at(i)->getAngMom();
         }
     }
     return maxAngMom;
+}
+
+void BasisFunctions2::addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, rowvec3 position)
+{
+    // Loop through number of contracteds (1s -> 1, 2p -> 3, 2d -> 6 (or 5)
+    for (uint i = 0; i < pows.n_rows; i++){
+        vector<Primitive*> primitives;
+        // Loop though number of power terms (only different from 1 when 5 d-functions are used)
+        for (uint j = 0; j < pows(i).n_rows; j++){
+            int counter = 0;
+            // Loop through the elements of exp and coeff
+            while (counter < (int)exp.size()){
+                double coeffn = coeff.at(counter);
+                normalizeCoeff(exp.at(counter), coeffn, pows(i).row(j));
+                coeffn *= prefactor(i)(j);
+                Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows(i).row(j), position);
+                primitives.push_back(primitive);
+                counter += 1;
+            }
+        }
+        Contracted *contracted = new Contracted(primitives);
+        m_contracteds.push_back(contracted);
+    }
 }
 
 void BasisFunctions2::normalizeCoeff(double exp, double &coeff, irowvec pows)
