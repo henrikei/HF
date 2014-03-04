@@ -16,6 +16,7 @@ RHF::RHF(System* system, int perturbOrder):HartreeFock(system)
     m_P = zeros<mat>(m_matDim, m_matDim);
     m_fockEnergy = ones<colvec>(m_matDim)*1.0E6;
     m_perturbOrder = perturbOrder;
+    m_energyMP2 = 0;
 }
 
 

@@ -106,8 +106,8 @@ int main()
     clock_t begin = clock();
 
     double d = 1.889725989;
-    rowvec posH = {-d/2, 0.0, 0.0};
-    rowvec posF = {d/2, 0.0, 0.0};
+    rowvec posH = {-0.5*d, 0.0, 0.0};
+    rowvec posF = {0.5*d, 0.0, 0.0};
     rowvec charges = {1.0, 9.0};
     int nElectrons = 10;
 
