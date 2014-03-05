@@ -91,25 +91,95 @@ void RHF::buildFockMatrix()
 double RHF::perturbation2order(){
     int nHStates = m_nElectrons/2;
     int nPStates = m_matDim - m_nElectrons/2;
-    field<mat> orbitalIntegrals(nHStates, nHStates);               // orbitalIntegral = <ij|g|ab>
+    cout << nHStates << endl;
+    cout << nPStates << endl;
+    field<mat> temp1(nHStates, m_matDim);
+    field<mat> temp2(nHStates, nHStates);
+    field<mat> temp3(nHStates, nHStates);
+    field<mat> orbitalIntegrals(nHStates, nHStates);    // orbitalIntegral = <ij|g|ab>
+    for (int i = 0; i < nHStates; i++){
+        for (int q = 0; q < m_matDim; q++){
+            temp1(i,q) = zeros(m_matDim, m_matDim);
+        }
+    }
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            temp2(i,j) = zeros(m_matDim, m_matDim);
+        }
+    }
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            temp3(i,j) = zeros(nPStates, m_matDim);
+        }
+    }
     for (int i = 0; i < nHStates; i++){
         for (int j = 0; j < nHStates; j++){
             orbitalIntegrals(i,j) = zeros(nPStates, nPStates);
-            for (int a = 0; a < nPStates; a++){
-                for (int b = 0; b < nPStates; b++){
-                    for (int p = 0; p < m_matDim; p++){
-                        for (int q = 0; q < m_matDim; q++){
-                            for (int r = 0; r < m_matDim; r++){
-                                for (int s = 0; s < m_matDim; s++){
-                                    orbitalIntegrals(i,j)(a,b) += m_C(p,i)*m_C(q,j)*m_C(r,a+nHStates)*m_C(s,b+nHStates)*m_Q[p][q][r][s];
-                                }
-                            }
-                        }
+        }
+    }
+
+    for (int i = 0; i < nHStates; i++){
+        for (int p = 0; p < m_matDim; p++){
+            for (int q = 0; q < m_matDim; q++){
+                for (int r = 0; r < m_matDim; r++){
+                    for (int s = 0; s < m_matDim; s++){
+                        temp1(i,q)(r,s) += m_C(p,i)*m_Q[p][q][r][s];
                     }
                 }
             }
         }
     }
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            for (int q = 0; q < m_matDim; q++){
+                for (int r = 0; r < m_matDim; r++){
+                    for (int s = 0; s < m_matDim; s++){
+                        temp2(i,j)(r,s) += m_C(q,j)*temp1(i,q)(r,s);
+                    }
+                }
+            }
+        }
+    }
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            for (int a = 0; a < nPStates; a++){
+                for (int r = 0; r < m_matDim; r++){
+                    for (int s = 0; s < m_matDim; s++){
+                        temp3(i,j)(a,s) += m_C(r,a+nHStates)*temp2(i,j)(r,s);
+                    }
+                }
+            }
+        }
+    }
+    for (int i = 0; i < nHStates; i++){
+        for (int j = 0; j < nHStates; j++){
+            for (int a = 0; a < nPStates; a++){
+                for (int b = 0; b < nPStates; b++){
+                    for (int s = 0; s < m_matDim; s++){
+                        orbitalIntegrals(i,j)(a,b) += m_C(s,b+nHStates)*temp3(i,j)(a,s);
+                    }
+                }
+            }
+        }
+    }
+//    for (int i = 0; i < nHStates; i++){
+//        for (int j = 0; j < nHStates; j++){
+//            orbitalIntegrals(i,j) = zeros(nPStates, nPStates);
+//            for (int a = 0; a < nPStates; a++){
+//                for (int b = 0; b < nPStates; b++){
+//                    for (int p = 0; p < m_matDim; p++){
+//                        for (int q = 0; q < m_matDim; q++){
+//                            for (int r = 0; r < m_matDim; r++){
+//                                for (int s = 0; s < m_matDim; s++){
+//                                    orbitalIntegrals(i,j)(a,b) += m_C(p,i)*m_C(q,j)*m_C(r,a+nHStates)*m_C(s,b+nHStates)*m_Q[p][q][r][s];
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     for (int i = 0; i < nHStates; i++){
         for (int j = 0; j < nHStates; j++){

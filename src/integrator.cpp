@@ -5,6 +5,7 @@ Integrator::Integrator(int angMomMax)
     m_boys = new BoysFunction(angMomMax);
     m_nucleusPosition = zeros<rowvec>(3);
     m_angMom = angMomMax;
+    test = 0;
 }
 
 Integrator::~Integrator()

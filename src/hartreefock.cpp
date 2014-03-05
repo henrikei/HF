@@ -71,7 +71,6 @@ void HartreeFock::calcIntegrals()
             }
         }
     }
-
 //        for (int i = 0; i < matDim; i++){
 //            for (int j = 0; j < matDim; j++){
 //                for (int k = 0; k < matDim; k++){
