@@ -91,8 +91,6 @@ void RHF::buildFockMatrix()
 double RHF::perturbation2order(){
     int nHStates = m_nElectrons/2;
     int nPStates = m_matDim - m_nElectrons/2;
-    cout << nHStates << endl;
-    cout << nPStates << endl;
     field<mat> temp1(nHStates, m_matDim);
     field<mat> temp2(nHStates, nHStates);
     field<mat> temp3(nHStates, nHStates);

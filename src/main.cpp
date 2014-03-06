@@ -76,37 +76,37 @@ int main()
 
 
 
-    double d = 2.06;
-    double s = sin(2*pi/3);
-    double c = cos(2*pi/3);
-    rowvec posC = {0.0, 0.0, 0.0};
-    rowvec posH1 = {d, 0.0, 0.0};
-    rowvec posH2 = {s*d, c*d, 0.0};
-    rowvec posH3 = {-s*d, c*d, 0.0};
-    rowvec charges = {6.0, 1.0, 1.0};
-    int nElectrons = 9;
+//    double d = 2.06;
+//    double s = sin(2*pi/3);
+//    double c = cos(2*pi/3);
+//    rowvec posC = {0.0, 0.0, 0.0};
+//    rowvec posH1 = {d, 0.0, 0.0};
+//    rowvec posH2 = {s*d, c*d, 0.0};
+//    rowvec posH3 = {-s*d, c*d, 0.0};
+//    rowvec charges = {6.0, 1.0, 1.0};
+//    int nElectrons = 9;
 
-    mat nucleiPositions = zeros<mat>(4,3);
-    nucleiPositions.row(0) = posC;
-    nucleiPositions.row(1) = posH1;
-    nucleiPositions.row(2) = posH2;
-    nucleiPositions.row(3) = posH3;
+//    mat nucleiPositions = zeros<mat>(4,3);
+//    nucleiPositions.row(0) = posC;
+//    nucleiPositions.row(1) = posH1;
+//    nucleiPositions.row(2) = posH2;
+//    nucleiPositions.row(3) = posH3;
 
-    BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", posC);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH3);
+//    BasisFunctions2 *basisFunctions = new BasisFunctions2;
+//    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", posC);
+//    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH1);
+//    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH2);
+//    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH3);
 
-    System *system;
-    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+//    System *system;
+//    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-    UHF solver(system);
-    solver.solve();
-    cout << "Energy: " << setprecision(10) <<  solver.getEnergy() << endl;
+//    UHF solver(system);
+//    solver.solve();
+//    cout << "Energy: " << setprecision(10) <<  solver.getEnergy() << endl;
 
-    clock_t end = clock();
-    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+//    clock_t end = clock();
+//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
 
 
@@ -142,31 +142,31 @@ int main()
 
 
 
-//    clock_t begin = clock();
+    clock_t begin = clock();
 
-//    double d = 1.889725989;
-//    rowvec posH = {-0.5*d, 0.0, 0.0};
-//    rowvec posF = {0.5*d, 0.0, 0.0};
-//    rowvec charges = {1.0, 9.0};
-//    int nElectrons = 10;
+    double d = 1.402176684;
+    rowvec posH = {-0.5*d, 0.0, 0.0};
+    rowvec posH2 = {0.5*d, 0.0, 0.0};
+    rowvec charges = {1.0, 1.0};
+    int nElectrons = 2;
 
-//    mat nucleiPositions = zeros<mat>(2,3);
-//    nucleiPositions.row(0) = posH;
-//    nucleiPositions.row(1) = posF;
+    mat nucleiPositions = zeros<mat>(2,3);
+    nucleiPositions.row(0) = posH;
+    nucleiPositions.row(1) = posH2;
 
-//    BasisFunctions2* basisFunctions = new BasisFunctions2;
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH);
-//    basisFunctions->addContracteds("../inFiles/basisSets/F_631Gs.dat", posF);
+    BasisFunctions2* basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/H_6311++G(3df,3pd).dat", posH);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_6311++G(3df,3pd).dat", posH2);
 
-//    System *system;
-//    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+    System *system;
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-//    RHF solver(system,2);
-//    solver.solve();
-//    cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+    RHF solver(system,2);
+    solver.solve();
+    cout << "Energy: " << setprecision(6) << solver.getEnergy() << endl;
 
-//    clock_t end = clock();
-//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+    clock_t end = clock();
+    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
     return 0;
 }
