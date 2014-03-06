@@ -5,10 +5,14 @@ HartreeFock::HartreeFock(System *system)
     m_system = system;
 
     m_matDim = m_system->getTotalNumOfBasisFunc();
-    m_nElectrons = m_system->getNumOfElectrons();
     m_h = zeros<mat>(m_matDim, m_matDim);
     m_S = zeros<mat>(m_matDim, m_matDim);
-    m_Q = 0;
+    m_Q.set_size(m_matDim, m_matDim);
+    for (int p = 0; p < m_matDim; p++){
+        for (int q = 0; q < m_matDim; q++){
+            m_Q(p,q) = zeros(m_matDim, m_matDim);
+        }
+    }
     m_energy = 1.0E6;
     m_energyMP2 = 0.0;
     m_toler = 1.0E-10;
@@ -41,32 +45,20 @@ void HartreeFock::calcIntegrals()
     }
 
     // The electron-electron integrals
-    if(m_Q == 0){
-        m_Q = new double***[m_matDim];
-        for (int i = 0; i < m_matDim; i++){
-            m_Q[i] = new double**[m_matDim];
-            for (int j = 0; j < m_matDim; j++){
-                m_Q[i][j] = new double*[m_matDim];
-                for (int k = 0; k < m_matDim; k++){
-                    m_Q[i][j][k] = new double[m_matDim];
-                }
-            }
-        }
-    }
 
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){
             for (int k = 0; k < i+1; k++){
                 for (int l = 0; l < j+1; l++){
-                    m_Q[i][j][k][l] = m_system->getTwoElectronIntegral(i, j, k, l);
-                    m_Q[k][j][i][l] = m_Q[i][j][k][l];
-                    m_Q[i][l][k][j] = m_Q[i][j][k][l];
-                    m_Q[k][l][i][j] = m_Q[i][j][k][l];
+                    m_Q(i,j)(k,l) = m_system->getTwoElectronIntegral(i, j, k, l);
+                    m_Q(k,j)(i,l) = m_Q(i,j)(k,l);
+                    m_Q(i,l)(k,j) = m_Q(i,j)(k,l);
+                    m_Q(k,l)(i,j) = m_Q(i,j)(k,l);
 
-                    m_Q[j][i][l][k] = m_Q[i][j][k][l];
-                    m_Q[j][k][l][i] = m_Q[i][j][k][l];
-                    m_Q[l][i][j][k] = m_Q[i][j][k][l];
-                    m_Q[l][k][j][i] = m_Q[i][j][k][l];
+                    m_Q(j,i)(l,k) = m_Q(i,j)(k,l);
+                    m_Q(j,k)(l,i) = m_Q(i,j)(k,l);
+                    m_Q(l,i)(j,k) = m_Q(i,j)(k,l);
+                    m_Q(l,k)(j,i) = m_Q(i,j)(k,l);
                 }
             }
         }
@@ -101,7 +93,7 @@ void HartreeFock::calcIntegrals()
 //----------------------------------------------------------------------------------------------------------------
 // Solves the Hartree-Fock equations (single iteration) and stores the Fock energy in double fockEnergy
 // and coefficients in vec C;
-void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy)
+void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons)
 {
     vec eigVal;
     mat eigVec;
@@ -128,8 +120,9 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
         Coeffs.col(i) = Coeffs.col(i)/sqrt(norm);
     }
 
-    // Compute density matrix
-    mat Ptemp = 2*Coeffs.cols(0, m_nElectrons/2-1)*Coeffs.cols(0, m_nElectrons/2-1).t();
+    // Compute density matrix. m_densityFactor accounts for the fact that the density matrix is
+    // defined differently for RHF and UHF
+    mat Ptemp = m_restrictedFactor*Coeffs.cols(0, nElectrons/m_restrictedFactor-1)*Coeffs.cols(0, nElectrons/m_restrictedFactor-1).t();
     P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix. Sometimes needed in order to achieve correct convergence.
 
     fockEnergy = eigVal;

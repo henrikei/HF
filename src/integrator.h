@@ -33,7 +33,6 @@ public:
     double overlap(int i, int j, int k, int l, int m, int n);
     double kinetic(int i, int j, int k, int l, int m, int n);
     double coulomb1(int i, int j, int k, int l, int m, int n);
-    double test;
 
 private:
     Primitive *m_primitiveA, *m_primitiveB, *m_primitiveC, *m_primitiveD;

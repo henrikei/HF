@@ -20,9 +20,12 @@ private:
     mat m_Pdown;
     colvec m_fockEnergyUp;
     colvec m_fockEnergyDown;
+    int m_nElectronsUp;
+    int m_nElectronsDown;
 
     void buildFockMatrix();
     double perturbation2order();
+    void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index);
 };
 
 #endif // UHF_H

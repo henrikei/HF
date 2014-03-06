@@ -15,6 +15,7 @@ private:
     mat m_C;
     mat m_P;
     colvec m_fockEnergy;
+    int m_nElectrons;
 
     void buildFockMatrix();
     double perturbation2order();

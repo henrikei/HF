@@ -20,17 +20,17 @@ protected:
     System *m_system;
     mat m_h;
     mat m_S;
-    double**** m_Q;
+    field<mat> m_Q;
     int m_matDim;
-    int m_nElectrons;
     double m_energy;
     double m_energyMP2;
     double m_toler;
+    double m_restrictedFactor;
     int m_perturbOrder;
 
     virtual void buildFockMatrix()=0;
     void calcIntegrals();
-    void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy);
+    void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons);
     virtual double perturbation2order()=0;
 };
 

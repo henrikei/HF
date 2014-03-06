@@ -6,6 +6,12 @@ RHF::RHF(System* system):HartreeFock(system)
     m_C = zeros<mat>(m_matDim, m_matDim);
     m_P = zeros<mat>(m_matDim, m_matDim);
     m_fockEnergy = ones<colvec>(m_matDim)*1.0E6;
+    m_nElectrons = system->getNumOfElectrons();
+    if (m_nElectrons % 2 == 1){
+        cout <<"Error: Cannot run Restricted Hartree-Fock on odd number of electrons.";
+        exit(EXIT_FAILURE);
+    }
+    m_restrictedFactor = 2;
     m_perturbOrder = 1;
 }
 
@@ -15,6 +21,12 @@ RHF::RHF(System* system, int perturbOrder):HartreeFock(system)
     m_C = zeros<mat>(m_matDim, m_matDim);
     m_P = zeros<mat>(m_matDim, m_matDim);
     m_fockEnergy = ones<colvec>(m_matDim)*1.0E6;
+    m_nElectrons = system->getNumOfElectrons();
+    if (m_nElectrons % 2 == 1){
+        cout <<"Error: Cannot run Restricted Hartree-Fock on odd number of electrons.";
+        exit(EXIT_FAILURE);
+    }
+    m_restrictedFactor = 2;
     m_perturbOrder = perturbOrder;
     m_energyMP2 = 0;
 }
@@ -34,7 +46,7 @@ void RHF::solve()
     while (energyDiff > m_toler){
         fockEnergyOld = m_fockEnergy(0);
         buildFockMatrix();
-        solveSingle(m_F, m_C, m_P, m_fockEnergy);
+        solveSingle(m_F, m_C, m_P, m_fockEnergy, m_nElectrons);
         energyDiff = fabs(fockEnergyOld - m_fockEnergy(0));
     }
 
@@ -78,7 +90,7 @@ void RHF::buildFockMatrix()
             // Add two-electron integrals
             for (int k = 0; k < m_matDim; k++){
                 for (int l = 0; l < m_matDim; l++){
-                    m_F(i,j) += 0.5*m_P(l,k)*(2*m_Q[i][k][j][l] - m_Q[i][k][l][j]);
+                    m_F(i,j) += 0.5*m_P(l,k)*(2*m_Q(i,k)(j,l) - m_Q(i,k)(l,j));
                 }
             }
         }
@@ -91,10 +103,13 @@ void RHF::buildFockMatrix()
 double RHF::perturbation2order(){
     int nHStates = m_nElectrons/2;
     int nPStates = m_matDim - m_nElectrons/2;
+    // temp1, temp2, temp3 are temporary fields used to get from
+    // Atomic Orbital Integrals to Molecular Orbital Integrals
     field<mat> temp1(nHStates, m_matDim);
     field<mat> temp2(nHStates, nHStates);
     field<mat> temp3(nHStates, nHStates);
-    field<mat> orbitalIntegrals(nHStates, nHStates);    // orbitalIntegral = <ij|g|ab>
+    // orbitalIntegral = <ij|g|ab>
+    field<mat> orbitalIntegrals(nHStates, nHStates);
     for (int i = 0; i < nHStates; i++){
         for (int q = 0; q < m_matDim; q++){
             temp1(i,q) = zeros(m_matDim, m_matDim);
@@ -103,15 +118,7 @@ double RHF::perturbation2order(){
     for (int i = 0; i < nHStates; i++){
         for (int j = 0; j < nHStates; j++){
             temp2(i,j) = zeros(m_matDim, m_matDim);
-        }
-    }
-    for (int i = 0; i < nHStates; i++){
-        for (int j = 0; j < nHStates; j++){
             temp3(i,j) = zeros(nPStates, m_matDim);
-        }
-    }
-    for (int i = 0; i < nHStates; i++){
-        for (int j = 0; j < nHStates; j++){
             orbitalIntegrals(i,j) = zeros(nPStates, nPStates);
         }
     }
@@ -121,7 +128,7 @@ double RHF::perturbation2order(){
             for (int q = 0; q < m_matDim; q++){
                 for (int r = 0; r < m_matDim; r++){
                     for (int s = 0; s < m_matDim; s++){
-                        temp1(i,q)(r,s) += m_C(p,i)*m_Q[p][q][r][s];
+                        temp1(i,q)(r,s) += m_C(p,i)*m_Q(p,q)(r,s);
                     }
                 }
             }
@@ -189,7 +196,5 @@ double RHF::perturbation2order(){
             }
         }
     }
-
     return m_energyMP2;
-
 }

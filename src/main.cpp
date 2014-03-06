@@ -3,6 +3,7 @@
 #include <time.h>
 #include <iomanip>
 #include <fstream>
+#include <armadillo>
 #include <libconfig.h++>
 #include "hartreefock.h"
 #include "rhf.h"
