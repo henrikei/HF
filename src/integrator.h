@@ -15,7 +15,7 @@ class Integrator
 {
 public:
     Integrator(int angMomMax);
-    ~Integrator();
+    virtual ~Integrator();
 
     void setNucleusPosition(rowvec3 RC);
     void setPrimitiveA(Primitive* primitiveA);

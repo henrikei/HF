@@ -6,8 +6,7 @@
 class RHF : public HartreeFock
 {
 public:
-    RHF(System *system);
-    RHF(System *system, int perturbOrder);
+    RHF(System *system, int perturbOrder=1);
     void solve();
     mat getCoeff();
 private:

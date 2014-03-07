@@ -1,6 +1,7 @@
 #include "hartreefock.h"
 
-HartreeFock::HartreeFock(System *system)
+HartreeFock::HartreeFock(System *system):
+    m_restrictedFactor(0)
 {
     m_system = system;
 
@@ -126,4 +127,32 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
     P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix. Sometimes needed in order to achieve correct convergence.
 
     fockEnergy = eigVal;
+}
+
+
+// Transforms Atomic Orbital Integrals to Molecular Orbital Integrals one index at a time
+void HartreeFock::AOItoMOI(field<mat>& MOI, field<mat> AOI, mat C, int index)
+{
+    int I = MOI.n_rows;
+    int J = MOI.n_cols;
+    int K = MOI(0,0).n_rows;
+    int L = MOI(0,0).n_cols;
+
+    int a, b, c, d, e;
+
+    for (int i = 0; i < I; i++){
+        for (int j = 0; j < J; j++){
+            for (int k = 0; k < K; k++){
+                for (int l = 0; l < L; l++){
+                    for (int m = 0; m < m_matDim; m++){
+                        if (index == 0)       { e = i; a = m; b = j; c = k; d = l;}
+                        else if(index == 1)   { e = j; a = i; b = m; c = k; d = l;}
+                        else if(index == 2)   { e = k; a = i; b = j; c = m; d = l;}
+                        else if(index == 3)   { e = l; a = i; b = j; c = k; d = m;}
+                        MOI(i,j)(k,l) += C(m,e)*AOI(a,b)(c,d);
+                    }
+                }
+            }
+        }
+    }
 }

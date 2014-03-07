@@ -1,19 +1,5 @@
 #include "rhf.h"
 
-RHF::RHF(System* system):HartreeFock(system)
-{
-    m_F = zeros<mat>(m_matDim, m_matDim);
-    m_C = zeros<mat>(m_matDim, m_matDim);
-    m_P = zeros<mat>(m_matDim, m_matDim);
-    m_fockEnergy = ones<colvec>(m_matDim)*1.0E6;
-    m_nElectrons = system->getNumOfElectrons();
-    if (m_nElectrons % 2 == 1){
-        cout <<"Error: Cannot run Restricted Hartree-Fock on odd number of electrons." << endl;
-        exit(EXIT_FAILURE);
-    }
-    m_restrictedFactor = 2;
-    m_perturbOrder = 1;
-}
 
 RHF::RHF(System* system, int perturbOrder):HartreeFock(system)
 {
@@ -43,12 +29,15 @@ void RHF::solve()
     // Iterate until the fock energy has converged
     double fockEnergyOld;
     double energyDiff = 1.0;
+    int counter = 0;
     while (energyDiff > m_toler){
+        counter += 1;
         fockEnergyOld = m_fockEnergy(0);
         buildFockMatrix();
         solveSingle(m_F, m_C, m_P, m_fockEnergy, m_nElectrons);
         energyDiff = fabs(fockEnergyOld - m_fockEnergy(0));
     }
+    cout << counter << endl;
 
     // Calculate energy (not equal to Fock energy)
     m_energy = 0;
@@ -109,7 +98,7 @@ double RHF::perturbation2order(){
     field<mat> temp2(nHStates, nHStates);
     field<mat> temp3(nHStates, nHStates);
     // orbitalIntegral = <ij|g|ab>
-    field<mat> orbitalIntegrals(nHStates, nHStates);
+    field<mat> MOI(nHStates, nHStates);
     for (int i = 0; i < nHStates; i++){
         for (int q = 0; q < m_matDim; q++){
             temp1(i,q) = zeros(m_matDim, m_matDim);
@@ -119,78 +108,22 @@ double RHF::perturbation2order(){
         for (int j = 0; j < nHStates; j++){
             temp2(i,j) = zeros(m_matDim, m_matDim);
             temp3(i,j) = zeros(nPStates, m_matDim);
-            orbitalIntegrals(i,j) = zeros(nPStates, nPStates);
+            MOI(i,j) = zeros(nPStates, nPStates);
         }
     }
 
-    for (int i = 0; i < nHStates; i++){
-        for (int p = 0; p < m_matDim; p++){
-            for (int q = 0; q < m_matDim; q++){
-                for (int r = 0; r < m_matDim; r++){
-                    for (int s = 0; s < m_matDim; s++){
-                        temp1(i,q)(r,s) += m_C(p,i)*m_Q(p,q)(r,s);
-                    }
-                }
-            }
-        }
-    }
-    for (int i = 0; i < nHStates; i++){
-        for (int j = 0; j < nHStates; j++){
-            for (int q = 0; q < m_matDim; q++){
-                for (int r = 0; r < m_matDim; r++){
-                    for (int s = 0; s < m_matDim; s++){
-                        temp2(i,j)(r,s) += m_C(q,j)*temp1(i,q)(r,s);
-                    }
-                }
-            }
-        }
-    }
-    for (int i = 0; i < nHStates; i++){
-        for (int j = 0; j < nHStates; j++){
-            for (int a = 0; a < nPStates; a++){
-                for (int r = 0; r < m_matDim; r++){
-                    for (int s = 0; s < m_matDim; s++){
-                        temp3(i,j)(a,s) += m_C(r,a+nHStates)*temp2(i,j)(r,s);
-                    }
-                }
-            }
-        }
-    }
+    // Transform from Atomic Orbital Integrals to Molecular Orbital Integrals
+    AOItoMOI(temp1, m_Q, m_C, 0);
+    AOItoMOI(temp2, temp1, m_C, 1);
+    AOItoMOI(temp3, temp2, m_C.cols(nHStates, m_matDim-1), 2);
+    AOItoMOI(MOI, temp3, m_C.cols(nHStates, m_matDim-1), 3);
+
+    // Sum up energy tems
     for (int i = 0; i < nHStates; i++){
         for (int j = 0; j < nHStates; j++){
             for (int a = 0; a < nPStates; a++){
                 for (int b = 0; b < nPStates; b++){
-                    for (int s = 0; s < m_matDim; s++){
-                        orbitalIntegrals(i,j)(a,b) += m_C(s,b+nHStates)*temp3(i,j)(a,s);
-                    }
-                }
-            }
-        }
-    }
-//    for (int i = 0; i < nHStates; i++){
-//        for (int j = 0; j < nHStates; j++){
-//            orbitalIntegrals(i,j) = zeros(nPStates, nPStates);
-//            for (int a = 0; a < nPStates; a++){
-//                for (int b = 0; b < nPStates; b++){
-//                    for (int p = 0; p < m_matDim; p++){
-//                        for (int q = 0; q < m_matDim; q++){
-//                            for (int r = 0; r < m_matDim; r++){
-//                                for (int s = 0; s < m_matDim; s++){
-//                                    orbitalIntegrals(i,j)(a,b) += m_C(p,i)*m_C(q,j)*m_C(r,a+nHStates)*m_C(s,b+nHStates)*m_Q[p][q][r][s];
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-    for (int i = 0; i < nHStates; i++){
-        for (int j = 0; j < nHStates; j++){
-            for (int a = 0; a < nPStates; a++){
-                for (int b = 0; b < nPStates; b++){
-                    m_energyMP2 += orbitalIntegrals(i,j)(a,b)*(2*orbitalIntegrals(i,j)(a,b) - orbitalIntegrals(j,i)(a,b))
+                    m_energyMP2 += MOI(i,j)(a,b)*(2*MOI(i,j)(a,b) - MOI(j,i)(a,b))
                                 /(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a+nHStates) - m_fockEnergy(b+nHStates));
                 }
             }

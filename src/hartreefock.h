@@ -31,6 +31,7 @@ protected:
     virtual void buildFockMatrix()=0;
     void calcIntegrals();
     void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons);
+    void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index);
     virtual double perturbation2order()=0;
 };
 

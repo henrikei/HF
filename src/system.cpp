@@ -12,6 +12,11 @@ System::System(BasisFunctions2* basisFunctions, mat nucleiPositions, rowvec char
     m_nElectrons = nElectrons;
 }
 
+System::~System()
+{
+    delete m_integrator;
+}
+
 
 
 //--------------------------------------------------------------------------------------

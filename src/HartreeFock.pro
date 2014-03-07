@@ -12,19 +12,10 @@ SOURCES += main.cpp \
     system.cpp \
     boysfunction.cpp \
     basisfunctions/basisfunctions.cpp \
-    basisfunctions/h_321g.cpp \
     integrator.cpp \
     basishandler.cpp \
-    basisfunctions/h_theijssen.cpp \
-    basisfunctions/o_321g.cpp \
-    basisfunctions/h_431g.cpp \
-    basisfunctions/n_431g.cpp \
-    basisfunctions/o_431g.cpp \
     rhf.cpp \
     uhf.cpp \
-    basisfunctions/h_6311gss.cpp \
-    basisfunctions/o_6311gss.cpp \
-    basisfunctions/o_6311g.cpp \
     basisfunctions/primitive.cpp \
     basisfunctions/basisfunctions2.cpp \
     basisfunctions/contracted.cpp
@@ -35,18 +26,9 @@ HEADERS += \
     integrator.h \
     boysfunction.h \
     basisfunctions/basisfunctions.h \
-    basisfunctions/h_321g.h \
     basishandler.h \
-    basisfunctions/h_theijssen.h \
-    basisfunctions/o_321g.h \
-    basisfunctions/h_431g.h \
-    basisfunctions/n_431g.h \
-    basisfunctions/o_431g.h \
     rhf.h \
     uhf.h \
-    basisfunctions/h_6311gss.h \
-    basisfunctions/o_6311gss.h \
-    basisfunctions/o_6311g.h \
     basisfunctions/primitive.h \
     basisfunctions/basisfunctions2.h \
     basisfunctions/contracted.h

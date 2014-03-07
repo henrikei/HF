@@ -9,6 +9,7 @@ Integrator::Integrator(int angMomMax)
 
 Integrator::~Integrator()
 {
+    delete m_boys;
 }
 
 void Integrator::setNucleusPosition(rowvec3 RC)

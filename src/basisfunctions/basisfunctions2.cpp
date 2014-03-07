@@ -4,6 +4,17 @@ BasisFunctions2::BasisFunctions2()
 {
 }
 
+BasisFunctions2::~BasisFunctions2()
+{
+    for (Contracted* contracted: m_contracteds){
+        for (int i = 0; i < contracted->getNumOfPrimitives(); i++){
+            Primitive* primitive = contracted->getPrimitive(i);
+            delete primitive;
+        }
+        delete contracted;
+    }
+}
+
 //---------------------------------------------------------------------------------------------------------------------------
 // Read exponents, coefficients and powers from input file in format TurboMole (taken from https://bse.pnl.gov/bse/portal)
 // and fills m_contracteds (vector<Contracted*> m_contracteds) with contracteds. Each contracted contains a vector of primitive.

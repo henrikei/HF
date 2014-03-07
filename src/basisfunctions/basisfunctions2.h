@@ -15,6 +15,7 @@ class BasisFunctions2
 {
 public:
     BasisFunctions2();
+    virtual ~BasisFunctions2();
     void addContracteds(string inFileName, rowvec3 position);
     double getNumOfContracteds();
     Contracted* getContracted (int p);
