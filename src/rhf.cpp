@@ -29,15 +29,12 @@ void RHF::solve()
     // Iterate until the fock energy has converged
     double fockEnergyOld;
     double energyDiff = 1.0;
-    int counter = 0;
     while (energyDiff > m_toler){
-        counter += 1;
         fockEnergyOld = m_fockEnergy(0);
         buildFockMatrix();
         solveSingle(m_F, m_C, m_P, m_fockEnergy, m_nElectrons);
         energyDiff = fabs(fockEnergyOld - m_fockEnergy(0));
     }
-    cout << counter << endl;
 
     // Calculate energy (not equal to Fock energy)
     m_energy = 0;
