@@ -1,4 +1,4 @@
-LIBS += -larmadillo -llapack -lblas
+LIBS += -larmadillo -llapack -lblas -lboost_regex
 
 COMMON_CXXFLAGS = -std=c++0x
 QMAKE_CXXFLAGS += $$COMMON_CXXFLAGS
