@@ -8,7 +8,7 @@ RHF::RHF(System* system):HartreeFock(system)
     m_fockEnergy = ones<colvec>(m_matDim)*1.0E6;
     m_nElectrons = system->getNumOfElectrons();
     if (m_nElectrons % 2 == 1){
-        cout <<"Error: Cannot run Restricted Hartree-Fock on odd number of electrons.";
+        cout <<"Error: Cannot run Restricted Hartree-Fock on odd number of electrons." << endl;
         exit(EXIT_FAILURE);
     }
     m_restrictedFactor = 2;
@@ -23,7 +23,7 @@ RHF::RHF(System* system, int perturbOrder):HartreeFock(system)
     m_fockEnergy = ones<colvec>(m_matDim)*1.0E6;
     m_nElectrons = system->getNumOfElectrons();
     if (m_nElectrons % 2 == 1){
-        cout <<"Error: Cannot run Restricted Hartree-Fock on odd number of electrons.";
+        cout <<"Error: Cannot run Restricted Hartree-Fock on odd number of electrons." << endl;
         exit(EXIT_FAILURE);
     }
     m_restrictedFactor = 2;
@@ -196,5 +196,6 @@ double RHF::perturbation2order(){
             }
         }
     }
+
     return m_energyMP2;
 }

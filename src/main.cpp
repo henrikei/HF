@@ -76,15 +76,16 @@ int main()
 
 
 
+//    clock_t begin = clock();
 
-//    double d = 2.06;
-//    double s = sin(2*pi/3);
-//    double c = cos(2*pi/3);
+//    double d = 2.028;//2.0262;
+//    double s = sin(2*M_PI/3);
+//    double c = cos(2*M_PI/3);
 //    rowvec posC = {0.0, 0.0, 0.0};
 //    rowvec posH1 = {d, 0.0, 0.0};
-//    rowvec posH2 = {s*d, c*d, 0.0};
-//    rowvec posH3 = {-s*d, c*d, 0.0};
-//    rowvec charges = {6.0, 1.0, 1.0};
+//    rowvec posH2 = {c*d, s*d, 0.0};
+//    rowvec posH3 = {c*d, -s*d, 0.0};
+//    rowvec charges = {6.0, 1.0, 1.0, 1.0};
 //    int nElectrons = 9;
 
 //    mat nucleiPositions = zeros<mat>(4,3);
@@ -102,9 +103,9 @@ int main()
 //    System *system;
 //    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-//    UHF solver(system);
+//    UHF solver(system,2);
 //    solver.solve();
-//    cout << "Energy: " << setprecision(10) <<  solver.getEnergy() << endl;
+//    cout << "Energy: " << setprecision(7) <<  solver.getEnergy() << endl;
 
 //    clock_t end = clock();
 //    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
@@ -145,26 +146,26 @@ int main()
 
     clock_t begin = clock();
 
-    double d = 1.402176684;
+    double d = 1.889725989;
     rowvec posH = {-0.5*d, 0.0, 0.0};
-    rowvec posH2 = {0.5*d, 0.0, 0.0};
-    rowvec charges = {1.0, 1.0};
-    int nElectrons = 2;
+    rowvec posF = {0.5*d, 0.0, 0.0};
+    rowvec charges = {1.0, 9.0};
+    int nElectrons = 10;
 
     mat nucleiPositions = zeros<mat>(2,3);
     nucleiPositions.row(0) = posH;
-    nucleiPositions.row(1) = posH2;
+    nucleiPositions.row(1) = posF;
 
     BasisFunctions2* basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/H_6311++G(3df,3pd).dat", posH);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_6311++G(3df,3pd).dat", posH2);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH);
+    basisFunctions->addContracteds("../inFiles/basisSets/F_631Gs.dat", posF);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
     RHF solver(system,2);
     solver.solve();
-    cout << "Energy: " << setprecision(6) << solver.getEnergy() << endl;
+    cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
 
     clock_t end = clock();
     cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;

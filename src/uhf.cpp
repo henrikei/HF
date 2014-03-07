@@ -91,7 +91,7 @@ void UHF::solve()
         buildFockMatrix();
         solveSingle(m_Fup, m_Cup, m_Pup, m_fockEnergyUp, m_nElectronsUp);
         solveSingle(m_Fdown, m_Cdown, m_Pdown, m_fockEnergyDown, m_nElectronsDown);
-        energyDiff = fabs(fockEnergyUpOld + fockEnergyDownOld - m_fockEnergyUp(0) - m_fockEnergyDown(0));
+        energyDiff = fabs(fockEnergyUpOld - m_fockEnergyUp(0))+ fabs(fockEnergyDownOld - m_fockEnergyDown(0));
     }
 
     // Calculate energy (not equal to Fock energy)

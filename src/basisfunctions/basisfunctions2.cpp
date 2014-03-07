@@ -22,7 +22,7 @@ void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
     field <rowvec> prefactor_p(3);
     field <rowvec> prefactor_d;
 
-    bool d6 = false;
+    bool d6 = true;
     if (d6 == true){
         pows_s(0) = {0,0,0};
         pows_p(0) = {1,0,0};
