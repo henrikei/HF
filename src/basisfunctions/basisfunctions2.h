@@ -16,14 +16,15 @@ class BasisFunctions2
 public:
     BasisFunctions2();
     virtual ~BasisFunctions2();
-    void addContracteds(string inFileName, rowvec3 position);
+    void addContracteds(string inFileName, int posNum);
+    void setPosPointer(mat* nucleiPositions);
     double getNumOfContracteds();
     Contracted* getContracted (int p);
     int getAngMomMax();
 private:
     vector<Contracted*> m_contracteds;
 
-    void addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, rowvec3 position);
+    void addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, int posNum);
     void normalizeCoeff(double exp, double& coeff, irowvec pows);
     int factorial (int n);
 };

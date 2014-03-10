@@ -18,8 +18,8 @@ BasisFunctions2::~BasisFunctions2()
 //---------------------------------------------------------------------------------------------------------------------------
 // Read exponents, coefficients and powers from input file in format TurboMole (taken from https://bse.pnl.gov/bse/portal)
 // and fills m_contracteds (vector<Contracted*> m_contracteds) with contracteds. Each contracted contains a vector of primitive.
-// Each primitive contains exponent, coefficient, powers (i,j,k) and position.
-void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
+// Each primitive contains exponent, coefficient, powers (i,j,k) and position number.
+void BasisFunctions2::addContracteds(string inFileName, int posNum)
 {
     // pows_s, pows_p and pows_d defines the powers which are used to form primitives. For example, i+j+k = 1 for p-orbitals.
     // The prefactors are needed in cases where each primitive has a sum of two or more power terms, which is the case when
@@ -120,16 +120,26 @@ void BasisFunctions2::addContracteds(string inFileName, rowvec3 position)
         regex search_p("[0-9]\\s+p");
         regex search_d("[0-9]\\s+d");
         if(regex_match(orbitalType, search_s)){
-            addSomeContracteds(exp, coeff, pows_s, prefactor_s, position);
+            addSomeContracteds(exp, coeff, pows_s, prefactor_s, posNum);
         }
         if(regex_match(orbitalType, search_p)){
-            addSomeContracteds(exp, coeff, pows_p, prefactor_p, position);
+            addSomeContracteds(exp, coeff, pows_p, prefactor_p, posNum);
         }
         if(regex_match(orbitalType, search_d)){
-            addSomeContracteds(exp, coeff, pows_d, prefactor_d, position);
+            addSomeContracteds(exp, coeff, pows_d, prefactor_d, posNum);
         }
     }
     //----------------------------------------------------------------------------------------------------------------------------
+}
+
+void BasisFunctions2::setPosPointer(mat *nucleiPositions)
+{
+    for (Contracted* contracted: m_contracteds){
+        for (int i = 0; i < contracted->getNumOfPrimitives(); i++){
+            Primitive* primitive = contracted->getPrimitive(i);
+            primitive->setPosPointer(nucleiPositions);
+        }
+    }
 }
 
 double BasisFunctions2::getNumOfContracteds()
@@ -153,7 +163,7 @@ int BasisFunctions2::getAngMomMax()
     return maxAngMom;
 }
 
-void BasisFunctions2::addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, rowvec3 position)
+void BasisFunctions2::addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, int posNum)
 {
     // Loop through number of contracteds (1s -> 1, 2p -> 3, 2d -> 6 (or 5)
     for (uint i = 0; i < pows.n_rows; i++){
@@ -166,7 +176,7 @@ void BasisFunctions2::addSomeContracteds(vector<double> exp, vector<double> coef
                 double coeffn = coeff.at(counter);
                 normalizeCoeff(exp.at(counter), coeffn, pows(i).row(j));
                 coeffn *= prefactor(i)(j);
-                Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows(i).row(j), position);
+                Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows(i).row(j), posNum);
                 primitives.push_back(primitive);
                 counter += 1;
             }

@@ -7,9 +7,11 @@ System::System(BasisFunctions2* basisFunctions, mat nucleiPositions, rowvec char
     m_basisFunctions = basisFunctions;
     m_integrator = new Integrator(basisFunctions->getAngMomMax());
     m_nucleiPositions = nucleiPositions;
-    m_nNuclei = m_nucleiPositions.n_rows;
     m_charges = charges;
     m_nElectrons = nElectrons;
+
+    m_basisFunctions->setPosPointer(&m_nucleiPositions);
+    m_nNuclei = m_nucleiPositions.n_rows;
 }
 
 System::~System()
@@ -34,10 +36,12 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
     double overlap = 0;
     double energy = 0;
 
+    Primitive* primitiveA;
+    Primitive* primitiveB;
     for (int v = 0; v < nPrimitivesA ; v++){
-        Primitive* primitiveA = contractedA->getPrimitive(v);
+        primitiveA = contractedA->getPrimitive(v);
         for (int w = 0; w < nPrimitivesB; w++){
-            Primitive* primitiveB = contractedB->getPrimitive(w);
+            primitiveB = contractedB->getPrimitive(w);
 
             m_integrator->setPrimitiveA(primitiveA);
             m_integrator->setPrimitiveB(primitiveB);

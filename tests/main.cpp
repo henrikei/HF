@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <armadillo>
 #include <unittest++/UnitTest++.h>
 #include <src/integrator.h>
@@ -22,8 +23,13 @@ TEST(OverlapIntegrals){
     irowvec3 powB = {0,0,0};
     rowvec3 RA = {1.2, 2.3, 3.4};
     rowvec3 RB = {-1.3, 1.4, -2.4};
-    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, RA);
-    Primitive *primitiveB = new Primitive(beta, coeffB, powB, RB);
+    mat pos = zeros(2,3);
+    pos.row(0) = RA;
+    pos.row(1) = RB;
+    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, 0);
+    Primitive *primitiveB = new Primitive(beta, coeffB, powB, 1);
+    primitiveA->setPosPointer(&pos);
+    primitiveB->setPosPointer(&pos);
     Integrator integrator(2);
     integrator.setPrimitiveA(primitiveA);
     integrator.setPrimitiveB(primitiveB);
@@ -56,8 +62,13 @@ TEST(KineticIntegrals){
     irowvec3 powB = {1,1,1}; // Must be set equal or higher than the highest values below
     rowvec3 RA = {1.2, 2.3, 3.4};
     rowvec3 RB = {-1.3, 1.4, -2.4};
-    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, RA);
-    Primitive *primitiveB = new Primitive(beta, coeffB, powB, RB);
+    mat pos = zeros(2,3);
+    pos.row(0) = RA;
+    pos.row(1) = RB;
+    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, 0);
+    Primitive *primitiveB = new Primitive(beta, coeffB, powB, 1);
+    primitiveA->setPosPointer(&pos);
+    primitiveB->setPosPointer(&pos);
     Integrator integrator(2);
     integrator.setPrimitiveA(primitiveA);
     integrator.setPrimitiveB(primitiveB);
@@ -186,8 +197,13 @@ TEST(Coulomb1){
     rowvec3 RA = {1.2, 2.3, 3.4};
     rowvec3 RB = {-1.3, 1.4, -2.4};
     rowvec3 RC = {2.3, 0.9, 3.2};
-    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, RA);
-    Primitive *primitiveB = new Primitive(beta, coeffB, powB, RB);
+    mat pos = zeros(2,3);
+    pos.row(0) = RA;
+    pos.row(1) = RB;
+    Primitive *primitiveA = new Primitive(alpha, coeffA, powA, 0);
+    Primitive *primitiveB = new Primitive(beta, coeffB, powB, 1);
+    primitiveA->setPosPointer(&pos);
+    primitiveB->setPosPointer(&pos);
     Integrator integrator(2);
     integrator.setPrimitiveA(primitiveA);
     integrator.setPrimitiveB(primitiveB);
@@ -315,9 +331,9 @@ TEST(H20_431G_RHF){
     nucleiPositions.row(2) = posH2;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", posO);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
+    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -347,9 +363,9 @@ TEST(H20_431G_UHF){
     nucleiPositions.row(2) = posH2;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", posO);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
+    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -385,11 +401,11 @@ TEST(CH4_431G_RHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_431G.dat", posC);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH3);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH4);
+    basisFunctions->addContracteds("../inFiles/basisSets/C_431G.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 3);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 4);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -425,11 +441,11 @@ TEST(CH4_431G_UHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_431G.dat", posC);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH3);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH4);
+    basisFunctions->addContracteds("../inFiles/basisSets/C_431G.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 3);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 4);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -465,11 +481,11 @@ TEST(CH4_631Gss_RHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", posC);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH3);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH4);
+    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 2);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 3);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 4);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -505,11 +521,11 @@ TEST(CH4_631Gss_UHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", posC);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH3);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH4);
+    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 1);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 2);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 3);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 4);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -519,6 +535,68 @@ TEST(CH4_631Gss_UHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(energy, -40.202, 1.0E-3);
+}
+
+TEST(HF_631Gss_RHF){
+    // Simulation of HF molecule.
+    // Results checked against the following article:
+    // "Full configuration interaction potential energy curves for breaking bonds
+    // to hydrogen: An assessment of single-reference correlation methods"
+    // by Dutta and Sherrill
+    // JOURNAL OF CHEMICAL PHYSICS, VOLUME 118, NUMBER 4, 22 JANUARY 2003
+    double d = 3.779451977;
+    rowvec posH = {-d/2, 0.0, 0.0};
+    rowvec posF = {d/2, 0.0, 0.0};
+    rowvec charges = {1.0, 9.0};
+    int nElectrons = 10;
+
+    mat nucleiPositions = zeros<mat>(2,3);
+    nucleiPositions.row(0) = posH;
+    nucleiPositions.row(1) = posF;
+
+    BasisFunctions2 *basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/F_631Gs.dat", 1);
+
+    System *system;
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+    RHF solver(system);
+    solver.solve();
+    double energy = solver.getEnergy();
+
+    CHECK_CLOSE(-99.747454, energy, 1.0E-6);
+}
+
+TEST(HF_631Gss_UHF){
+    // Simulation of HF molecule.
+    // Results checked against the following article:
+    // "Full configuration interaction potential energy curves for breaking bonds
+    // to hydrogen: An assessment of single-reference correlation methods"
+    // by Dutta and Sherrill
+    // JOURNAL OF CHEMICAL PHYSICS, VOLUME 118, NUMBER 4, 22 JANUARY 2003
+    double d = 3.779451977;
+    rowvec posH = {-d/2, 0.0, 0.0};
+    rowvec posF = {d/2, 0.0, 0.0};
+    rowvec charges = {1.0, 9.0};
+    int nElectrons = 10;
+
+    mat nucleiPositions = zeros<mat>(2,3);
+    nucleiPositions.row(0) = posH;
+    nucleiPositions.row(1) = posF;
+
+    BasisFunctions2 *basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/F_631Gs.dat", 1);
+
+    System *system;
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+    UHF solver(system);
+    solver.solve();
+    double energy = solver.getEnergy();
+
+    CHECK_CLOSE(-99.865798, energy, 1.0E-6);
 }
 
 int main()

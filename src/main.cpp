@@ -16,6 +16,9 @@
 #include "basisfunctions/basisfunctions2.h"
 #include "basisfunctions/contracted.h"
 #include "basisfunctions/primitive.h"
+#include "minimizer/func.h"
+#include "minimizer/minimizer.h"
+#include "minimizer/twodimtest.h"
 
 
 using namespace std;
@@ -24,21 +27,6 @@ using namespace libconfig;
 
 int main()
 {
-    //    BasisFunctions2 basis;
-    //    rowvec3 position = {1, 2, 3};
-    //    basis.addContracteds("../inFiles/basisSets/O_431G.dat", position);
-
-    //    int M = basis.getNumOfContracteds();
-    //    for (int i = 0; i < M; i++){
-    //        Contracted *contracted = basis.getContracted(i);
-    //        int L = contracted->getNumOfPrimitives();
-    //        cout << "Contracted " << i+1 << " :" << endl;
-    //        for (int j = 0; j < L; j++){
-    //            Primitive *primitive = contracted->getPrimitive(j);
-    //            cout << primitive->getExp() << " , " << primitive->getCoeff() << " , " << primitive->getPos() << " , " << primitive->getPow() << endl << endl;
-    //        }
-    //    }
-
 //    clock_t begin = clock();
 
 //    double d = 1.1795265999544056;
@@ -174,36 +162,10 @@ int main()
 //    delete basisFunctions;
 
 
-
-
-    clock_t begin = clock();
-
-    double d = 0.8*1.889725989;
-    rowvec posH = {-0.5*d, 0.0, 0.0};
-    rowvec posF = {0.5*d, 0.0, 0.0};
-    rowvec charges = {1.0, 9.0};
-    int nElectrons = 10;
-
-    mat nucleiPositions = zeros<mat>(2,3);
-    nucleiPositions.row(0) = posH;
-    nucleiPositions.row(1) = posF;
-
-    BasisFunctions2* basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH);
-    basisFunctions->addContracteds("../inFiles/basisSets/F_631Gs.dat", posF);
-
-    System *system;
-    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
-
-    RHF solver(system);
-    solver.solve();
-    cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
-
-    clock_t end = clock();
-    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
-
-    delete system;
-    delete basisFunctions;
+    Func *func = new TwoDimTest;
+    rowvec guess = {2.236,5.89};
+    Minimizer minimizer(func, guess);
+    cout << minimizer.solve() << endl;
 
     return 0;
 }

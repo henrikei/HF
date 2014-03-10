@@ -18,7 +18,10 @@ SOURCES += main.cpp \
     uhf.cpp \
     basisfunctions/primitive.cpp \
     basisfunctions/basisfunctions2.cpp \
-    basisfunctions/contracted.cpp
+    basisfunctions/contracted.cpp \
+    minimizer/minimizer.cpp \
+    minimizer/func.cpp \
+    minimizer/twodimtest.cpp
 
 HEADERS += \
     hartreefock.h \
@@ -31,7 +34,10 @@ HEADERS += \
     uhf.h \
     basisfunctions/primitive.h \
     basisfunctions/basisfunctions2.h \
-    basisfunctions/contracted.h
+    basisfunctions/contracted.h \
+    minimizer/minimizer.h \
+    minimizer/func.h \
+    minimizer/twodimtest.h
 
 include(defaults.pri)
 
