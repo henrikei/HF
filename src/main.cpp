@@ -162,9 +162,9 @@ int main()
 //    delete basisFunctions;
 
 
-    Func *func = new TwoDimTest;
-    rowvec guess = {2.236,5.89};
-    Minimizer minimizer(func, guess);
+    rowvec guess = {1.0,-1.0};
+    Func *func = new TwoDimTest(guess);
+    Minimizer minimizer(func);
     cout << minimizer.solve() << endl;
 
     return 0;

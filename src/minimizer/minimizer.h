@@ -11,7 +11,7 @@ using namespace arma;
 class Minimizer
 {
 public:
-    Minimizer(Func* func, rowvec x);
+    Minimizer(Func* func);
     rowvec solve();
 
 private:
@@ -27,7 +27,7 @@ private:
     double m_toler;
     double m_dim;
 
-    void initializeSimplex(rowvec x);
+    void initializeSimplex();
     void advance();
     void sort();
     void setCentroid();

@@ -136,3 +136,13 @@ int System::getNumOfElectrons()
     return m_nElectrons;
 }
 
+mat System::getNucleiPositions()
+{
+    return m_nucleiPositions;
+}
+
+void System::setNucleiPositions(mat nucleiPositions)
+{
+    m_nucleiPositions = nucleiPositions;
+}
+

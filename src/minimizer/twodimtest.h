@@ -11,8 +11,11 @@ using namespace arma;
 class TwoDimTest : public Func
 {
 public:
-    TwoDimTest();
+    TwoDimTest(rowvec xInitial);
+    virtual rowvec getxInitial();
     virtual double getValue(rowvec x);
+private:
+    rowvec m_xInitial;
 };
 
 #endif // TWODIMTEST_H

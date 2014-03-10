@@ -9,6 +9,7 @@ public:
     RHF(System *system, int perturbOrder=1);
     void solve();
     mat getCoeff();
+
 private:
     mat m_F;
     mat m_C;

@@ -15,13 +15,18 @@ using namespace arma;
 class System
 {
 public:
-    System(BasisFunctions2* m_basisFunctions, mat NucleiPositions, rowvec charges, int nElectrons);
+    System(BasisFunctions2* m_basisFunctions, mat nucleiPositions, rowvec charges, int nElectrons);
     virtual ~System();
+
     rowvec2 getOneElectronIntegrals(int p, int q);
     double getTwoElectronIntegral(int p, int q, int r, int s);
     double getNucleiPotential();
     int getTotalNumOfBasisFunc();
     int getNumOfElectrons();
+    mat getNucleiPositions();
+
+    void setNucleiPositions(mat nucleiPositions);
+
 private:
     int m_nNuclei;
     mat m_nucleiPositions;

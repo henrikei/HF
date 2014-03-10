@@ -19,6 +19,7 @@ HartreeFock::HartreeFock(System *system):
     m_toler = 1.0E-10;
 }
 
+
 //----------------------------------------------------------------------------------------------------------------
 double HartreeFock::getEnergy(){
     return m_energy;

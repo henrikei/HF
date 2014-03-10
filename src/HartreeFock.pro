@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     basisfunctions/contracted.cpp \
     minimizer/minimizer.cpp \
     minimizer/func.cpp \
-    minimizer/twodimtest.cpp
+    minimizer/twodimtest.cpp \
+    minimizer/hartreefockfunc.cpp
 
 HEADERS += \
     hartreefock.h \
@@ -37,7 +38,8 @@ HEADERS += \
     basisfunctions/contracted.h \
     minimizer/minimizer.h \
     minimizer/func.h \
-    minimizer/twodimtest.h
+    minimizer/twodimtest.h \
+    minimizer/hartreefockfunc.h
 
 include(defaults.pri)
 

@@ -1,11 +1,12 @@
 #include "minimizer.h"
 
-Minimizer::Minimizer(Func* func, rowvec x)
+Minimizer::Minimizer(Func* func)
 {
     m_func = func;
-    m_dim = x.n_elem;
+    m_dim = m_func->getxInitial().n_elem;
+    m_X = zeros<mat>(m_dim+1, m_dim);
     m_x0 = zeros<rowvec>(m_dim);
-    initializeSimplex(x);
+    initializeSimplex();
 
     m_alpha = 1.0;
     m_gamma = 2.0;
@@ -22,16 +23,15 @@ rowvec Minimizer::solve()
     return m_X.row(0);
 }
 
-void Minimizer::initializeSimplex(rowvec x)
+void Minimizer::initializeSimplex()
 {
-    m_X.set_size(m_dim + 1, m_dim);
-    m_X.row(0) = x;
+    m_X.row(0) = m_func->getxInitial();
 
     double initialStep = 1.0;
     rowvec xtemp = zeros<rowvec>(m_dim);
 
     for (uint i = 1; i < m_dim+1; i++){
-        xtemp = x;
+        xtemp = m_func->getxInitial();
         xtemp(i-1) += initialStep;
         m_X.row(i) = xtemp;
     }

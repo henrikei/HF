@@ -12,18 +12,23 @@ class HartreeFock
 {
 public:
     HartreeFock(System *system);
+
     virtual void solve()=0;
     double getEnergy();
     double getEnergyMP2();
     virtual mat getCoeff()=0;
+
 protected:
     System *m_system;
+
     mat m_h;
     mat m_S;
     field<mat> m_Q;
+
     int m_matDim;
     double m_energy;
     double m_energyMP2;
+
     double m_toler;
     double m_restrictedFactor;
     int m_perturbOrder;

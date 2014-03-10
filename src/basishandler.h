@@ -20,6 +20,7 @@ public:
     irowvec getPowers(int p);
     int getAngMom(int p);
     int getAngMomMax();
+
 private:
     vector<BasisFunctions*> allBasisFunctions;
     vector<int> map;

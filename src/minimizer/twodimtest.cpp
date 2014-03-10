@@ -1,10 +1,16 @@
 #include "twodimtest.h"
 
-TwoDimTest::TwoDimTest()
+TwoDimTest::TwoDimTest(rowvec xInitial)
 {
+    m_xInitial = xInitial;
+}
+
+rowvec TwoDimTest::getxInitial()
+{
+    return m_xInitial;
 }
 
 double TwoDimTest::getValue(rowvec x)
 {
-    return x(0)*x(0) + x(1)*x(1) + 2*x(0) - 4*x(1) + 10;
+    return 100*(x(1) - x(0)*x(0))*(x(1) - x(0)*x(0)) + (2.4 - x(0))*(2.4 - x(0));
 }
