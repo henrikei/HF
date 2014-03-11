@@ -3,8 +3,8 @@
 
 #include <armadillo>
 #include "func.h"
-#include "hartreefock.h"
-#include "system.h"
+#include "../hartreefock.h"
+#include "../system.h"
 
 using namespace std;
 using namespace arma;
