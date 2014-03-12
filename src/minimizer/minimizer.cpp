@@ -1,4 +1,5 @@
 #include "minimizer.h"
+#include <iomanip>
 
 Minimizer::Minimizer(Func* func)
 {
@@ -15,12 +16,24 @@ Minimizer::Minimizer(Func* func)
     m_toler = 1.0E-8;
 }
 
-rowvec Minimizer::solve()
+void Minimizer::solve()
 {
+    int counter = 0;
     while (fabs(m_fX(m_dim) - m_fX(0)) > m_toler){
+        counter += 1;
         advance();
+        cout << "Iteration no.: " << counter << ",    Energy: "  << m_fX(0) << endl;
     }
+}
+
+rowvec Minimizer::getMinPoint()
+{
     return m_X.row(0);
+}
+
+double Minimizer::getMinValue()
+{
+    return m_fX(0);
 }
 
 void Minimizer::initializeSimplex()

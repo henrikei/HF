@@ -17,7 +17,6 @@ public:
     virtual rowvec getxInitial();
     virtual double getValue (rowvec x);
 
-private:
     HartreeFock *m_solver;
     System *m_system;
 
@@ -27,12 +26,13 @@ private:
     mat m_rotz;
 
     mat m_nucleiPositions;
+    rowvec m_x;
 
     void calcTransfMatrices();
     void transfPositions();
     void transfPositionsInverse();
-    rowvec matToVec(mat nucleiPositions);
-    mat vecToMat(rowvec x);
+    void matToVec();
+    void vecToMat();
 };
 
 #endif // HARTREEFOCKFUNC_H

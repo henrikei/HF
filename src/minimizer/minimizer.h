@@ -12,7 +12,9 @@ class Minimizer
 {
 public:
     Minimizer(Func* func);
-    rowvec solve();
+    void solve();
+    rowvec getMinPoint();
+    double getMinValue();
 
 private:
     mat m_X;

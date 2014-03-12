@@ -11,9 +11,7 @@ SOURCES += main.cpp \
     hartreefock.cpp \
     system.cpp \
     boysfunction.cpp \
-    basisfunctions/basisfunctions.cpp \
     integrator.cpp \
-    basishandler.cpp \
     rhf.cpp \
     uhf.cpp \
     basisfunctions/primitive.cpp \
@@ -29,8 +27,6 @@ HEADERS += \
     system.h \
     integrator.h \
     boysfunction.h \
-    basisfunctions/basisfunctions.h \
-    basishandler.h \
     rhf.h \
     uhf.h \
     basisfunctions/primitive.h \

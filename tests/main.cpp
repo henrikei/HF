@@ -9,6 +9,10 @@
 #include <src/hartreefock.h>
 #include <src/rhf.h>
 #include <src/uhf.h>
+#include <src/minimizer/minimizer.h>
+#include <src/minimizer/func.h>
+#include <src/minimizer/hartreefockfunc.h>
+#include <src/minimizer/twodimtest.h>
 
 using namespace std;
 using namespace arma;
@@ -51,6 +55,9 @@ TEST(OverlapIntegrals){
     CHECK_CLOSE(integrator.overlap(1, 0, 1, 0, 0, 2), 0.616090611588, 0.00001);
     CHECK_CLOSE(integrator.overlap(1, 0, 1, 2, 0, 0), -0.0196663001276, 0.00001);
     CHECK_CLOSE(integrator.overlap(1, 0, 1, 2, 0, 2), -0.125518193934, 0.00001);
+
+    delete primitiveA;
+    delete primitiveB;
 }
 
 TEST(KineticIntegrals){
@@ -138,6 +145,9 @@ TEST(KineticIntegrals){
     CHECK_CLOSE(integrator.kinetic(1, 1, 1, 1, 0, 1), -0.0634703676663, 0.00001);
     CHECK_CLOSE(integrator.kinetic(1, 1, 1, 1, 1, 0), 0.0952055514994, 0.00001);
     CHECK_CLOSE(integrator.kinetic(1, 1, 1, 1, 1, 1), 0.28653192666, 0.00001);
+
+    delete primitiveA;
+    delete primitiveB;
 }
 
 TEST(BoysIntegrals){
@@ -311,6 +321,8 @@ TEST(Coulomb1){
 //    CHECK_CLOSE(3.878852644576e-02, integrator.coulomb1(2,0,0,1,0,1), 1e-5);
 //    CHECK_CLOSE(4.176920693786e-03, integrator.coulomb1(2,0,0,1,1,0), 1e-5);
 //    CHECK_CLOSE(6.422210627967e-02, integrator.coulomb1(2,0,0,2,0,0), 1e-5);
+    delete primitiveA;
+    delete primitiveB;
 }
 
 TEST(H20_431G_RHF){
@@ -343,6 +355,9 @@ TEST(H20_431G_RHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(-75.907, energy, 1.0E-3);
+
+    delete basisFunctions;
+    delete system;
 }
 
 TEST(H20_431G_UHF){
@@ -375,6 +390,9 @@ TEST(H20_431G_UHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(-75.907, energy, 1.0E-3);
+
+    delete basisFunctions;
+    delete system;
 }
 
 TEST(CH4_431G_RHF){
@@ -415,6 +433,9 @@ TEST(CH4_431G_RHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(energy, -40.140, 1.0E-3);
+
+    delete basisFunctions;
+    delete system;
 }
 
 TEST(CH4_431G_UHF){
@@ -455,6 +476,9 @@ TEST(CH4_431G_UHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(energy, -40.140, 1.0E-3);
+
+    delete basisFunctions;
+    delete system;
 }
 
 TEST(CH4_631Gss_RHF){
@@ -495,6 +519,9 @@ TEST(CH4_631Gss_RHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(energy, -40.202, 1.0E-3);
+
+    delete basisFunctions;
+    delete system;
 }
 
 TEST(CH4_631Gss_UHF){
@@ -535,6 +562,9 @@ TEST(CH4_631Gss_UHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(energy, -40.202, 1.0E-3);
+
+    delete basisFunctions;
+    delete system;
 }
 
 TEST(HF_631Gss_RHF){
@@ -566,6 +596,9 @@ TEST(HF_631Gss_RHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(-99.747454, energy, 1.0E-6);
+
+    delete basisFunctions;
+    delete system;
 }
 
 TEST(HF_631Gss_UHF){
@@ -597,6 +630,23 @@ TEST(HF_631Gss_UHF){
     double energy = solver.getEnergy();
 
     CHECK_CLOSE(-99.865798, energy, 1.0E-6);
+
+    delete basisFunctions;
+    delete system;
+}
+
+TEST(MINIMIZER_RBANANA){
+    rowvec x = {-1.2, 1.0};
+    Func *func = new TwoDimTest(x);
+    Minimizer *minimizer= new Minimizer(func);
+    minimizer->solve();
+    x = minimizer->getMinPoint();
+
+    CHECK_CLOSE(2.4, x(0), 1.0E-4);
+    CHECK_CLOSE(5.76, x(1), 1.0E-4);
+
+    delete func;
+    delete minimizer;
 }
 
 int main()

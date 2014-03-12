@@ -11,14 +11,13 @@
 #include "system.h"
 #include "integrator.h"
 #include "boysfunction.h"
-#include "basishandler.h"
-#include "basisfunctions/basisfunctions.h"
 #include "basisfunctions/basisfunctions2.h"
 #include "basisfunctions/contracted.h"
 #include "basisfunctions/primitive.h"
 #include "minimizer/func.h"
 #include "minimizer/minimizer.h"
 #include "minimizer/twodimtest.h"
+#include "minimizer/hartreefockfunc.h"
 
 
 using namespace std;
@@ -162,10 +161,32 @@ int main()
 //    delete basisFunctions;
 
 
-    rowvec guess = {1.0,-1.0};
-    Func *func = new TwoDimTest(guess);
-    Minimizer minimizer(func);
-    cout << minimizer.solve() << endl;
+//    rowvec guess = {1.0,-1.0};
+//    Func *func = new TwoDimTest(guess);
+//    Minimizer minimizer(func);
+//    cout << minimizer.solve() << endl;
+
+    rowvec H1 = {0.0,0.0,0.0};
+    rowvec H2 = {1.0,0.0,0.0};
+    rowvec O = {0.0,1.0,0.0};
+    rowvec charges = {1.0,1.0,8.0};
+    int nElectrons = 10;
+    mat nucleiPositions = zeros<mat>(3,3);
+    nucleiPositions.row(0) = H1;
+    nucleiPositions.row(1) = H2;
+    nucleiPositions.row(2) = O;
+    BasisFunctions2* basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 2);
+    System *system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+    RHF *solver = new RHF(system);
+    HartreeFockFunc *func = new HartreeFockFunc(solver, system);
+    Minimizer *minimizer = new Minimizer(func);
+    minimizer->solve();
+    cout << system->getNucleiPositions() << endl;
+    cout << minimizer->getMinValue() << endl;
+
 
     return 0;
 }
