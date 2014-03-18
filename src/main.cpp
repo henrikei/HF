@@ -26,166 +26,196 @@ using namespace libconfig;
 
 int main()
 {
-//    clock_t begin = clock();
+    string run = "HF";
 
-//    double d = 1.1795265999544056;
-//    rowvec posC = {0.0, 0.0, 0.0};
-//    rowvec posH1 = {d, d, d};
-//    rowvec posH2 = {-d, -d, d};
-//    rowvec posH3 = {d, -d, -d};
-//    rowvec posH4 = {-d, d, -d};
-//    rowvec charges = {6.0, 1.0, 1.0, 1.0, 1.0};
-//    int nElectrons = 10;
+    if (run == "CH4"){
 
-//    mat nucleiPositions = zeros<mat>(5,3);
-//    nucleiPositions.row(0) = posC;
-//    nucleiPositions.row(1) = posH1;
-//    nucleiPositions.row(2) = posH2;
-//    nucleiPositions.row(3) = posH3;
-//    nucleiPositions.row(4) = posH4;
+        clock_t begin = clock();
 
-//    BasisFunctions2 *basisFunctions = new BasisFunctions2;
-//    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", posC);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH1);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH2);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH3);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", posH4);
+        double d = 1.1795265999544056;
+        rowvec posC = {0.0, 0.0, 0.0};
+        rowvec posH1 = {d, d, d};
+        rowvec posH2 = {-d, -d, d};
+        rowvec posH3 = {d, -d, -d};
+        rowvec posH4 = {-d, d, -d};
+        rowvec charges = {6.0, 1.0, 1.0, 1.0, 1.0};
+        int nElectrons = 10;
 
-//    System *system;
-//    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+        mat nucleiPositions = zeros<mat>(5,3);
+        nucleiPositions.row(0) = posC;
+        nucleiPositions.row(1) = posH1;
+        nucleiPositions.row(2) = posH2;
+        nucleiPositions.row(3) = posH3;
+        nucleiPositions.row(4) = posH4;
 
-//    RHF solver(system);
-//    solver.solve();
-//    cout << "Energy: " << setprecision(10) <<  solver.getEnergy() << endl;
+        BasisFunctions2 *basisFunctions = new BasisFunctions2;
+        basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 2);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 3);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 4);
 
-//    clock_t end = clock();
-//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
+        RHF solver(system);
+        solver.solve();
+        cout << "Energy: " << setprecision(10) <<  solver.getEnergy() << endl;
 
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
-//    clock_t begin = clock();
+    } else if (run == "CH3"){
 
-//    double d = 2.028;//2.0262;
-//    double s = sin(2*M_PI/3);
-//    double c = cos(2*M_PI/3);
-//    rowvec posC = {0.0, 0.0, 0.0};
-//    rowvec posH1 = {d, 0.0, 0.0};
-//    rowvec posH2 = {c*d, s*d, 0.0};
-//    rowvec posH3 = {c*d, -s*d, 0.0};
-//    rowvec charges = {6.0, 1.0, 1.0, 1.0};
-//    int nElectrons = 9;
+        clock_t begin = clock();
 
-//    mat nucleiPositions = zeros<mat>(4,3);
-//    nucleiPositions.row(0) = posC;
-//    nucleiPositions.row(1) = posH1;
-//    nucleiPositions.row(2) = posH2;
-//    nucleiPositions.row(3) = posH3;
+        double d = 2.028;//2.0262;
+        double s = sin(2*M_PI/3);
+        double c = cos(2*M_PI/3);
+        rowvec posC = {0.0, 0.0, 0.0};
+        rowvec posH1 = {d, 0.0, 0.0};
+        rowvec posH2 = {c*d, s*d, 0.0};
+        rowvec posH3 = {c*d, -s*d, 0.0};
+        rowvec charges = {6.0, 1.0, 1.0, 1.0};
+        int nElectrons = 9;
 
-//    BasisFunctions2 *basisFunctions = new BasisFunctions2;
-//    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", posC);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH1);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH2);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", posH3);
+        mat nucleiPositions = zeros<mat>(4,3);
+        nucleiPositions.row(0) = posC;
+        nucleiPositions.row(1) = posH1;
+        nucleiPositions.row(2) = posH2;
+        nucleiPositions.row(3) = posH3;
 
-//    System *system;
-//    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+        BasisFunctions2 *basisFunctions = new BasisFunctions2;
+        basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", 1);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", 2);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631G.dat", 3);
 
-//    UHF solver(system,2);
-//    solver.solve();
-//    cout << "Energy: " << setprecision(7) <<  solver.getEnergy() << endl;
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-//    clock_t end = clock();
-//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        UHF solver(system,2);
+        solver.solve();
+        cout << "Energy: " << setprecision(7) <<  solver.getEnergy() << endl;
 
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
+    } else if (run == "H20"){
 
+        clock_t begin = clock();
 
-//    clock_t begin = clock();
+        rowvec posO = {0.0, 0.0, 0.0};
+        rowvec posH1 = {1.797, 0.0, 0.0};
+        rowvec posH2 = {-0.448, 1.740, 0.0};
+        rowvec charges = {8.0, 1.0, 1.0};
+        int nElectrons = 10;
 
-//    rowvec posO = {0.0, 0.0, 0.0};
-//    rowvec posH1 = {1.797, 0.0, 0.0};
-//    rowvec posH2 = {-0.448, 1.740, 0.0};
-//    rowvec charges = {8.0, 1.0, 1.0};
-//    int nElectrons = 10;
+        mat nucleiPositions = zeros<mat>(3,3);
+        nucleiPositions.row(0) = posO;
+        nucleiPositions.row(1) = posH1;
+        nucleiPositions.row(2) = posH2;
 
-//    mat nucleiPositions = zeros<mat>(3,3);
-//    nucleiPositions.row(0) = posO;
-//    nucleiPositions.row(1) = posH1;
-//    nucleiPositions.row(2) = posH2;
+        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
 
-//    BasisFunctions2* basisFunctions = new BasisFunctions2;
-//    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", posO);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH1);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", posH2);
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-//    System *system;
-//    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+        RHF solver(system);
+        solver.solve();
+        cout << "Energy: " << solver.getEnergy() << endl;
 
-//    RHF solver(system);
-//    solver.solve();
-//    cout << "Energy: " << solver.getEnergy() << endl;
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
-//    clock_t end = clock();
-//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+    } else if (run == "HF") {
 
+        clock_t begin = clock();
 
+        double d = 1.735524348;
+        rowvec posH = {-0.5*d, 0.0, 0.0};
+        rowvec posF= {0.5*d, 0.0, 0.0};
+        rowvec charges = {1.0, 9.0};
+        int nElectrons = 10;
 
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posH;
+        nucleiPositions.row(1) = posF;
 
-//    clock_t begin = clock();
+        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        basisFunctions->addContracteds("../inFiles/basisSets/H_6311Gss.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/F_6311Gs.dat", 1);
 
-//    double d = 1.402176684;
-//    rowvec posH1 = {-0.5*d, 0.0, 0.0};
-//    rowvec posH2= {0.5*d, 0.0, 0.0};
-//    rowvec charges = {1.0, 1.0};
-//    int nElectrons = 2;
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-//    mat nucleiPositions = zeros<mat>(2,3);
-//    nucleiPositions.row(0) = posH1;
-//    nucleiPositions.row(1) = posH2;
+        RHF solver(system,2);
+        solver.solve();
+        cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
 
-//    BasisFunctions2* basisFunctions = new BasisFunctions2;
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_6311++G(3df,3pd).dat", posH1);
-//    basisFunctions->addContracteds("../inFiles/basisSets/H_6311++G(3df,3pd).dat", posH2);
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
-//    System *system;
-//    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+        delete system;
+        delete basisFunctions;
 
-//    RHF solver(system,2);
-//    solver.solve();
-//    cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+    } else if (run == "FCl") {
 
-//    clock_t end = clock();
-//    cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        clock_t begin = clock();
 
-//    delete system;
-//    delete basisFunctions;
+        double d = 3.154519593;
+        rowvec posF = {-0.5*d, 0.0, 0.0};
+        rowvec posCl= {0.5*d, 0.0, 0.0};
+        rowvec charges = {9.0, 17.0};
+        int nElectrons = 26;
 
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posF;
+        nucleiPositions.row(1) = posCl;
 
-//    rowvec guess = {1.0,-1.0};
-//    Func *func = new TwoDimTest(guess);
-//    Minimizer minimizer(func);
-//    cout << minimizer.solve() << endl;
+        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        basisFunctions->addContracteds("../inFiles/basisSets/F_6311Gs.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/Cl_6311Gs.dat", 1);
 
-    rowvec H1 = {0.0,0.0,0.0};
-    rowvec H2 = {1.0,0.0,0.0};
-    rowvec O = {0.0,1.0,0.0};
-    rowvec charges = {1.0,1.0,8.0};
-    int nElectrons = 10;
-    mat nucleiPositions = zeros<mat>(3,3);
-    nucleiPositions.row(0) = H1;
-    nucleiPositions.row(1) = H2;
-    nucleiPositions.row(2) = O;
-    BasisFunctions2* basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
-    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 2);
-    System *system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
-    RHF *solver = new RHF(system);
-    HartreeFockFunc *func = new HartreeFockFunc(solver, system);
-    Minimizer *minimizer = new Minimizer(func);
-    minimizer->solve();
-    cout << system->getNucleiPositions() << endl;
-    cout << minimizer->getMinValue() << endl;
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        RHF solver(system,2);
+        solver.solve();
+        cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+
+    } else if (run == "H20_Minimize"){
+
+        rowvec H1 = {0.0,0.0,0.0};
+        rowvec H2 = {1.0,0.0,0.0};
+        rowvec O = {0.0,1.0,0.0};
+        rowvec charges = {1.0,1.0,8.0};
+        int nElectrons = 10;
+        mat nucleiPositions = zeros<mat>(3,3);
+        nucleiPositions.row(0) = H1;
+        nucleiPositions.row(1) = H2;
+        nucleiPositions.row(2) = O;
+        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
+        basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 2);
+        System *system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+        RHF *solver = new RHF(system);
+        HartreeFockFunc *func = new HartreeFockFunc(solver, system);
+        Minimizer *minimizer = new Minimizer(func);
+        minimizer->solve();
+        cout << system->getNucleiPositions() << endl;
+        cout << minimizer->getMinValue() << endl;
+
+    } else {
+        cout << "No valid run selected." << endl;
+    }
 
 
     return 0;
