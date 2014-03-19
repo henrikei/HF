@@ -26,7 +26,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "HF";
+    string run = "H2O_Minimize";
 
     if (run == "CH4"){
 
@@ -190,21 +190,21 @@ int main()
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
-    } else if (run == "H20_Minimize"){
+    } else if (run == "H2O_Minimize"){
 
-        rowvec H1 = {0.0,0.0,0.0};
-        rowvec H2 = {1.0,0.0,0.0};
-        rowvec O = {0.0,1.0,0.0};
-        rowvec charges = {1.0,1.0,8.0};
+        rowvec O = {0.0,0.0,0.0};
+        rowvec H1 = {1.0,0.0,0.0};
+        rowvec H2 = {0.0,1.0,0.0};
+        rowvec charges = {8.0,1.0,1.0};
         int nElectrons = 10;
         mat nucleiPositions = zeros<mat>(3,3);
-        nucleiPositions.row(0) = H1;
-        nucleiPositions.row(1) = H2;
-        nucleiPositions.row(2) = O;
+        nucleiPositions.row(0) = O;
+        nucleiPositions.row(1) = H1;
+        nucleiPositions.row(2) = H2;
         BasisFunctions2* basisFunctions = new BasisFunctions2;
-        basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 0);
-        basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
-        basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 2);
+        basisFunctions->addContracteds("../inFiles/basisSets/O_631Gs.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 2);
         System *system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
         RHF *solver = new RHF(system);
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
