@@ -15,6 +15,13 @@ RHF::RHF(System* system, int perturbOrder):HartreeFock(system)
     m_restrictedFactor = 2;
     m_perturbOrder = perturbOrder;
     m_energyMP2 = 0;
+
+    m_MOI.set_size(m_matDim, m_matDim);
+    for(int i = 0; i < m_matDim; i++){
+        for(int j = 0; j < m_matDim; j++){
+            m_MOI(i,j) = zeros(m_matDim, m_matDim);
+        }
+    }
 }
 
 
@@ -87,41 +94,33 @@ void RHF::buildFockMatrix()
 //--------------------------------------------------------------------------------------------------------------------
 // Second order perturbation
 double RHF::perturbation2order(){
-    int nHStates = m_nElectrons/2;
-    int nPStates = m_matDim - m_nElectrons/2;
     // temp1, temp2, temp3 are temporary fields used to get from
     // Atomic Orbital Integrals to Molecular Orbital Integrals
-    field<mat> temp1(nHStates, m_matDim);
-    field<mat> temp2(nHStates, nHStates);
-    field<mat> temp3(nHStates, nHStates);
+    field<mat> temp1(m_matDim, m_matDim);
+    field<mat> temp2(m_matDim, m_matDim);
+    field<mat> temp3(m_matDim, m_matDim);
     // orbitalIntegral = <ij|g|ab>
-    field<mat> MOI(nHStates, nHStates);
-    for (int i = 0; i < nHStates; i++){
-        for (int q = 0; q < m_matDim; q++){
-            temp1(i,q) = zeros(m_matDim, m_matDim);
-        }
-    }
-    for (int i = 0; i < nHStates; i++){
-        for (int j = 0; j < nHStates; j++){
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < m_matDim; j++){
+            temp1(i,j) = zeros(m_matDim, m_matDim);
             temp2(i,j) = zeros(m_matDim, m_matDim);
-            temp3(i,j) = zeros(nPStates, m_matDim);
-            MOI(i,j) = zeros(nPStates, nPStates);
+            temp3(i,j) = zeros(m_matDim, m_matDim);
         }
     }
 
     // Transform from Atomic Orbital Integrals to Molecular Orbital Integrals
     AOItoMOI(temp1, m_Q, m_C, 0);
     AOItoMOI(temp2, temp1, m_C, 1);
-    AOItoMOI(temp3, temp2, m_C.cols(nHStates, m_matDim-1), 2);
-    AOItoMOI(MOI, temp3, m_C.cols(nHStates, m_matDim-1), 3);
+    AOItoMOI(temp3, temp2, m_C, 2);
+    AOItoMOI(m_MOI, temp3, m_C, 3);
 
     // Sum up energy tems
-    for (int i = 0; i < nHStates; i++){
-        for (int j = 0; j < nHStates; j++){
-            for (int a = 0; a < nPStates; a++){
-                for (int b = 0; b < nPStates; b++){
-                    m_energyMP2 += MOI(i,j)(a,b)*(2*MOI(i,j)(a,b) - MOI(j,i)(a,b))
-                                /(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a+nHStates) - m_fockEnergy(b+nHStates));
+    for (int i = 0; i < m_nElectrons/2; i++){
+        for (int j = 0; j < m_nElectrons/2; j++){
+            for (int a = m_nElectrons/2; a < m_matDim; a++){
+                for (int b = m_nElectrons/2; b < m_matDim; b++){
+                    m_energyMP2 += m_MOI(i,j)(a,b)*(2*m_MOI(i,j)(a,b) - m_MOI(j,i)(a,b))
+                                /(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(b));
                 }
             }
         }

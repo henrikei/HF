@@ -635,6 +635,62 @@ TEST(HF_631Gss_UHF){
     delete system;
 }
 
+TEST(FCl_RMP2_6311Gs){
+    double d = 3.154519593;
+    rowvec posF = {-0.5*d, 0.0, 0.0};
+    rowvec posCl= {0.5*d, 0.0, 0.0};
+    rowvec charges = {9.0, 17.0};
+    int nElectrons = 26;
+
+    mat nucleiPositions = zeros<mat>(2,3);
+    nucleiPositions.row(0) = posF;
+    nucleiPositions.row(1) = posCl;
+
+    BasisFunctions2* basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/F_6311Gs.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/Cl_6311Gs.dat", 1);
+
+    System *system;
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+    RHF solver(system,2);
+    solver.solve();
+    double energy = solver.getEnergy();
+
+    CHECK_CLOSE(-559.293198, energy, 1.0E-6);
+
+    delete basisFunctions;
+    delete system;
+}
+
+TEST(FCl_UMP2_6311Gs){
+    double d = 3.154519593;
+    rowvec posF = {-0.5*d, 0.0, 0.0};
+    rowvec posCl= {0.5*d, 0.0, 0.0};
+    rowvec charges = {9.0, 17.0};
+    int nElectrons = 26;
+
+    mat nucleiPositions = zeros<mat>(2,3);
+    nucleiPositions.row(0) = posF;
+    nucleiPositions.row(1) = posCl;
+
+    BasisFunctions2* basisFunctions = new BasisFunctions2;
+    basisFunctions->addContracteds("../inFiles/basisSets/F_6311Gs.dat", 0);
+    basisFunctions->addContracteds("../inFiles/basisSets/Cl_6311Gs.dat", 1);
+
+    System *system;
+    system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+    UHF solver(system,2);
+    solver.solve();
+    double energy = solver.getEnergy();
+
+    CHECK_CLOSE(-559.293198, energy, 1.0E-6);
+
+    delete basisFunctions;
+    delete system;
+}
+
 TEST(MINIMIZER_RBANANA){
     rowvec x = {-1.2, 1.0};
     Func *func = new TwoDimTest(x);

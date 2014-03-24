@@ -26,7 +26,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "H2O_Minimize";
+    string run = "FCl";
 
     if (run == "CH4"){
 
@@ -101,7 +101,7 @@ int main()
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
-    } else if (run == "H20"){
+    } else if (run == "H2O"){
 
         clock_t begin = clock();
 
@@ -183,7 +183,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system,2);
+        UHF solver(system,2);
         solver.solve();
         cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
 
@@ -202,9 +202,9 @@ int main()
         nucleiPositions.row(1) = H1;
         nucleiPositions.row(2) = H2;
         BasisFunctions2* basisFunctions = new BasisFunctions2;
-        basisFunctions->addContracteds("../inFiles/basisSets/O_631Gs.dat", 0);
-        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 1);
-        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 2);
+        basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
         System *system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
         RHF *solver = new RHF(system);
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);

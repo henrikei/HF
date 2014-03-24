@@ -23,6 +23,10 @@ private:
     int m_nElectronsUp;
     int m_nElectronsDown;
 
+    field<mat> m_MOI_UU;
+    field<mat> m_MOI_DD;
+    field<mat> m_MOI_UD;
+
     void buildFockMatrix();
     double perturbation2order();
 };

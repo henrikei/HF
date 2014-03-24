@@ -16,7 +16,8 @@ HartreeFock::HartreeFock(System *system):
     }
     m_energy = 1.0E6;
     m_energyMP2 = 0.0;
-    m_toler = 1.0E-10;
+    m_energyMP3 = 0.0;
+    m_toler = 1.0E-8;
 }
 
 
@@ -134,17 +135,12 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
 // Transforms Atomic Orbital Integrals to Molecular Orbital Integrals one index at a time
 void HartreeFock::AOItoMOI(field<mat>& MOI, field<mat> AOI, mat C, int index)
 {
-    int I = MOI.n_rows;
-    int J = MOI.n_cols;
-    int K = MOI(0,0).n_rows;
-    int L = MOI(0,0).n_cols;
-
     int a, b, c, d, e;
 
-    for (int i = 0; i < I; i++){
-        for (int j = 0; j < J; j++){
-            for (int k = 0; k < K; k++){
-                for (int l = 0; l < L; l++){
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < m_matDim; j++){
+            for (int k = 0; k < m_matDim; k++){
+                for (int l = 0; l < m_matDim; l++){
                     for (int m = 0; m < m_matDim; m++){
                         if (index == 0)       { e = i; a = m; b = j; c = k; d = l;}
                         else if(index == 1)   { e = j; a = i; b = m; c = k; d = l;}

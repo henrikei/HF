@@ -18,6 +18,17 @@ UHF::UHF(System *system, int perturbOrder):HartreeFock(system)
         m_nElectronsUp += 1;
     }
     m_perturbOrder = perturbOrder;
+
+    m_MOI_UU.set_size(m_matDim, m_matDim);
+    m_MOI_DD.set_size(m_matDim, m_matDim);
+    m_MOI_UD.set_size(m_matDim, m_matDim);
+    for(int i = 0; i < m_matDim; i++){
+        for(int j = 0; j < m_matDim; j++){
+            m_MOI_UU(i,j) = zeros(m_matDim, m_matDim);
+            m_MOI_DD(i,j) = zeros(m_matDim, m_matDim);
+            m_MOI_UD(i,j) = zeros(m_matDim, m_matDim);
+        }
+    }
 }
 
 
@@ -96,107 +107,78 @@ void UHF::solve()
 
 
 double UHF::perturbation2order(){
-    int nHStatesUp = m_nElectronsUp;
-    int nHStatesDown = m_nElectronsDown;
-    int nPStatesUp = m_matDim - m_nElectronsUp;
-    int nPStatesDown = m_matDim - m_nElectronsDown;
-    field<mat> tempUU1(nHStatesUp, m_matDim);
-    field<mat> tempDD1(nHStatesDown, m_matDim);
-    field<mat> tempUD1(nHStatesUp, m_matDim);
-    field<mat> tempUU2(nHStatesUp, nHStatesUp);
-    field<mat> tempDD2(nHStatesDown, nHStatesDown);
-    field<mat> tempUD2(nHStatesUp, nHStatesDown);
-    field<mat> tempUU3(nHStatesUp, nHStatesUp);
-    field<mat> tempDD3(nHStatesDown, nHStatesDown);
-    field<mat> tempUD3(nHStatesUp, nHStatesDown);
+    field<mat> tempUU1(m_matDim, m_matDim);
+    field<mat> tempDD1(m_matDim, m_matDim);
+    field<mat> tempUD1(m_matDim, m_matDim);
+    field<mat> tempUU2(m_matDim, m_matDim);
+    field<mat> tempDD2(m_matDim, m_matDim);
+    field<mat> tempUD2(m_matDim, m_matDim);
+    field<mat> tempUU3(m_matDim, m_matDim);
+    field<mat> tempDD3(m_matDim, m_matDim);
+    field<mat> tempUD3(m_matDim, m_matDim);
     // MOI = Molecular Orbital Integral
     // AOI = Atomic Orbital Integral
-    field<mat> MOI_UU(nHStatesUp, nHStatesUp);
-    field<mat> MOI_DD(nHStatesDown, nHStatesDown);
-    field<mat> MOI_UD(nHStatesUp, nHStatesDown);
 
-    // Up-Up AOI to Up-Up MOI
-    for(int i = 0; i < nHStatesUp; i++){
+    for(int i = 0; i < m_matDim; i++){
         for(int j = 0; j < m_matDim; j++){
             tempUU1(i,j) = zeros(m_matDim, m_matDim);
-        }
-    }
-    for(int i = 0; i < nHStatesUp; i++){
-        for(int j = 0; j < nHStatesUp; j++){
+            tempDD1(i,j) = zeros(m_matDim, m_matDim);
+            tempUD1(i,j) = zeros(m_matDim, m_matDim);
             tempUU2(i,j) = zeros(m_matDim, m_matDim);
-            tempUU3(i,j) = zeros(nPStatesUp, m_matDim);
-            MOI_UU(i,j) = zeros(nPStatesUp, nPStatesUp);
+            tempDD2(i,j) = zeros(m_matDim, m_matDim);
+            tempUD2(i,j) = zeros(m_matDim, m_matDim);
+            tempUU3(i,j) = zeros(m_matDim, m_matDim);
+            tempDD3(i,j) = zeros(m_matDim, m_matDim);
+            tempUD3(i,j) = zeros(m_matDim, m_matDim);
         }
     }
+
+    // Up-Up AOI to Up-Up MOI
     AOItoMOI(tempUU1, m_Q, m_Cup, 0);
     AOItoMOI(tempUU2, tempUU1, m_Cup, 1);
-    AOItoMOI(tempUU3, tempUU2, m_Cup.cols(nHStatesUp, m_matDim-1), 2);
-    AOItoMOI(MOI_UU, tempUU3, m_Cup.cols(nHStatesUp, m_matDim-1), 3);
+    AOItoMOI(tempUU3, tempUU2, m_Cup, 2);
+    AOItoMOI(m_MOI_UU, tempUU3, m_Cup, 3);
 
     // Down-Down AOI to Down-Down MOI
-    for(int i = 0; i < nHStatesDown; i++){
-        for(int j = 0; j < m_matDim; j++){
-            tempDD1(i,j) = zeros(m_matDim, m_matDim);
-        }
-    }
-    for(int i = 0; i < nHStatesDown; i++){
-        for(int j = 0; j < nHStatesDown; j++){
-            tempDD2(i,j) = zeros(m_matDim, m_matDim);
-            tempDD3(i,j) = zeros(nPStatesDown, m_matDim);
-            MOI_DD(i,j) = zeros(nPStatesDown, nPStatesDown);
-        }
-    }
     AOItoMOI(tempDD1, m_Q, m_Cdown, 0);
     AOItoMOI(tempDD2, tempDD1, m_Cdown, 1);
-    AOItoMOI(tempDD3, tempDD2, m_Cdown.cols(nHStatesDown, m_matDim-1), 2);
-    AOItoMOI(MOI_DD, tempDD3, m_Cdown.cols(nHStatesDown, m_matDim-1), 3);
+    AOItoMOI(tempDD3, tempDD2, m_Cdown, 2);
+    AOItoMOI(m_MOI_DD, tempDD3, m_Cdown, 3);
 
     // Up-Down AOI to Up-Down MOI
-    for(int i = 0; i < nHStatesUp; i++){
-        for(int j = 0; j < m_matDim; j++){
-            tempUD1(i,j) = zeros(m_matDim, m_matDim);
-        }
-    }
-    for(int i = 0; i < nHStatesUp; i++){
-        for(int j = 0; j < nHStatesDown; j++){
-            tempUD2(i,j) = zeros(m_matDim, m_matDim);
-            tempUD3(i,j) = zeros(nPStatesUp, m_matDim);
-            MOI_UD(i,j) = zeros(nPStatesUp, nPStatesDown);
-        }
-    }
     AOItoMOI(tempUD1, m_Q, m_Cup, 0);
     AOItoMOI(tempUD2, tempUD1, m_Cdown, 1);
-    AOItoMOI(tempUD3, tempUD2, m_Cup.cols(nHStatesUp, m_matDim-1), 2);
-    AOItoMOI(MOI_UD, tempUD3, m_Cdown.cols(nHStatesDown, m_matDim-1), 3);
+    AOItoMOI(tempUD3, tempUD2, m_Cup, 2);
+    AOItoMOI(m_MOI_UD, tempUD3, m_Cdown, 3);
 
 
     // Sum up energy terms
-    for (int i = 0; i < nHStatesUp; i++){
-        for (int j = 0; j < nHStatesUp; j++){
-            for (int a = 0; a < nPStatesUp; a++){
-                for (int b = 0; b < nPStatesUp; b++){
-                    m_energyMP2 += 0.25*(MOI_UU(i,j)(a,b) - MOI_UU(i,j)(b,a))*(MOI_UU(i,j)(a,b) - MOI_UU(i,j)(b,a))/
-                            (m_fockEnergyUp(i) + m_fockEnergyUp(j) - m_fockEnergyUp(a+nHStatesUp) - m_fockEnergyUp(b+nHStatesUp));
+    for (int i = 0; i < m_nElectronsUp; i++){
+        for (int j = 0; j < m_nElectronsUp; j++){
+            for (int a = m_nElectronsUp; a < m_matDim; a++){
+                for (int b = m_nElectronsUp; b < m_matDim; b++){
+                    m_energyMP2 += 0.25*(m_MOI_UU(i,j)(a,b) - m_MOI_UU(i,j)(b,a))*(m_MOI_UU(i,j)(a,b) - m_MOI_UU(i,j)(b,a))/
+                            (m_fockEnergyUp(i) + m_fockEnergyUp(j) - m_fockEnergyUp(a) - m_fockEnergyUp(b));
                 }
             }
         }
     }
-    for (int i = 0; i < nHStatesDown; i++){
-        for (int j = 0; j < nHStatesDown; j++){
-            for (int a = 0; a < nPStatesDown; a++){
-                for (int b = 0; b < nPStatesDown; b++){
-                    m_energyMP2 += 0.25*(MOI_DD(i,j)(a,b) - MOI_DD(i,j)(b,a))*(MOI_DD(i,j)(a,b) - MOI_DD(i,j)(b,a))/
-                            (m_fockEnergyDown(i) + m_fockEnergyDown(j) - m_fockEnergyDown(a+nHStatesDown) - m_fockEnergyDown(b+nHStatesDown));
+    for (int i = 0; i < m_nElectronsDown; i++){
+        for (int j = 0; j < m_nElectronsDown; j++){
+            for (int a = m_nElectronsDown; a < m_matDim; a++){
+                for (int b = m_nElectronsDown; b < m_matDim; b++){
+                    m_energyMP2 += 0.25*(m_MOI_DD(i,j)(a,b) - m_MOI_DD(i,j)(b,a))*(m_MOI_DD(i,j)(a,b) - m_MOI_DD(i,j)(b,a))/
+                            (m_fockEnergyDown(i) + m_fockEnergyDown(j) - m_fockEnergyDown(a) - m_fockEnergyDown(b));
                 }
             }
         }
     }
-    for (int i = 0; i < nHStatesUp; i++){
-        for (int j = 0; j < nHStatesDown; j++){
-            for (int a = 0; a < nPStatesUp; a++){
-                for (int b = 0; b < nPStatesDown; b++){
-                    m_energyMP2 += MOI_UD(i,j)(a,b)*MOI_UD(i,j)(a,b)/
-                            (m_fockEnergyUp(i) + m_fockEnergyDown(j) - m_fockEnergyUp(a+nHStatesUp) - m_fockEnergyDown(b+nHStatesDown));
+    for (int i = 0; i < m_nElectronsUp; i++){
+        for (int j = 0; j < m_nElectronsDown; j++){
+            for (int a = m_nElectronsUp; a < m_matDim; a++){
+                for (int b = m_nElectronsDown; b < m_matDim; b++){
+                    m_energyMP2 += m_MOI_UD(i,j)(a,b)*m_MOI_UD(i,j)(a,b)/
+                            (m_fockEnergyUp(i) + m_fockEnergyDown(j) - m_fockEnergyUp(a) - m_fockEnergyDown(b));
                 }
             }
         }

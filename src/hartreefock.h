@@ -28,6 +28,7 @@ protected:
     int m_matDim;
     double m_energy;
     double m_energyMP2;
+    double m_energyMP3;
 
     double m_toler;
     double m_restrictedFactor;
