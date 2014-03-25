@@ -1,0 +1,68 @@
+#  6-311G*  EMSL  Basis Set Exchange Library  3/18/14 4:16 AM
+# Elements                             References
+# --------                             ----------
+# H, Li - Ne: R. Krishnan, J.S. Binkley, R. Seeger and J.A. Pople,
+#             J. Chem. Phys. 72, 650 (1980)
+# Na - Ar:    A.D. McLean and G.S. Chandler J. Chem. Phys. 72, 5639, (1980).
+# K  - Ca:    J-P. Blaudeau, M. P. McGrath, L.A. Curtiss and L. Radom,
+#             J. Chem. Phys. 107, 5016 (1997).
+# Ga - Kr:    L. A. Curtiss, M. P. McGrath, J-P. Blandeau, N. E. Davis, 
+#             R. C. Binning, Jr. L. Radom, J. Chem. Phys. 103, 6104 (1995).
+# I      :    M.N. Glukhovstev, A. pross, M.P. McGrath, L. Radom, J. Chem. Phys.
+#             103, 1878 (1995)
+#   
+
+# Elements                             References
+# --------                             ----------
+# Li - Ar: R. Krishnan, J.S. Binkley, R. Seeger, J.A. Pople, J. Chem. Phys. 72,
+#          650 (1980).
+# K  - Ca: J-P. Blaudeau, M. P. McGrath, L.A. Curtiss
+#                                    and L. Radom, J. Chem. Phys. 107, 5016
+#                                    (1997).
+# Ga - Kr: L. A. Curtiss, M. P. McGrath, J-P. Blandeau, N. E. Davis, R. C. 
+#          Binning, Jr., L. Radom, J. Chem. Phys. 103, 6104 (1995)
+#   
+
+
+$basis
+*
+cl   6-311G*
+*
+    6  s
+ 105819.0000000              0.0007380        
+  15872.0000000              0.0057180        
+   3619.6500000              0.0294950        
+   1030.8000000              0.1172860        
+    339.9080000              0.3629490        
+    124.5380000              0.5841490        
+    3  s
+    124.5380000              0.1341770        
+     49.5135000              0.6242500        
+     20.8056000              0.2917560        
+    1  s
+      6.5834600              1.0000000        
+    1  s
+      2.5646800              1.0000000        
+    1  s
+      0.5597630              1.0000000        
+    1  s
+      0.1832730              1.0000000        
+    5  p
+    589.7760000              0.0023910        
+    139.8490000              0.0185040        
+     45.1413000              0.0813770        
+     16.8733000              0.2215520        
+      6.7411000              0.7725690        
+    2  p
+      6.7411000             -1.5722440        
+      2.7715200              0.9923890        
+    1  p
+      1.0238700              1.0000000        
+    1  p
+      0.3813680              1.0000000        
+    1  p
+      0.1094370              1.0000000        
+    1  d
+      0.7500000              1.0000000        
+*
+$end
