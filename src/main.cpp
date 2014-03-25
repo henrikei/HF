@@ -26,7 +26,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "FCl";
+    string run = "H2";
 
     if (run == "CH4"){
 
@@ -131,6 +131,36 @@ int main()
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
+    } else if (run =="H2"){
+
+        clock_t begin = clock();
+
+        double d = 1.4;
+        rowvec posH1 = {-d/2, 0.0, 0.0};
+        rowvec posH2 = {d/2, 0.0, 0.0};
+        rowvec charges = {1.0, 1.0};
+        int nElectrons = 2;
+
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posH1;
+        nucleiPositions.row(1) = posH2;
+
+        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 0);
+        basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 1);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        RHF solver(system,3);
+        solver.solve();
+        cout << "Energy: " << solver.getEnergy() << endl;
+        cout << "energyMP2: " << solver.getEnergyMP2() << endl;
+        cout << "energyMP3: " << solver.getEnergyMP2()+solver.getEnergyMP3() << endl;
+
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+
     } else if (run == "HF") {
 
         clock_t begin = clock();
@@ -183,7 +213,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UHF solver(system,2);
+        RHF solver(system,2);
         solver.solve();
         cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
 

@@ -29,6 +29,7 @@ private:
 
     void buildFockMatrix();
     double perturbation2order();
+    double perturbation3order();
 };
 
 #endif // UHF_H

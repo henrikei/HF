@@ -14,7 +14,6 @@ RHF::RHF(System* system, int perturbOrder):HartreeFock(system)
     }
     m_restrictedFactor = 2;
     m_perturbOrder = perturbOrder;
-    m_energyMP2 = 0;
 
     m_MOI.set_size(m_matDim, m_matDim);
     for(int i = 0; i < m_matDim; i++){
@@ -56,6 +55,9 @@ void RHF::solve()
     // Perturbative terms
     if (m_perturbOrder == 2){
         m_energy += perturbation2order();
+    } else if (m_perturbOrder ==3) {
+        m_energy += perturbation2order();
+        m_energy += perturbation3order();
     } else if (m_perturbOrder == 1) {
     } else {
         cout << "Error. Only first and second order perturbation has been implemented." << endl;
@@ -127,4 +129,66 @@ double RHF::perturbation2order(){
     }
 
     return m_energyMP2;
+}
+
+double RHF::perturbation3order()
+{
+    // Contribution from particle ladder diagram
+    for (int i = 0; i < m_nElectrons/2; i++){
+        for (int j = 0; j < m_nElectrons/2; j++){
+            for (int a = m_nElectrons/2; a < m_matDim; a++){
+                for (int b = m_nElectrons/2; b < m_matDim; b++){
+                    for (int c = m_nElectrons/2; c < m_matDim; c++){
+                        for (int d = m_nElectrons/2; d < m_matDim; d++){
+                            m_energyMP3 += (m_MOI(i,j)(a,b)*m_MOI(a,b)(c,d)*(2*m_MOI(c,d)(i,j) + 2*m_MOI(d,c)(j,i) - m_MOI(c,d)(j,i) - m_MOI(d,c)(i,j))
+                                         + m_MOI(i,j)(a,b)*m_MOI(b,a)(c,d)*(2*m_MOI(c,d)(j,i) + 2*m_MOI(d,c)(i,j) - m_MOI(c,d)(i,j) - m_MOI(d,c)(j,i)))
+                                          /(4*(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(b))
+                                             *(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(c) - m_fockEnergy(d)));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Contribution from hole ladder diagram
+    for (int i = 0; i < m_nElectrons/2; i++){
+        for (int j = 0; j < m_nElectrons/2; j++){
+            for (int k = 0; k < m_nElectrons/2; k++){
+                for (int l = 0; l < m_nElectrons/2; l++){
+                    for (int a = m_nElectrons/2; a < m_matDim; a++){
+                        for (int b = m_nElectrons/2; b < m_matDim; b++){
+                            m_energyMP3 += (m_MOI(i,j)(a,b)*m_MOI(a,b)(k,l)*(2*m_MOI(k,l)(i,j) + 2*m_MOI(l,k)(j,i) - m_MOI(k,l)(j,i) - m_MOI(l,k)(i,j))
+                                         + m_MOI(i,j)(a,b)*m_MOI(b,a)(k,l)*(2*m_MOI(k,l)(j,i) + 2*m_MOI(l,k)(i,j) - m_MOI(k,l)(i,j) - m_MOI(l,k)(j,i)))
+                                           /(4*(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(b))
+                                              *(m_fockEnergy(k) + m_fockEnergy(l) - m_fockEnergy(a) - m_fockEnergy(b)));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    // Contribution from ring diagram
+    for (int i = 0; i < m_nElectrons/2; i++){
+        for (int j = 0; j < m_nElectrons/2; j++){
+            for (int k = 0; k < m_nElectrons/2; k++){
+                for (int a = m_nElectrons/2; a < m_matDim; a++){
+                    for (int b = m_nElectrons/2; b < m_matDim; b++){
+                        for (int c = m_nElectrons/2; c < m_matDim; c++){
+                            m_energyMP3 += -2*(m_MOI(i,j)(a,b)*m_MOI(k,b)(i,c)*(2*m_MOI(a,c)(k,j) - m_MOI(a,c)(j,k))
+                                              +m_MOI(i,j)(a,b)*m_MOI(k,b)(c,i)*(2*m_MOI(a,c)(j,k) - m_MOI(a,c)(k,j))
+                                              +m_MOI(i,j)(b,a)*m_MOI(k,b)(i,c)*(2*m_MOI(a,c)(j,k) - m_MOI(a,c)(k,j))
+                                              +m_MOI(i,j)(b,a)*m_MOI(k,b)(c,i)*(2*m_MOI(a,c)(k,j) - 4*m_MOI(a,c)(j,k)))
+                                            /((m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(b))
+                                             *(m_fockEnergy(k) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(c)));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return m_energyMP3;
 }

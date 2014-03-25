@@ -31,6 +31,11 @@ double HartreeFock::getEnergyMP2()
     return m_energyMP2;
 }
 
+double HartreeFock::getEnergyMP3()
+{
+    return m_energyMP3;
+}
+
 //----------------------------------------------------------------------------------------------------------------
 // Calculates all integrals needed to make the matrices
 void HartreeFock::calcIntegrals()

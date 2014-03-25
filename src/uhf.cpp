@@ -185,3 +185,8 @@ double UHF::perturbation2order(){
     }
     return m_energyMP2;
 }
+
+double UHF::perturbation3order()
+{
+    return 0;
+}

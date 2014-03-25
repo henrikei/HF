@@ -16,6 +16,7 @@ public:
     virtual void solve()=0;
     double getEnergy();
     double getEnergyMP2();
+    double getEnergyMP3();
     virtual mat getCoeff()=0;
 
 protected:
@@ -39,6 +40,7 @@ protected:
     void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons);
     void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index);
     virtual double perturbation2order()=0;
+    virtual double perturbation3order()=0;
 };
 
 #endif // HARTREEFOCK_H

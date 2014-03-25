@@ -21,6 +21,7 @@ private:
 
     void buildFockMatrix();
     double perturbation2order();
+    double perturbation3order();
 };
 
 #endif // RHF_H
