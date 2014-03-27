@@ -21,6 +21,7 @@ public:
     double getNumOfContracteds();
     Contracted* getContracted (int p);
     int getAngMomMax();
+
 private:
     vector<Contracted*> m_contracteds;
 

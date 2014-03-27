@@ -188,5 +188,35 @@ double UHF::perturbation2order(){
 
 double UHF::perturbation3order()
 {
+//    for (int i = 0; i < m_nElectronsUp; i++){
+//        for (int j = 0; j < m_nElectronsUp; j++){
+//            for (int k = 0; k < m_nElectronsUp; k++){
+//                for (int a = m_nElectronsUp; a < m_matDim; a++){
+//                    for (int b = m_nElectronsUp; b < m_matDim; b++){
+//                        for (int c = m_nElectronsUp; c < m_matDim; c++){
+//                            m_energyMP3 += -(m_MOI_UU(i,j)(a,b) - m_MOI_UU(i,j)(b,a))*(m_MOI_UU(k,b)(i,c) - m_MOI_UU(k,b)(c,i))*(m_MOI_UU(a,c)(k,j) - m_MOI_UU(a,c)(j,k))
+//                                          /((m_fockEnergyUp(i) + m_fockEnergyUp(j) - m_fockEnergyUp(a) - m_fockEnergyUp(b))
+//                                            *(m_fockEnergyUp(k) + m_fockEnergyUp(j) - m_fockEnergyUp(a) - m_fockEnergyUp(c)));
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

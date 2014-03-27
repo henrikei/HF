@@ -26,7 +26,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "H2";
+    string run = "FCl";
 
     if (run == "CH4"){
 

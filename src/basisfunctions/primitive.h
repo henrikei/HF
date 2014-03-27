@@ -16,6 +16,7 @@ public:
     irowvec3 getPow();
     rowvec3 getPos();
     void setPosPointer(mat* nucleiPositions);
+
 private:
     double m_exp;
     double m_coeff;

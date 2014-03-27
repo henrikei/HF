@@ -15,6 +15,7 @@ public:
     int getNumOfPrimitives();
     Primitive *getPrimitive(int p);
     int getAngMom();
+
 private:
     vector<Primitive*> m_primitives;
 };

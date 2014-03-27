@@ -6,7 +6,7 @@ Primitive::Primitive(double exp, double coeff, irowvec pow, int posNum)
     m_coeff = coeff;
     m_pow = pow;
     m_posNum = posNum;
-    m_nucleiPositions = 0;
+    m_nucleiPositions = NULL;
 }
 
 double Primitive::getExp()

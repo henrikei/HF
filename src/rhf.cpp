@@ -140,10 +140,9 @@ double RHF::perturbation3order()
                 for (int b = m_nElectrons/2; b < m_matDim; b++){
                     for (int c = m_nElectrons/2; c < m_matDim; c++){
                         for (int d = m_nElectrons/2; d < m_matDim; d++){
-                            m_energyMP3 += (m_MOI(i,j)(a,b)*m_MOI(a,b)(c,d)*(2*m_MOI(c,d)(i,j) + 2*m_MOI(d,c)(j,i) - m_MOI(c,d)(j,i) - m_MOI(d,c)(i,j))
-                                         + m_MOI(i,j)(a,b)*m_MOI(b,a)(c,d)*(2*m_MOI(c,d)(j,i) + 2*m_MOI(d,c)(i,j) - m_MOI(c,d)(i,j) - m_MOI(d,c)(j,i)))
-                                          /(4*(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(b))
-                                             *(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(c) - m_fockEnergy(d)));
+                            m_energyMP3 += m_MOI(i,j)(a,b)*m_MOI(a,b)(c,d)*(2*m_MOI(c,d)(i,j) - m_MOI(c,d)(j,i))
+                                          /((m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(b))
+                                           *(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(c) - m_fockEnergy(d)));
                         }
                     }
                 }
@@ -158,10 +157,9 @@ double RHF::perturbation3order()
                 for (int l = 0; l < m_nElectrons/2; l++){
                     for (int a = m_nElectrons/2; a < m_matDim; a++){
                         for (int b = m_nElectrons/2; b < m_matDim; b++){
-                            m_energyMP3 += (m_MOI(i,j)(a,b)*m_MOI(a,b)(k,l)*(2*m_MOI(k,l)(i,j) + 2*m_MOI(l,k)(j,i) - m_MOI(k,l)(j,i) - m_MOI(l,k)(i,j))
-                                         + m_MOI(i,j)(a,b)*m_MOI(b,a)(k,l)*(2*m_MOI(k,l)(j,i) + 2*m_MOI(l,k)(i,j) - m_MOI(k,l)(i,j) - m_MOI(l,k)(j,i)))
-                                           /(4*(m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(b))
-                                              *(m_fockEnergy(k) + m_fockEnergy(l) - m_fockEnergy(a) - m_fockEnergy(b)));
+                            m_energyMP3 += m_MOI(i,j)(a,b)*m_MOI(a,b)(k,l)*(2*m_MOI(k,l)(i,j) - m_MOI(k,l)(j,i))
+                                           /((m_fockEnergy(i) + m_fockEnergy(j) - m_fockEnergy(a) - m_fockEnergy(b))
+                                            *(m_fockEnergy(k) + m_fockEnergy(l) - m_fockEnergy(a) - m_fockEnergy(b)));
                         }
                     }
                 }
