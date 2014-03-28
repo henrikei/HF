@@ -168,7 +168,7 @@ double RHF::perturbation3order()
     }
 
 
-    // Contribution from ring diagram
+    // Contribution from loop diagram
     for (int i = 0; i < m_nElectrons/2; i++){
         for (int j = 0; j < m_nElectrons/2; j++){
             for (int k = 0; k < m_nElectrons/2; k++){

@@ -152,7 +152,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system,3);
+        UHF solver(system,3);
         solver.solve();
         cout << "Energy: " << solver.getEnergy() << endl;
         cout << "energyMP2: " << solver.getEnergyMP2() << endl;
@@ -213,7 +213,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system,2);
+        UHF solver(system,3);
         solver.solve();
         cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
 
