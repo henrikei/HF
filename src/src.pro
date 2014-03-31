@@ -17,7 +17,10 @@ SOURCES += \
     minimizer/minimizer.cpp \
     minimizer/func.cpp \
     minimizer/twodimtest.cpp \
-    minimizer/hartreefockfunc.cpp
+    minimizer/hartreefockfunc.cpp \
+    perturbation/mollerplessetpt.cpp \
+    perturbation/restrictedmollerplessetpt.cpp \
+    perturbation/unrestrictedmollerplessetpt.cpp
 
 HEADERS += \
     hartreefock.h \
@@ -32,7 +35,10 @@ HEADERS += \
     minimizer/minimizer.h \
     minimizer/func.h \
     minimizer/twodimtest.h \
-    minimizer/hartreefockfunc.h
+    minimizer/hartreefockfunc.h \
+    perturbation/mollerplessetpt.h \
+    perturbation/restrictedmollerplessetpt.h \
+    perturbation/unrestrictedmollerplessetpt.h
 
 OTHER_FILES += \
     ../inFiles/configFiles/H2O_431G.cfg \

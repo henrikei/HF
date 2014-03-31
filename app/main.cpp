@@ -8,6 +8,8 @@
 #include <hartreefock.h>
 #include <rhf.h>
 #include <uhf.h>
+#include <perturbation/restrictedmollerplessetpt.h>
+#include <perturbation/unrestrictedmollerplessetpt.h>
 #include <system.h>
 #include <integrator.h>
 #include <boysfunction.h>
@@ -26,7 +28,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "H2O";
+    string run = "H2";
 
     if (run == "CH4"){
 
@@ -94,7 +96,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UHF solver(system,2);
+        UHF solver(system);
         solver.solve();
         cout << "Energy: " << setprecision(7) <<  solver.getEnergy() << endl;
 
@@ -152,11 +154,11 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UHF solver(system,3);
+        RestrictedMollerPlessetPT solver(system,3);
         solver.solve();
         cout << "Energy: " << solver.getEnergy() << endl;
-        cout << "energyMP2: " << solver.getEnergyMP2() << endl;
-        cout << "energyMP3: " << solver.getEnergyMP2()+solver.getEnergyMP3() << endl;
+        cout << "energyMP2: " << solver.getEnergy2order() << endl;
+        cout << "energyMP3: " << solver.getEnergy2order()+solver.getEnergy3order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
@@ -182,7 +184,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system,2);
+        RHF solver(system);
         solver.solve();
         cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
 
@@ -213,9 +215,9 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system,2);
+        RestrictedMollerPlessetPT solver(system,2);
         solver.solve();
-        cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+        cout << "Energy: " << setprecision(9) << solver.getEnergy2order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;

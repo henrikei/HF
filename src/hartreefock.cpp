@@ -15,8 +15,6 @@ HartreeFock::HartreeFock(System *system):
         }
     }
     m_energy = 1.0E6;
-    m_energyMP2 = 0.0;
-    m_energyMP3 = 0.0;
     m_toler = 1.0E-8;
 }
 
@@ -26,14 +24,9 @@ double HartreeFock::getEnergy(){
     return m_energy;
 }
 
-double HartreeFock::getEnergyMP2()
+field<mat> HartreeFock::getQmatrix()
 {
-    return m_energyMP2;
-}
-
-double HartreeFock::getEnergyMP3()
-{
-    return m_energyMP3;
+    return m_Q;
 }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -134,27 +127,4 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
     P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix. Sometimes needed in order to achieve correct convergence.
 
     fockEnergy = eigVal;
-}
-
-
-// Transforms Atomic Orbital Integrals to Molecular Orbital Integrals one index at a time
-void HartreeFock::AOItoMOI(field<mat>& MOI, field<mat> AOI, mat C, int index)
-{
-    int a, b, c, d, e;
-
-    for (int i = 0; i < m_matDim; i++){
-        for (int j = 0; j < m_matDim; j++){
-            for (int k = 0; k < m_matDim; k++){
-                for (int l = 0; l < m_matDim; l++){
-                    for (int m = 0; m < m_matDim; m++){
-                        if (index == 0)       { e = i; a = m; b = j; c = k; d = l;}
-                        else if(index == 1)   { e = j; a = i; b = m; c = k; d = l;}
-                        else if(index == 2)   { e = k; a = i; b = j; c = m; d = l;}
-                        else if(index == 3)   { e = l; a = i; b = j; c = k; d = m;}
-                        MOI(i,j)(k,l) += C(m,e)*AOI(a,b)(c,d);
-                    }
-                }
-            }
-        }
-    }
 }
