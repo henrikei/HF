@@ -6,7 +6,7 @@ BoysFunction::BoysFunction(int angMomMax)
 {
     m_nMax = 4*angMomMax;
     m_F = zeros<vec>(4*angMomMax+1);
-    m_Ftabulated.load("../inFiles/boys_tabulated.dat");
+    m_Ftabulated.load("../../HartreeFock/inFiles/boys_tabulated.dat");
 }
 
 

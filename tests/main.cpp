@@ -2,17 +2,17 @@
 #include <iomanip>
 #include <armadillo>
 #include <unittest++/UnitTest++.h>
-#include <src/integrator.h>
-#include <src/boysfunction.h>
-#include <src/basisfunctions/basisfunctions2.h>
-#include <src/basisfunctions/primitive.h>
-#include <src/hartreefock.h>
-#include <src/rhf.h>
-#include <src/uhf.h>
-#include <src/minimizer/minimizer.h>
-#include <src/minimizer/func.h>
-#include <src/minimizer/hartreefockfunc.h>
-#include <src/minimizer/twodimtest.h>
+#include <integrator.h>
+#include <boysfunction.h>
+#include <basisfunctions/basisfunctions2.h>
+#include <basisfunctions/primitive.h>
+#include <hartreefock.h>
+#include <rhf.h>
+#include <uhf.h>
+#include <minimizer/minimizer.h>
+#include <minimizer/func.h>
+#include <minimizer/hartreefockfunc.h>
+#include <minimizer/twodimtest.h>
 
 using namespace std;
 using namespace arma;
@@ -343,9 +343,9 @@ TEST(H20_431G_RHF){
     nucleiPositions.row(2) = posH2;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_431G.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -378,9 +378,9 @@ TEST(H20_431G_UHF){
     nucleiPositions.row(2) = posH2;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/O_431G.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_431G.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -419,11 +419,11 @@ TEST(CH4_431G_RHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_431G.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 3);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 4);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_431G.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 3);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 4);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -462,11 +462,11 @@ TEST(CH4_431G_UHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_431G.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 3);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_431G.dat", 4);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_431G.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 3);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 4);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -505,11 +505,11 @@ TEST(CH4_631Gss_RHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 3);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 4);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 3);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 4);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -548,11 +548,11 @@ TEST(CH4_631Gss_UHF){
     nucleiPositions.row(4) = posH4;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/C_631Gs.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 1);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 2);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 3);
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 4);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 3);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 4);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -585,8 +585,8 @@ TEST(HF_631Gss_RHF){
     nucleiPositions.row(1) = posF;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/F_631Gs.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_631Gs.dat", 1);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -619,8 +619,8 @@ TEST(HF_631Gss_UHF){
     nucleiPositions.row(1) = posF;
 
     BasisFunctions2 *basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/H_631Gss.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/F_631Gs.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_631Gs.dat", 1);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -647,8 +647,8 @@ TEST(FCl_RMP2_6311Gs){
     nucleiPositions.row(1) = posCl;
 
     BasisFunctions2* basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/F_6311Gs.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/Cl_6311Gs.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_6311Gs.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/Cl_6311Gs.dat", 1);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -675,8 +675,8 @@ TEST(FCl_UMP2_6311Gs){
     nucleiPositions.row(1) = posCl;
 
     BasisFunctions2* basisFunctions = new BasisFunctions2;
-    basisFunctions->addContracteds("../inFiles/basisSets/F_6311Gs.dat", 0);
-    basisFunctions->addContracteds("../inFiles/basisSets/Cl_6311Gs.dat", 1);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_6311Gs.dat", 0);
+    basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/Cl_6311Gs.dat", 1);
 
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);

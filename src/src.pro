@@ -1,13 +1,10 @@
-TEMPLATE = app
-CONFIG += console
+include(../defaults.pri)
 CONFIG -= qt
 
-LIBS += -llapack -larmadillo -lboost_regex -lconfig++
+TARGET = myapp
+TEMPLATE = lib
 
-QMAKE_CXXFLAGS += -std=c++0x
-QMAKE_CXXFLAGS_RELEASE += -std=c++0x
-
-SOURCES += main.cpp \
+SOURCES += \
     hartreefock.cpp \
     system.cpp \
     boysfunction.cpp \
@@ -36,8 +33,6 @@ HEADERS += \
     minimizer/func.h \
     minimizer/twodimtest.h \
     minimizer/hartreefockfunc.h
-
-include(defaults.pri)
 
 OTHER_FILES += \
     ../inFiles/configFiles/H2O_431G.cfg \
