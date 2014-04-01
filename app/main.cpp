@@ -193,7 +193,7 @@ int main()
 
         RestrictedMollerPlessetPT solver(system,3);
         solver.solve();
-        cout << "Energy: " << solver.getEnergyHF() << endl;
+        cout << "Energy: " << solver.getEnergyHF() +solver.getEnergy2order()+solver.getEnergy3order() << endl;
         cout << "energyMP2: " << solver.getEnergy2order() << endl;
         cout << "energyMP3: " << solver.getEnergy2order()+solver.getEnergy3order() << endl;
 
