@@ -1,18 +1,25 @@
 #include "unrestrictedmollerplessetpt.h"
 
-UnrestrictedMollerPlessetPT::UnrestrictedMollerPlessetPT()
+UnrestrictedMollerPlessetPT::UnrestrictedMollerPlessetPT(System *system, int perturbOrder) :
+    MollerPlessetPT(system, perturbOrder)
 {
     m_solver = new UHF(m_system);
-    m_fockEnergyUp = zeros(1);
-    m_fockEnergyDown = zeros(1);
-    m_Cup = zeros(1,1);
-    m_Cdown = zeros(1,1);
-    m_MOI_UU.set_size(1);
-    m_MOI_UU(0) = zeros(1,1);
-    m_MOI_DD.set_size(1);
-    m_MOI_DD(0) = zeros(1,1);
-    m_MOI_UD.set_size(1);
-    m_MOI_UD(0) = zeros(1,1);
+    m_nElectronsUp = m_solver->getNumOfElectronsUp();
+    m_nElectronsDown = m_solver->getNumOfElecrtonsDown();
+    m_fockEnergyUp = zeros(m_matDim);
+    m_fockEnergyDown = zeros(m_matDim);
+    m_Cup = zeros(m_matDim, m_matDim);
+    m_Cdown = zeros(m_matDim, m_matDim);
+    m_MOI_UU.set_size(m_matDim, m_matDim);
+    m_MOI_DD.set_size(m_matDim, m_matDim);
+    m_MOI_UD.set_size(m_matDim, m_matDim);
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < m_matDim; j++){
+            m_MOI_UU(i,j) = zeros(m_matDim, m_matDim);
+            m_MOI_DD(i,j) = zeros(m_matDim, m_matDim);
+            m_MOI_UD(i,j) = zeros(m_matDim, m_matDim);
+        }
+    }
 }
 
 void UnrestrictedMollerPlessetPT::solve()
@@ -51,22 +58,33 @@ void UnrestrictedMollerPlessetPT::solve()
     }
 
     // Up-Up AOI to Up-Up MOI
-    AOItoMOI(tempUU1, m_Q, m_Cup, 0);
+    AOItoMOI(tempUU1, m_AOI, m_Cup, 0);
     AOItoMOI(tempUU2, tempUU1, m_Cup, 1);
     AOItoMOI(tempUU3, tempUU2, m_Cup, 2);
     AOItoMOI(m_MOI_UU, tempUU3, m_Cup, 3);
 
     // Down-Down AOI to Down-Down MOI
-    AOItoMOI(tempDD1, m_Q, m_Cdown, 0);
+    AOItoMOI(tempDD1, m_AOI, m_Cdown, 0);
     AOItoMOI(tempDD2, tempDD1, m_Cdown, 1);
     AOItoMOI(tempDD3, tempDD2, m_Cdown, 2);
     AOItoMOI(m_MOI_DD, tempDD3, m_Cdown, 3);
 
     // Up-Down AOI to Up-Down MOI
-    AOItoMOI(tempUD1, m_Q, m_Cup, 0);
+    AOItoMOI(tempUD1, m_AOI, m_Cup, 0);
     AOItoMOI(tempUD2, tempUD1, m_Cdown, 1);
     AOItoMOI(tempUD3, tempUD2, m_Cup, 2);
     AOItoMOI(m_MOI_UD, tempUD3, m_Cdown, 3);
+
+    if (m_perturbOrder == 1){
+    } else if (m_perturbOrder == 2){
+        calc2OrderPerturb();
+    } else if (m_perturbOrder == 3){
+        calc2OrderPerturb();
+        calc3OrderPerturb();
+    } else {
+        cout << "Error: " << m_perturbOrder << " order perturbation theory not implemented." << endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
@@ -76,7 +94,7 @@ void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
         for (int j = 0; j < m_nElectronsUp; j++){
             for (int a = m_nElectronsUp; a < m_matDim; a++){
                 for (int b = m_nElectronsUp; b < m_matDim; b++){
-                    m_energy2Order += 0.25*(m_MOI_UU(i,j)(a,b) - m_MOI_UU(i,j)(b,a))*(m_MOI_UU(i,j)(a,b) - m_MOI_UU(i,j)(b,a))/
+                    m_energy2Order += 0.25*(m_MOI_UU(i,j)(a,b) - m_MOI_UU(i,j)(b,a))*(m_MOI_UU(a,b)(i,j) - m_MOI_UU(b,a)(i,j))/
                             (m_fockEnergyUp(i) + m_fockEnergyUp(j) - m_fockEnergyUp(a) - m_fockEnergyUp(b));
                 }
             }
@@ -86,7 +104,7 @@ void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
         for (int j = 0; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsDown; a < m_matDim; a++){
                 for (int b = m_nElectronsDown; b < m_matDim; b++){
-                    m_energy2Order += 0.25*(m_MOI_DD(i,j)(a,b) - m_MOI_DD(i,j)(b,a))*(m_MOI_DD(i,j)(a,b) - m_MOI_DD(i,j)(b,a))/
+                    m_energy2Order += 0.25*(m_MOI_DD(i,j)(a,b) - m_MOI_DD(i,j)(b,a))*(m_MOI_DD(a,b)(i,j) - m_MOI_DD(b,a)(i,j))/
                             (m_fockEnergyDown(i) + m_fockEnergyDown(j) - m_fockEnergyDown(a) - m_fockEnergyDown(b));
                 }
             }
@@ -102,6 +120,8 @@ void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
             }
         }
     }
+    cout << m_nElectronsUp << endl;
+    cout << m_nElectronsDown << endl;
 
 }
 
@@ -189,7 +209,7 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    // following five generated from previous five by interchange up <--> down
+
 
     for (int i = 0; i < m_nElectronsDown; i++){
         for (int j = 0; j < m_nElectronsDown; j++){

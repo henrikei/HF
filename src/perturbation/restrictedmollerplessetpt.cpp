@@ -18,6 +18,7 @@ RestrictedMollerPlessetPT::RestrictedMollerPlessetPT(System* system, int perturb
 void RestrictedMollerPlessetPT::solve()
 {
     m_solver->solve();
+    m_energyHF = m_solver->getEnergy();
     m_AOI = m_solver->getQmatrix();
     m_fockEnergy = m_solver->getFockEnergy()(0);
     m_C = m_solver->getCoeff()(0);

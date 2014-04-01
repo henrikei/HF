@@ -11,6 +11,8 @@ public:
     void solve();
     field<mat> getCoeff();
     field<colvec> getFockEnergy();
+    int getNumOfElectronsUp();
+    int getNumOfElecrtonsDown();
 
 private:
     mat m_Fup;

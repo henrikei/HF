@@ -9,6 +9,8 @@
 #include <hartreefock.h>
 #include <rhf.h>
 #include <uhf.h>
+#include <perturbation/restrictedmollerplessetpt.h>
+#include <perturbation/unrestrictedmollerplessetpt.h>
 #include <minimizer/minimizer.h>
 #include <minimizer/func.h>
 #include <minimizer/hartreefockfunc.h>
@@ -653,9 +655,9 @@ TEST(FCl_RMP2_6311Gs){
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-    RHF solver(system,2);
+    RestrictedMollerPlessetPT solver(system,2);
     solver.solve();
-    double energy = solver.getEnergy();
+    double energy = solver.getEnergyHF() + solver.getEnergy2order();
 
     CHECK_CLOSE(-559.293198, energy, 1.0E-6);
 
@@ -681,9 +683,9 @@ TEST(FCl_UMP2_6311Gs){
     System *system;
     system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-    UHF solver(system,2);
+    UnrestrictedMollerPlessetPT solver(system,2);
     solver.solve();
-    double energy = solver.getEnergy();
+    double energy = solver.getEnergyHF() + solver.getEnergy2order();
 
     CHECK_CLOSE(-559.293198, energy, 1.0E-6);
 

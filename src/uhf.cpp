@@ -62,6 +62,16 @@ field<colvec> UHF::getFockEnergy()
     return fockEnergy;
 }
 
+int UHF::getNumOfElectronsUp()
+{
+    return m_nElectronsUp;
+}
+
+int UHF::getNumOfElecrtonsDown()
+{
+    return m_nElectronsDown;
+}
+
 
 //-----------------------------------------------------------------------------------------------------------------
 // Solves the Hartree-Fock equations (iterated), stores the energy in double energy and the coefficients

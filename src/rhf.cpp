@@ -55,7 +55,7 @@ field<mat> RHF::getCoeff(){
 //---------------------------------------------------------------------------------------------------------------
 field<colvec> RHF::getFockEnergy()
 {
-    field<colvec> fockEnergy(0);
+    field<colvec> fockEnergy(1);
     fockEnergy(0) = m_fockEnergy;
     return fockEnergy;
 }
