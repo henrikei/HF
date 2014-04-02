@@ -4,3 +4,8 @@ Func::Func()
 {
 }
 
+Func::~Func()
+{
+
+}
+

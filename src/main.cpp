@@ -26,7 +26,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "FCl";
+    string run = "CH4";
 
     if (run == "CH4"){
 
@@ -213,7 +213,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UHF solver(system,3);
+        RHF solver(system,2);
         solver.solve();
         cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
 
