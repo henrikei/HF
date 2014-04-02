@@ -1,6 +1,6 @@
 #include "mollerplessetpt.h"
 
-MollerPlessetPT::MollerPlessetPT(System *system, int perturbOrder)
+MollerPlessetPT::MollerPlessetPT(System *system, int perturbOrder, int frozenCore)
 {
     m_system = system;
     m_AOI.set_size(1,1);
@@ -10,6 +10,12 @@ MollerPlessetPT::MollerPlessetPT(System *system, int perturbOrder)
     m_energyHF = 0;
     m_energy2Order = 0;
     m_energy3Order = 0;
+    if (frozenCore % 2 == 0){
+        m_frozenCore = frozenCore;
+    } else {
+        cout << "Error: The number of frozen core electrons must be even." << endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 double MollerPlessetPT::getEnergyHF()

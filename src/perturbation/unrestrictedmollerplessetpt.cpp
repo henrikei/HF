@@ -1,7 +1,7 @@
 #include "unrestrictedmollerplessetpt.h"
 
-UnrestrictedMollerPlessetPT::UnrestrictedMollerPlessetPT(System *system, int perturbOrder) :
-    MollerPlessetPT(system, perturbOrder)
+UnrestrictedMollerPlessetPT::UnrestrictedMollerPlessetPT(System *system, int perturbOrder, int frozenCore) :
+    MollerPlessetPT(system, perturbOrder, frozenCore)
 {
     m_solver = new UHF(m_system);
     m_nElectronsUp = m_solver->getNumOfElectronsUp();
@@ -90,8 +90,8 @@ void UnrestrictedMollerPlessetPT::solve()
 void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
 {
     // Sum up energy terms
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsUp; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
             for (int a = m_nElectronsUp; a < m_matDim; a++){
                 for (int b = m_nElectronsUp; b < m_matDim; b++){
                     m_energy2Order += 0.25*(m_MOI_UU(i,j)(a,b) - m_MOI_UU(i,j)(b,a))*(m_MOI_UU(a,b)(i,j) - m_MOI_UU(b,a)(i,j))/
@@ -100,8 +100,8 @@ void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
             }
         }
     }
-    for (int i = 0; i < m_nElectronsDown; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsDown; a < m_matDim; a++){
                 for (int b = m_nElectronsDown; b < m_matDim; b++){
                     m_energy2Order += 0.25*(m_MOI_DD(i,j)(a,b) - m_MOI_DD(i,j)(b,a))*(m_MOI_DD(a,b)(i,j) - m_MOI_DD(b,a)(i,j))/
@@ -110,8 +110,8 @@ void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
             }
         }
     }
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsUp; a < m_matDim; a++){
                 for (int b = m_nElectronsDown; b < m_matDim; b++){
                     m_energy2Order += m_MOI_UD(i,j)(a,b)*m_MOI_UD(i,j)(a,b)/
@@ -120,18 +120,15 @@ void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
             }
         }
     }
-    cout << m_nElectronsUp << endl;
-    cout << m_nElectronsDown << endl;
-
 }
 
 void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
 {
     // Contributions from loop diagram
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsUp; j++){
-            for (int k = 0; k < m_nElectronsUp; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
                 for (int a = m_nElectronsUp; a < m_matDim; a++){
                     for (int b = m_nElectronsUp; b < m_matDim; b++){
                         for (int c = m_nElectronsUp; c < m_matDim; c++){
@@ -145,9 +142,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
-            for (int k = 0; k < m_nElectronsUp; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
                 for (int a = m_nElectronsDown; a < m_matDim; a++){
                     for (int b = m_nElectronsUp; b < m_matDim; b++){
                         for (int c = m_nElectronsUp; c < m_matDim; c++){
@@ -161,9 +158,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsDown; i++){
-        for (int j = 0; j < m_nElectronsUp; j++){
-            for (int k = 0; k < m_nElectronsUp; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
                 for (int a = m_nElectronsUp; a < m_matDim; a++){
                     for (int b = m_nElectronsDown; b < m_matDim; b++){
                         for (int c = m_nElectronsUp; c < m_matDim; c++){
@@ -177,9 +174,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsDown; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
-            for (int k = 0; k < m_nElectronsUp; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
                 for (int a = m_nElectronsDown; a < m_matDim; a++){
                     for (int b = m_nElectronsDown; b < m_matDim; b++){
                         for (int c = m_nElectronsUp; c < m_matDim; c++){
@@ -193,9 +190,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
-            for (int k = 0; k < m_nElectronsUp; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
                 for (int a = m_nElectronsUp; a < m_matDim; a++){
                     for (int b = m_nElectronsDown; b < m_matDim; b++){
                         for (int c = m_nElectronsDown; c < m_matDim; c++){
@@ -211,9 +208,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
 
 
 
-    for (int i = 0; i < m_nElectronsDown; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
-            for (int k = 0; k < m_nElectronsDown; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
                 for (int a = m_nElectronsDown; a < m_matDim; a++){
                     for (int b = m_nElectronsDown; b < m_matDim; b++){
                         for (int c = m_nElectronsDown; c < m_matDim; c++){
@@ -227,9 +224,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsDown; i++){
-        for (int j = 0; j < m_nElectronsUp; j++){
-            for (int k = 0; k < m_nElectronsDown; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
                 for (int a = m_nElectronsUp; a < m_matDim; a++){
                     for (int b = m_nElectronsDown; b < m_matDim; b++){
                         for (int c = m_nElectronsDown; c < m_matDim; c++){
@@ -243,9 +240,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
-            for (int k = 0; k < m_nElectronsDown; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
                 for (int a = m_nElectronsDown; a < m_matDim; a++){
                     for (int b = m_nElectronsUp; b < m_matDim; b++){
                         for (int c = m_nElectronsDown; c < m_matDim; c++){
@@ -259,9 +256,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsUp; j++){
-            for (int k = 0; k < m_nElectronsDown; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
                 for (int a = m_nElectronsUp; a < m_matDim; a++){
                     for (int b = m_nElectronsUp; b < m_matDim; b++){
                         for (int c = m_nElectronsDown; c < m_matDim; c++){
@@ -275,9 +272,9 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsDown; i++){
-        for (int j = 0; j < m_nElectronsUp; j++){
-            for (int k = 0; k < m_nElectronsDown; k++){
+    for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
+            for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
                 for (int a = m_nElectronsDown; a < m_matDim; a++){
                     for (int b = m_nElectronsUp; b < m_matDim; b++){
                         for (int c = m_nElectronsUp; c < m_matDim; c++){
@@ -295,8 +292,8 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
     // Contributions from particle ladder diagram
     // -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsUp; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
             for (int a = m_nElectronsUp; a < m_matDim; a++){
                 for (int b = m_nElectronsUp; b < m_matDim; b++){
                     for (int c = m_nElectronsUp; c < m_matDim; c++){
@@ -311,8 +308,8 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsDown; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsDown; a < m_matDim; a++){
                 for (int b = m_nElectronsDown; b < m_matDim; b++){
                     for (int c = m_nElectronsDown; c < m_matDim; c++){
@@ -327,8 +324,8 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsUp; a < m_matDim; a++){
                 for (int b = m_nElectronsDown; b < m_matDim; b++){
                     for (int c = m_nElectronsUp; c < m_matDim; c++){
@@ -347,12 +344,12 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
     // Contributions from hole ladder diagram
     // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsUp; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
             for (int a = m_nElectronsUp; a < m_matDim; a++){
                 for (int b = m_nElectronsUp; b < m_matDim; b++){
-                    for (int k = 0; k < m_nElectronsUp; k++){
-                        for (int l = 0; l < m_nElectronsUp; l++){
+                    for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
+                        for (int l = m_frozenCore/2; l < m_nElectronsUp; l++){
                             m_energy3Order += (m_MOI_UU(i,j)(a,b) - m_MOI_UU(i,j)(b,a))*(m_MOI_UU(a,b)(k,l) - m_MOI_UU(a,b)(l,k))*(m_MOI_UU(k,l)(i,j) - m_MOI_UU(k,l)(j,i))
                                            /(8*(m_fockEnergyUp(i) + m_fockEnergyUp(j) - m_fockEnergyUp(a) - m_fockEnergyUp(b))
                                             *(m_fockEnergyUp(k) + m_fockEnergyUp(l) - m_fockEnergyUp(a) - m_fockEnergyUp(b)));
@@ -363,12 +360,12 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsDown; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsDown; a < m_matDim; a++){
                 for (int b = m_nElectronsDown; b < m_matDim; b++){
-                    for (int k = 0; k < m_nElectronsDown; k++){
-                        for (int l = 0; l < m_nElectronsDown; l++){
+                    for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
+                        for (int l = m_frozenCore/2; l < m_nElectronsDown; l++){
                             m_energy3Order += (m_MOI_DD(i,j)(a,b) - m_MOI_DD(i,j)(b,a))*(m_MOI_DD(a,b)(k,l) - m_MOI_DD(a,b)(l,k))*(m_MOI_DD(k,l)(i,j) - m_MOI_DD(k,l)(j,i))
                                            /(8*(m_fockEnergyDown(i) + m_fockEnergyDown(j) - m_fockEnergyDown(a) - m_fockEnergyDown(b))
                                             *(m_fockEnergyDown(k) + m_fockEnergyDown(l) - m_fockEnergyDown(a) - m_fockEnergyDown(b)));
@@ -379,12 +376,12 @@ void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
         }
     }
 
-    for (int i = 0; i < m_nElectronsUp; i++){
-        for (int j = 0; j < m_nElectronsDown; j++){
+    for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
+        for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsUp; a < m_matDim; a++){
                 for (int b = m_nElectronsDown; b < m_matDim; b++){
-                    for (int k = 0; k < m_nElectronsUp; k++){
-                        for (int l = 0; l < m_nElectronsDown; l++){
+                    for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
+                        for (int l = m_frozenCore/2; l < m_nElectronsDown; l++){
                             m_energy3Order += m_MOI_UD(i,j)(a,b)*m_MOI_UD(a,b)(k,l)*m_MOI_UD(k,l)(i,j)
                                            /((m_fockEnergyUp(i) + m_fockEnergyDown(j) - m_fockEnergyUp(a) - m_fockEnergyDown(b))
                                             *(m_fockEnergyUp(k) + m_fockEnergyDown(l) - m_fockEnergyUp(a) - m_fockEnergyDown(b)));

@@ -12,7 +12,7 @@ using namespace arma;
 class UnrestrictedMollerPlessetPT : public MollerPlessetPT
 {
 public:
-    UnrestrictedMollerPlessetPT(System *system, int perturbOrder);
+    UnrestrictedMollerPlessetPT(System *system, int perturbOrder, int frozenCore=0);
     virtual void solve();
 
 private:

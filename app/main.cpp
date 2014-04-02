@@ -71,14 +71,14 @@ int main()
 
         clock_t begin = clock();
 
-        double d = 1.1324930928286276;
+        double d = 1.1150365517919136;
         rowvec posN = {0.0, 0.0, 0.0};
         rowvec posH1 = {d, d, d};
         rowvec posH2 = {-d, -d, d};
         rowvec posH3 = {d, -d, -d};
         rowvec posH4 = {-d, d, -d};
         rowvec charges = {7.0, 1.0, 1.0, 1.0, 1.0};
-        int nElectrons = 11;
+        int nElectrons = 10;
 
         mat nucleiPositions = zeros<mat>(5,3);
         nucleiPositions.row(0) = posN;
@@ -97,7 +97,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UnrestrictedMollerPlessetPT solver(system,2);
+        RestrictedMollerPlessetPT solver(system,3,2);
         solver.solve();
         cout << "Energy: " << setprecision(10) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order()<< endl;
 
@@ -108,7 +108,7 @@ int main()
 
         clock_t begin = clock();
 
-        double d = 2.028;//2.0262;
+        double d = 2.04;//2.0262;
         double s = sin(2*M_PI/3);
         double c = cos(2*M_PI/3);
         rowvec posC = {0.0, 0.0, 0.0};
@@ -133,7 +133,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UnrestrictedMollerPlessetPT solver(system,2);
+        UnrestrictedMollerPlessetPT solver(system,2,2);
         solver.solve();
         cout << "Energy: " << setprecision(7) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
@@ -204,7 +204,7 @@ int main()
 
         clock_t begin = clock();
 
-        double d = 1.735524348;
+        double d = 1.889725989*2;
         rowvec posH = {-0.5*d, 0.0, 0.0};
         rowvec posF= {0.5*d, 0.0, 0.0};
         rowvec charges = {1.0, 9.0};
@@ -215,15 +215,15 @@ int main()
         nucleiPositions.row(1) = posF;
 
         BasisFunctions2* basisFunctions = new BasisFunctions2;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311Gss.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_6311Gs.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_631Gs.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system);
+        UnrestrictedMollerPlessetPT solver(system,2);
         solver.solve();
-        cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;

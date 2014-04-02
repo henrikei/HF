@@ -1,7 +1,7 @@
 #include "restrictedmollerplessetpt.h"
 
-RestrictedMollerPlessetPT::RestrictedMollerPlessetPT(System* system, int perturbOrder) :
-    MollerPlessetPT(system, perturbOrder)
+RestrictedMollerPlessetPT::RestrictedMollerPlessetPT(System* system, int perturbOrder, int frozenCore) :
+    MollerPlessetPT(system, perturbOrder, frozenCore)
 {
     m_solver = new RHF(m_system);
     m_nElectrons = m_system->getNumOfElectrons();
@@ -59,8 +59,8 @@ void RestrictedMollerPlessetPT::solve()
 void RestrictedMollerPlessetPT::calc2OrderPerturb()
 {
     // Sum up energy tems
-    for (int i = 0; i < m_nElectrons/2; i++){
-        for (int j = 0; j < m_nElectrons/2; j++){
+    for (int i = m_frozenCore/2; i < m_nElectrons/2; i++){
+        for (int j = m_frozenCore/2; j < m_nElectrons/2; j++){
             for (int a = m_nElectrons/2; a < m_matDim; a++){
                 for (int b = m_nElectrons/2; b < m_matDim; b++){
                     m_energy2Order += m_MOI(i,j)(a,b)*(2*m_MOI(i,j)(a,b) - m_MOI(j,i)(a,b))
@@ -75,8 +75,8 @@ void RestrictedMollerPlessetPT::calc2OrderPerturb()
 void RestrictedMollerPlessetPT::calc3OrderPerturb()
 {
     // Contribution from particle ladder diagram
-    for (int i = 0; i < m_nElectrons/2; i++){
-        for (int j = 0; j < m_nElectrons/2; j++){
+    for (int i = m_frozenCore/2; i < m_nElectrons/2; i++){
+        for (int j = m_frozenCore/2; j < m_nElectrons/2; j++){
             for (int a = m_nElectrons/2; a < m_matDim; a++){
                 for (int b = m_nElectrons/2; b < m_matDim; b++){
                     for (int c = m_nElectrons/2; c < m_matDim; c++){
@@ -92,10 +92,10 @@ void RestrictedMollerPlessetPT::calc3OrderPerturb()
     }
 
     // Contribution from hole ladder diagram
-    for (int i = 0; i < m_nElectrons/2; i++){
-        for (int j = 0; j < m_nElectrons/2; j++){
-            for (int k = 0; k < m_nElectrons/2; k++){
-                for (int l = 0; l < m_nElectrons/2; l++){
+    for (int i = m_frozenCore/2; i < m_nElectrons/2; i++){
+        for (int j = m_frozenCore/2; j < m_nElectrons/2; j++){
+            for (int k = m_frozenCore/2; k < m_nElectrons/2; k++){
+                for (int l = m_frozenCore/2; l < m_nElectrons/2; l++){
                     for (int a = m_nElectrons/2; a < m_matDim; a++){
                         for (int b = m_nElectrons/2; b < m_matDim; b++){
                             m_energy3Order += m_MOI(i,j)(a,b)*m_MOI(a,b)(k,l)*(2*m_MOI(k,l)(i,j) - m_MOI(k,l)(j,i))
@@ -110,9 +110,9 @@ void RestrictedMollerPlessetPT::calc3OrderPerturb()
 
 
     // Contribution from loop diagram
-    for (int i = 0; i < m_nElectrons/2; i++){
-        for (int j = 0; j < m_nElectrons/2; j++){
-            for (int k = 0; k < m_nElectrons/2; k++){
+    for (int i = m_frozenCore/2; i < m_nElectrons/2; i++){
+        for (int j = m_frozenCore/2; j < m_nElectrons/2; j++){
+            for (int k = m_frozenCore/2; k < m_nElectrons/2; k++){
                 for (int a = m_nElectrons/2; a < m_matDim; a++){
                     for (int b = m_nElectrons/2; b < m_matDim; b++){
                         for (int c = m_nElectrons/2; c < m_matDim; c++){

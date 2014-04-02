@@ -8,7 +8,7 @@
 class MollerPlessetPT
 {
 public:
-    MollerPlessetPT(System *system, int perturbOrder);
+    MollerPlessetPT(System *system, int perturbOrder, int frozenCore);
     virtual void solve()=0;
     double getEnergyHF();
     double getEnergy2order();
@@ -23,6 +23,8 @@ protected:
     double m_energyHF;
     double m_energy2Order;
     double m_energy3Order;
+
+    int m_frozenCore;
 
     void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index);
 };
