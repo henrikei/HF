@@ -5,15 +5,15 @@
 #include <fstream>
 #include <armadillo>
 #include <libconfig.h++>
-#include <hartreefock.h>
-#include <rhf.h>
-#include <uhf.h>
-#include <perturbation/restrictedmollerplessetpt.h>
-#include <perturbation/unrestrictedmollerplessetpt.h>
-#include <system.h>
-#include <integrator.h>
-#include <boysfunction.h>
-#include <basisfunctions/basisfunctions2.h>
+#include <hartreefock/hartreefock.h>
+#include <hartreefock/rhf.h>
+#include <hartreefock/uhf.h>
+#include <perturbation/rmp.h>
+#include <perturbation/ump.h>
+#include <system/system.h>
+#include <integrator/integrator.h>
+#include <boysfunction/boysfunction.h>
+#include <basisfunctions/basisfunctions.h>
 #include <basisfunctions/contracted.h>
 #include <basisfunctions/primitive.h>
 #include <minimizer/func.h>
@@ -50,7 +50,7 @@ int main()
         nucleiPositions.row(3) = posH3;
         nucleiPositions.row(4) = posH4;
 
-        BasisFunctions2 *basisFunctions = new BasisFunctions2;
+        BasisFunctions *basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
@@ -87,7 +87,7 @@ int main()
         nucleiPositions.row(3) = posH3;
         nucleiPositions.row(4) = posH4;
 
-        BasisFunctions2 *basisFunctions = new BasisFunctions2;
+        BasisFunctions *basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/N_631++Gs.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631++Gss.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631++Gss.dat", 2);
@@ -97,7 +97,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RestrictedMollerPlessetPT solver(system,3,2);
+        RMP solver(system,3,2);
         solver.solve();
         cout << "Energy: " << setprecision(10) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order()<< endl;
 
@@ -124,7 +124,7 @@ int main()
         nucleiPositions.row(2) = posH2;
         nucleiPositions.row(3) = posH3;
 
-        BasisFunctions2 *basisFunctions = new BasisFunctions2;
+        BasisFunctions *basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 2);
@@ -133,7 +133,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UnrestrictedMollerPlessetPT solver(system,2,2);
+        UMP solver(system,2,2);
         solver.solve();
         cout << "Energy: " << setprecision(7) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
@@ -155,7 +155,7 @@ int main()
         nucleiPositions.row(1) = posH1;
         nucleiPositions.row(2) = posH2;
 
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        BasisFunctions* basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_431G.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
@@ -184,14 +184,14 @@ int main()
         nucleiPositions.row(0) = posH1;
         nucleiPositions.row(1) = posH2;
 
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        BasisFunctions* basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RestrictedMollerPlessetPT solver(system,3);
+        RMP solver(system,3);
         solver.solve();
         cout << "Energy: " << solver.getEnergyHF() +solver.getEnergy2order()+solver.getEnergy3order() << endl;
         cout << "energyMP2: " << solver.getEnergy2order() << endl;
@@ -214,14 +214,14 @@ int main()
         nucleiPositions.row(0) = posH;
         nucleiPositions.row(1) = posF;
 
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        BasisFunctions* basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_631Gs.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UnrestrictedMollerPlessetPT solver(system,2);
+        UMP solver(system,2);
         solver.solve();
         cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
 
@@ -245,14 +245,14 @@ int main()
         nucleiPositions.row(0) = posF;
         nucleiPositions.row(1) = posCl;
 
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        BasisFunctions* basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_6311Gs.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/Cl_6311Gs.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RestrictedMollerPlessetPT solver(system,2);
+        RMP solver(system,2);
         solver.solve();
         cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
 
@@ -270,7 +270,7 @@ int main()
         nucleiPositions.row(0) = O;
         nucleiPositions.row(1) = H1;
         nucleiPositions.row(2) = H2;
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        BasisFunctions* basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_431G.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);

@@ -1,18 +1,18 @@
-#ifndef UNRESTRICTEDMOLLERPLESSETPT_H
-#define UNRESTRICTEDMOLLERPLESSETPT_H
+#ifndef UMF_H
+#define UMP_H
 
 #include <armadillo>
-#include "mollerplessetpt.h"
-#include "uhf.h"
+#include "mollerplesset.h"
+#include "hartreefock/uhf.h"
 
 using namespace std;
 using namespace arma;
 
 
-class UnrestrictedMollerPlessetPT : public MollerPlessetPT
+class UMP : public MollerPlesset
 {
 public:
-    UnrestrictedMollerPlessetPT(System *system, int perturbOrder, int frozenCore=0);
+    UMP(System *system, int perturbOrder, int frozenCore=0);
     virtual void solve();
 
 private:
@@ -32,4 +32,4 @@ private:
     void calc3OrderPerturb();
 };
 
-#endif // UNRESTRICTEDMOLLERPLESSETPT_H
+#endif // UMP_H

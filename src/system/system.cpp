@@ -2,7 +2,7 @@
 
 
 
-System::System(BasisFunctions2* basisFunctions, mat nucleiPositions, rowvec charges, int nElectrons)
+System::System(BasisFunctions *basisFunctions, mat nucleiPositions, rowvec charges, int nElectrons)
 {
     m_basisFunctions = basisFunctions;
     m_integrator = new Integrator(basisFunctions->getAngMomMax());

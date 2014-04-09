@@ -1,7 +1,7 @@
-#include "unrestrictedmollerplessetpt.h"
+#include "ump.h"
 
-UnrestrictedMollerPlessetPT::UnrestrictedMollerPlessetPT(System *system, int perturbOrder, int frozenCore) :
-    MollerPlessetPT(system, perturbOrder, frozenCore)
+UMP::UMP(System *system, int perturbOrder, int frozenCore) :
+    MollerPlesset(system, perturbOrder, frozenCore)
 {
     m_solver = new UHF(m_system);
     m_nElectronsUp = m_solver->getNumOfElectronsUp();
@@ -22,7 +22,7 @@ UnrestrictedMollerPlessetPT::UnrestrictedMollerPlessetPT(System *system, int per
     }
 }
 
-void UnrestrictedMollerPlessetPT::solve()
+void UMP::solve()
 {
     m_solver->solve();
     m_energyHF = m_solver->getEnergy();
@@ -87,7 +87,7 @@ void UnrestrictedMollerPlessetPT::solve()
     }
 }
 
-void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
+void UMP::calc2OrderPerturb()
 {
     // Sum up energy terms
     for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
@@ -122,7 +122,7 @@ void UnrestrictedMollerPlessetPT::calc2OrderPerturb()
     }
 }
 
-void UnrestrictedMollerPlessetPT::calc3OrderPerturb()
+void UMP::calc3OrderPerturb()
 {
     // Contributions from loop diagram
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

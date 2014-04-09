@@ -1,10 +1,10 @@
-#include "basisfunctions2.h"
+#include "basisfunctions.h"
 
-BasisFunctions2::BasisFunctions2()
+BasisFunctions::BasisFunctions()
 {
 }
 
-BasisFunctions2::~BasisFunctions2()
+BasisFunctions::~BasisFunctions()
 {
     for (Contracted* contracted: m_contracteds){
         for (int i = 0; i < contracted->getNumOfPrimitives(); i++){
@@ -19,7 +19,7 @@ BasisFunctions2::~BasisFunctions2()
 // Read exponents, coefficients and powers from input file in format TurboMole (taken from https://bse.pnl.gov/bse/portal)
 // and fills m_contracteds (vector<Contracted*> m_contracteds) with contracteds. Each contracted contains a vector of primitive.
 // Each primitive contains exponent, coefficient, powers (i,j,k) and position number.
-void BasisFunctions2::addContracteds(string inFileName, int posNum)
+void BasisFunctions::addContracteds(string inFileName, int posNum)
 {
     // pows_s, pows_p and pows_d defines the powers which are used to form primitives. For example, i+j+k = 1 for p-orbitals.
     // The prefactors are needed in cases where each primitive has a sum of two or more power terms, which is the case when
@@ -132,7 +132,7 @@ void BasisFunctions2::addContracteds(string inFileName, int posNum)
     //----------------------------------------------------------------------------------------------------------------------------
 }
 
-void BasisFunctions2::setPosPointer(mat *nucleiPositions)
+void BasisFunctions::setPosPointer(mat *nucleiPositions)
 {
     for (Contracted* contracted: m_contracteds){
         for (int i = 0; i < contracted->getNumOfPrimitives(); i++){
@@ -142,17 +142,17 @@ void BasisFunctions2::setPosPointer(mat *nucleiPositions)
     }
 }
 
-double BasisFunctions2::getNumOfContracteds()
+double BasisFunctions::getNumOfContracteds()
 {
     return m_contracteds.size();
 }
 
-Contracted *BasisFunctions2::getContracted(int p)
+Contracted *BasisFunctions::getContracted(int p)
 {
     return m_contracteds.at(p);
 }
 
-int BasisFunctions2::getAngMomMax()
+int BasisFunctions::getAngMomMax()
 {
     int maxAngMom = 0;
     for (uint i = 0; i < m_contracteds.size(); i++){
@@ -163,7 +163,7 @@ int BasisFunctions2::getAngMomMax()
     return maxAngMom;
 }
 
-void BasisFunctions2::addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, int posNum)
+void BasisFunctions::addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, int posNum)
 {
     // Loop through number of contracteds (1s -> 1, 2p -> 3, 2d -> 6 (or 5)
     for (uint i = 0; i < pows.n_rows; i++){
@@ -186,7 +186,7 @@ void BasisFunctions2::addSomeContracteds(vector<double> exp, vector<double> coef
     }
 }
 
-void BasisFunctions2::normalizeCoeff(double exp, double &coeff, irowvec pows)
+void BasisFunctions::normalizeCoeff(double exp, double &coeff, irowvec pows)
 {
     int i = pows.at(0);
     int j = pows.at(1);
@@ -194,7 +194,7 @@ void BasisFunctions2::normalizeCoeff(double exp, double &coeff, irowvec pows)
     coeff *= pow((2*exp/M_PI),0.75)*sqrt(pow(8*exp,i+j+k)*factorial(i)*factorial(j)*factorial(k)/(factorial(2*i)*factorial(2*j)*factorial(2*k)));
 }
 
-int BasisFunctions2::factorial(int n)
+int BasisFunctions::factorial(int n)
 {
     double value = 1;
     double i = 1;

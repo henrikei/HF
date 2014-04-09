@@ -2,8 +2,8 @@
 #define SYSTEM_H
 
 #include <armadillo>
-#include "integrator.h"
-#include "basisfunctions/basisfunctions2.h"
+#include "integrator/integrator.h"
+#include "basisfunctions/basisfunctions.h"
 #include "basisfunctions/contracted.h"
 #include "basisfunctions/primitive.h"
 
@@ -15,7 +15,7 @@ using namespace arma;
 class System
 {
 public:
-    System(BasisFunctions2* m_basisFunctions, mat nucleiPositions, rowvec charges, int nElectrons);
+    System(BasisFunctions* m_basisFunctions, mat nucleiPositions, rowvec charges, int nElectrons);
     virtual ~System();
 
     rowvec2 getOneElectronIntegrals(int p, int q);
@@ -32,7 +32,7 @@ private:
     mat m_nucleiPositions;
     rowvec m_charges;
     int m_nElectrons;
-    BasisFunctions2* m_basisFunctions;
+    BasisFunctions* m_basisFunctions;
     Integrator* m_integrator;
 };
 

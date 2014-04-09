@@ -3,7 +3,7 @@
 
 #include <armadillo>
 #include "math.h"
-#include "system.h"
+#include "system/system.h"
 
 using namespace arma;
 

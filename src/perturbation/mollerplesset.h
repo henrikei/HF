@@ -1,14 +1,14 @@
-#ifndef MOLLERPLESSETPT_H
-#define MOLLERPLESSETPT_H
+#ifndef MOLLERPLESSET_H
+#define MOLLERPLESSET_H
 
 #include <armadillo>
-#include <system.h>
-#include <hartreefock.h>
+#include <system/system.h>
+#include <hartreefock/hartreefock.h>
 
-class MollerPlessetPT
+class MollerPlesset
 {
 public:
-    MollerPlessetPT(System *system, int perturbOrder, int frozenCore);
+    MollerPlesset(System *system, int perturbOrder, int frozenCore);
     virtual void solve()=0;
     double getEnergyHF();
     double getEnergy2order();
@@ -29,4 +29,4 @@ protected:
     void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index);
 };
 
-#endif // MOLLERPLESSETPT_H
+#endif // MOLLERPLESSET_H

@@ -1,5 +1,5 @@
-#ifndef BASISFUNCTIONS2_H
-#define BASISFUNCTIONS2_H
+#ifndef BASISFUNCTIONS_H
+#define BASISFUNCTIONS_H
 
 #include <armadillo>
 #include <boost/regex.hpp>
@@ -11,11 +11,11 @@ using namespace arma;
 using namespace boost;
 
 
-class BasisFunctions2
+class BasisFunctions
 {
 public:
-    BasisFunctions2();
-    virtual ~BasisFunctions2();
+    BasisFunctions();
+    virtual ~BasisFunctions();
     void addContracteds(string inFileName, int posNum);
     void setPosPointer(mat* nucleiPositions);
     double getNumOfContracteds();
@@ -30,4 +30,4 @@ private:
     int factorial (int n);
 };
 
-#endif // BASISFUNCTIONS2_H
+#endif // BASISFUNCTIONS_H

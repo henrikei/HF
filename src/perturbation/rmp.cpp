@@ -1,7 +1,7 @@
-#include "restrictedmollerplessetpt.h"
+#include "rmp.h"
 
-RestrictedMollerPlessetPT::RestrictedMollerPlessetPT(System* system, int perturbOrder, int frozenCore) :
-    MollerPlessetPT(system, perturbOrder, frozenCore)
+RMP::RMP(System* system, int perturbOrder, int frozenCore) :
+    MollerPlesset(system, perturbOrder, frozenCore)
 {
     m_solver = new RHF(m_system);
     m_nElectrons = m_system->getNumOfElectrons();
@@ -15,7 +15,7 @@ RestrictedMollerPlessetPT::RestrictedMollerPlessetPT(System* system, int perturb
     }
 }
 
-void RestrictedMollerPlessetPT::solve()
+void RMP::solve()
 {
     m_solver->solve();
     m_energyHF = m_solver->getEnergy();
@@ -56,7 +56,7 @@ void RestrictedMollerPlessetPT::solve()
 }
 
 
-void RestrictedMollerPlessetPT::calc2OrderPerturb()
+void RMP::calc2OrderPerturb()
 {
     // Sum up energy tems
     for (int i = m_frozenCore/2; i < m_nElectrons/2; i++){
@@ -72,7 +72,7 @@ void RestrictedMollerPlessetPT::calc2OrderPerturb()
 }
 
 
-void RestrictedMollerPlessetPT::calc3OrderPerturb()
+void RMP::calc3OrderPerturb()
 {
     // Contribution from particle ladder diagram
     for (int i = m_frozenCore/2; i < m_nElectrons/2; i++){

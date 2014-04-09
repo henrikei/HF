@@ -1,6 +1,6 @@
-#include "mollerplessetpt.h"
+#include "mollerplesset.h"
 
-MollerPlessetPT::MollerPlessetPT(System *system, int perturbOrder, int frozenCore)
+MollerPlesset::MollerPlesset(System *system, int perturbOrder, int frozenCore)
 {
     m_system = system;
     m_AOI.set_size(1,1);
@@ -18,23 +18,23 @@ MollerPlessetPT::MollerPlessetPT(System *system, int perturbOrder, int frozenCor
     }
 }
 
-double MollerPlessetPT::getEnergyHF()
+double MollerPlesset::getEnergyHF()
 {
     return m_energyHF;
 }
 
-double MollerPlessetPT::getEnergy2order()
+double MollerPlesset::getEnergy2order()
 {
     return m_energy2Order;
 }
 
-double MollerPlessetPT::getEnergy3order()
+double MollerPlesset::getEnergy3order()
 {
     return m_energy3Order;
 }
 
 // Transforms Atomic Orbital Integrals to Molecular Orbital Integrals one index at a time
-void MollerPlessetPT::AOItoMOI(field<mat>& MOI, field<mat> AOI, mat C, int index)
+void MollerPlesset::AOItoMOI(field<mat>& MOI, field<mat> AOI, mat C, int index)
 {
     int a, b, c, d, e;
 
