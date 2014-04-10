@@ -28,7 +28,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "O2";
+    string run = "NH4";
 
     if (run == "CH4"){
 
@@ -97,7 +97,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,3,2);
+        RMP solver(system,1);
         solver.solve();
         cout << "Energy: " << setprecision(10) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order()<< endl;
 
@@ -163,7 +163,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,3);
+        RMP solver(system,1);
         solver.solve();
         cout << "Energy: " << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 

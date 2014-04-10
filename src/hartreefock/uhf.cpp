@@ -85,6 +85,10 @@ void UHF::solve()
     // Calculate integrals
     calcIntegrals();
 
+    // Diagonalize m_S (overlap) and calculate transformation matrix m_V
+    // such that m_V.t()*S*m_V = I.
+    diagOverlap();
+
     // Iterate until the fock energy has converged
     while (energyDiff > m_toler){
         fockEnergyUpOld = m_fockEnergyUp(0);

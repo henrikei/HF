@@ -25,6 +25,7 @@ protected:
     mat m_h;
     mat m_S;
     field<mat> m_Q;
+    mat m_V;
 
     int m_matDim;
     double m_energy;
@@ -34,6 +35,7 @@ protected:
 
     virtual void buildFockMatrix()=0;
     void calcIntegrals();
+    void diagOverlap();
     void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons);
 };
 
