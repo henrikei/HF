@@ -28,7 +28,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "NH4";
+    string run = "O2";
 
     if (run == "CH4"){
 
@@ -156,16 +156,16 @@ int main()
         nucleiPositions.row(2) = posH2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_431G.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system);
+        RMP solver(system,3);
         solver.solve();
-        cout << "Energy: " << solver.getEnergy() << endl;
+        cout << "Energy: " << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
@@ -221,9 +221,71 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UMP solver(system,2);
+        UMP solver(system,2,2);
         solver.solve();
         cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
+
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+
+        delete system;
+        delete basisFunctions;
+
+    } else if (run =="O2") {
+
+        clock_t begin = clock();
+
+        double d = 2.314158446;
+        rowvec posO1 = {-0.5*d, 0.0, 0.0};
+        rowvec posO2= {0.5*d, 0.0, 0.0};
+        rowvec charges = {8.0, 8.0};
+        int nElectrons = 16;
+
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posO1;
+        nucleiPositions.row(1) = posO2;
+
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311Gs.dat", 1);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        UMP solver(system,2);
+        solver.solve();
+        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
+
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+
+        delete system;
+        delete basisFunctions;
+
+    } else if (run == "N2"){
+
+        clock_t begin = clock();
+
+        double d = 2.116115162;
+        rowvec posN1 = {-0.5*d, 0.0, 0.0};
+        rowvec posN2= {0.5*d, 0.0, 0.0};
+        rowvec charges = {7.0, 7.0};
+        int nElectrons = 14;
+
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posN1;
+        nucleiPositions.row(1) = posN2;
+
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/N_6311Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/N_6311Gs.dat", 1);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        RMP solver(system,2);
+        solver.solve();
+        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
