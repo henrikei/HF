@@ -3,7 +3,7 @@
 
 #include <armadillo>
 #include <vector>
-#include "boysfunction.h"
+#include "boysfunction/boysfunction.h"
 #include "basisfunctions/primitive.h"
 
 using namespace arma;

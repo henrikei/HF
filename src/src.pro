@@ -5,34 +5,40 @@ TARGET = myapp
 TEMPLATE = lib
 
 SOURCES += \
-    hartreefock.cpp \
-    system.cpp \
-    boysfunction.cpp \
-    integrator.cpp \
-    rhf.cpp \
-    uhf.cpp \
+    hartreefock/hartreefock.cpp \
+    hartreefock/rhf.cpp \
+    hartreefock/uhf.cpp \
+    system/system.cpp \
+    boysfunction/boysfunction.cpp \
+    integrator/integrator.cpp \
     basisfunctions/primitive.cpp \
-    basisfunctions/basisfunctions2.cpp \
     basisfunctions/contracted.cpp \
     minimizer/minimizer.cpp \
     minimizer/func.cpp \
     minimizer/twodimtest.cpp \
-    minimizer/hartreefockfunc.cpp
+    minimizer/hartreefockfunc.cpp \
+    basisfunctions/basisfunctions.cpp \
+    perturbation/mollerplesset.cpp \
+    perturbation/rmp.cpp \
+    perturbation/ump.cpp
 
 HEADERS += \
-    hartreefock.h \
-    system.h \
-    integrator.h \
-    boysfunction.h \
-    rhf.h \
-    uhf.h \
+    hartreefock/hartreefock.h \
+    hartreefock/rhf.h \
+    hartreefock/uhf.h \
+    system/system.h \
+    integrator/integrator.h \
+    boysfunction/boysfunction.h \
     basisfunctions/primitive.h \
-    basisfunctions/basisfunctions2.h \
     basisfunctions/contracted.h \
     minimizer/minimizer.h \
     minimizer/func.h \
     minimizer/twodimtest.h \
-    minimizer/hartreefockfunc.h
+    minimizer/hartreefockfunc.h \
+    basisfunctions/basisfunctions.h \
+    perturbation/mollerplesset.h \
+    perturbation/rmp.h \
+    perturbation/ump.h
 
 OTHER_FILES += \
     ../inFiles/configFiles/H2O_431G.cfg \

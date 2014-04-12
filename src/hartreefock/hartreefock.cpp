@@ -14,9 +14,8 @@ HartreeFock::HartreeFock(System *system):
             m_Q(p,q) = zeros(m_matDim, m_matDim);
         }
     }
+    m_V = zeros(m_matDim, m_matDim);
     m_energy = 1.0E6;
-    m_energyMP2 = 0.0;
-    m_energyMP3 = 0.0;
     m_toler = 1.0E-8;
 }
 
@@ -26,14 +25,9 @@ double HartreeFock::getEnergy(){
     return m_energy;
 }
 
-double HartreeFock::getEnergyMP2()
+field<mat> HartreeFock::getQmatrix()
 {
-    return m_energyMP2;
-}
-
-double HartreeFock::getEnergyMP3()
-{
-    return m_energyMP3;
+    return m_Q;
 }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -93,7 +87,20 @@ void HartreeFock::calcIntegrals()
 //                    }
 //                }
 //            }
-//        }
+    //        }
+}
+
+// Diagonalize overlap matrix S and calculate matrix m_V such that m_V.t()*S*m_V = I.
+// Then set F2 = m_V.t()*F*m_V and C = m_V*C2.
+void HartreeFock::diagOverlap()
+{
+    vec eigVal;
+
+    eig_sym(eigVal, m_V, m_S);
+
+    for (int i = 0; i < m_matDim; i++){
+        m_V.col(i) = m_V.col(i)/sqrt(eigVal(i));
+    }
 }
 
 
@@ -105,21 +112,13 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
 {
     vec eigVal;
     mat eigVec;
-    mat V = zeros<mat>(m_matDim, m_matDim);
     mat F2 = zeros<mat>(m_matDim, m_matDim);
 
-    // Diagonalize overlap matrix S and calculate matrix V such that V.t()*S*V = I. Then set F2 = V.t()*F*V and C = V*C2.
-    eig_sym(eigVal, eigVec, m_S);
-
-    for (int i = 0; i < m_matDim; i++){
-        V.col(i) = eigVec.col(i)/sqrt(eigVal(i));
-    }
-
-    F2 = V.t()*Fock*V;
+    F2 = m_V.t()*Fock*m_V;
 
     // Diagonalize matrix h2
     eig_sym(eigVal, eigVec, F2);
-    Coeffs = V*eigVec;
+    Coeffs = m_V*eigVec;
 
     // Normalize the orbitals (phi = sum_p(C_p chi_p)). For vector C this means:
     double norm;
@@ -134,27 +133,4 @@ void HartreeFock::solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fock
     P = 0.5*P + 0.5*Ptemp;  // Interpolate between new and old density matrix. Sometimes needed in order to achieve correct convergence.
 
     fockEnergy = eigVal;
-}
-
-
-// Transforms Atomic Orbital Integrals to Molecular Orbital Integrals one index at a time
-void HartreeFock::AOItoMOI(field<mat>& MOI, field<mat> AOI, mat C, int index)
-{
-    int a, b, c, d, e;
-
-    for (int i = 0; i < m_matDim; i++){
-        for (int j = 0; j < m_matDim; j++){
-            for (int k = 0; k < m_matDim; k++){
-                for (int l = 0; l < m_matDim; l++){
-                    for (int m = 0; m < m_matDim; m++){
-                        if (index == 0)       { e = i; a = m; b = j; c = k; d = l;}
-                        else if(index == 1)   { e = j; a = i; b = m; c = k; d = l;}
-                        else if(index == 2)   { e = k; a = i; b = j; c = m; d = l;}
-                        else if(index == 3)   { e = l; a = i; b = j; c = k; d = m;}
-                        MOI(i,j)(k,l) += C(m,e)*AOI(a,b)(c,d);
-                    }
-                }
-            }
-        }
-    }
 }

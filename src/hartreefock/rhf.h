@@ -6,9 +6,10 @@
 class RHF : public HartreeFock
 {
 public:
-    RHF(System *system, int perturbOrder=1);
+    RHF(System *system);
     void solve();
-    mat getCoeff();
+    field<mat> getCoeff();
+    field<colvec> getFockEnergy();
 
 private:
     mat m_F;
@@ -17,11 +18,7 @@ private:
     colvec m_fockEnergy;
     int m_nElectrons;
 
-    field<mat> m_MOI;
-
     void buildFockMatrix();
-    double perturbation2order();
-    double perturbation3order();
 };
 
 #endif // RHF_H

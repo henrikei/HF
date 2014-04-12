@@ -5,13 +5,15 @@
 #include <fstream>
 #include <armadillo>
 #include <libconfig.h++>
-#include <hartreefock.h>
-#include <rhf.h>
-#include <uhf.h>
-#include <system.h>
-#include <integrator.h>
-#include <boysfunction.h>
-#include <basisfunctions/basisfunctions2.h>
+#include <hartreefock/hartreefock.h>
+#include <hartreefock/rhf.h>
+#include <hartreefock/uhf.h>
+#include <perturbation/rmp.h>
+#include <perturbation/ump.h>
+#include <system/system.h>
+#include <integrator/integrator.h>
+#include <boysfunction/boysfunction.h>
+#include <basisfunctions/basisfunctions.h>
 #include <basisfunctions/contracted.h>
 #include <basisfunctions/primitive.h>
 #include <minimizer/func.h>
@@ -48,7 +50,7 @@ int main()
         nucleiPositions.row(3) = posH3;
         nucleiPositions.row(4) = posH4;
 
-        BasisFunctions2 *basisFunctions = new BasisFunctions2;
+        BasisFunctions *basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
@@ -65,11 +67,48 @@ int main()
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
 
+    } else if (run == "NH4"){
+
+        clock_t begin = clock();
+
+        double d = 1.1150365517919136;
+        rowvec posN = {0.0, 0.0, 0.0};
+        rowvec posH1 = {d, d, d};
+        rowvec posH2 = {-d, -d, d};
+        rowvec posH3 = {d, -d, -d};
+        rowvec posH4 = {-d, d, -d};
+        rowvec charges = {7.0, 1.0, 1.0, 1.0, 1.0};
+        int nElectrons = 10;
+
+        mat nucleiPositions = zeros<mat>(5,3);
+        nucleiPositions.row(0) = posN;
+        nucleiPositions.row(1) = posH1;
+        nucleiPositions.row(2) = posH2;
+        nucleiPositions.row(3) = posH3;
+        nucleiPositions.row(4) = posH4;
+
+        BasisFunctions *basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/N_631++Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631++Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631++Gss.dat", 2);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631++Gss.dat", 3);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631++Gss.dat", 4);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        RMP solver(system,1);
+        solver.solve();
+        cout << "Energy: " << setprecision(10) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order()<< endl;
+
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+
     } else if (run == "CH3"){
 
         clock_t begin = clock();
 
-        double d = 2.028;//2.0262;
+        double d = 2.04;//2.0262;
         double s = sin(2*M_PI/3);
         double c = cos(2*M_PI/3);
         rowvec posC = {0.0, 0.0, 0.0};
@@ -85,7 +124,7 @@ int main()
         nucleiPositions.row(2) = posH2;
         nucleiPositions.row(3) = posH3;
 
-        BasisFunctions2 *basisFunctions = new BasisFunctions2;
+        BasisFunctions *basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 2);
@@ -94,9 +133,9 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UHF solver(system,2);
+        UMP solver(system,2,2);
         solver.solve();
-        cout << "Energy: " << setprecision(7) <<  solver.getEnergy() << endl;
+        cout << "Energy: " << setprecision(7) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
@@ -116,17 +155,17 @@ int main()
         nucleiPositions.row(1) = posH1;
         nucleiPositions.row(2) = posH2;
 
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_431G.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system);
+        RMP solver(system,1);
         solver.solve();
-        cout << "Energy: " << solver.getEnergy() << endl;
+        cout << "Energy: " << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
@@ -145,18 +184,18 @@ int main()
         nucleiPositions.row(0) = posH1;
         nucleiPositions.row(1) = posH2;
 
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        BasisFunctions* basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UHF solver(system,3);
+        RMP solver(system,3);
         solver.solve();
-        cout << "Energy: " << solver.getEnergy() << endl;
-        cout << "energyMP2: " << solver.getEnergyMP2() << endl;
-        cout << "energyMP3: " << solver.getEnergyMP2()+solver.getEnergyMP3() << endl;
+        cout << "Energy: " << solver.getEnergyHF() +solver.getEnergy2order()+solver.getEnergy3order() << endl;
+        cout << "energyMP2: " << solver.getEnergy2order() << endl;
+        cout << "energyMP3: " << solver.getEnergy2order()+solver.getEnergy3order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
@@ -165,7 +204,7 @@ int main()
 
         clock_t begin = clock();
 
-        double d = 1.735524348;
+        double d = 1.889725989*2;
         rowvec posH = {-0.5*d, 0.0, 0.0};
         rowvec posF= {0.5*d, 0.0, 0.0};
         rowvec charges = {1.0, 9.0};
@@ -175,16 +214,78 @@ int main()
         nucleiPositions.row(0) = posH;
         nucleiPositions.row(1) = posF;
 
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311Gss.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_6311Gs.dat", 1);
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_631Gs.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system,2);
+        UMP solver(system,2,2);
         solver.solve();
-        cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
+
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+
+        delete system;
+        delete basisFunctions;
+
+    } else if (run =="O2") {
+
+        clock_t begin = clock();
+
+        double d = 2.314158446;
+        rowvec posO1 = {-0.5*d, 0.0, 0.0};
+        rowvec posO2= {0.5*d, 0.0, 0.0};
+        rowvec charges = {8.0, 8.0};
+        int nElectrons = 16;
+
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posO1;
+        nucleiPositions.row(1) = posO2;
+
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311Gs.dat", 1);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        UMP solver(system,2);
+        solver.solve();
+        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
+
+        clock_t end = clock();
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+
+        delete system;
+        delete basisFunctions;
+
+    } else if (run == "N2"){
+
+        clock_t begin = clock();
+
+        double d = 2.116115162;
+        rowvec posN1 = {-0.5*d, 0.0, 0.0};
+        rowvec posN2= {0.5*d, 0.0, 0.0};
+        rowvec charges = {7.0, 7.0};
+        int nElectrons = 14;
+
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posN1;
+        nucleiPositions.row(1) = posN2;
+
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/N_6311Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/N_6311Gs.dat", 1);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        RMP solver(system,2);
+        solver.solve();
+        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
@@ -206,16 +307,16 @@ int main()
         nucleiPositions.row(0) = posF;
         nucleiPositions.row(1) = posCl;
 
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        BasisFunctions* basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_6311Gs.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/Cl_6311Gs.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system,2);
+        RMP solver(system,2);
         solver.solve();
-        cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
 
         clock_t end = clock();
         cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
@@ -231,7 +332,7 @@ int main()
         nucleiPositions.row(0) = O;
         nucleiPositions.row(1) = H1;
         nucleiPositions.row(2) = H2;
-        BasisFunctions2* basisFunctions = new BasisFunctions2;
+        BasisFunctions* basisFunctions = new BasisFunctions;
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_431G.dat", 0);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
@@ -242,6 +343,12 @@ int main()
         minimizer->solve();
         cout << system->getNucleiPositions() << endl;
         cout << minimizer->getMinValue() << endl;
+
+    } else if (run == "testBoys"){
+
+        BoysFunction boys(5);
+        boys.setx(10.7);
+        cout << boys.returnValue(7) << endl;
 
     } else {
         cout << "No valid run selected." << endl;

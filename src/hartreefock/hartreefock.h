@@ -3,7 +3,7 @@
 
 #include <armadillo>
 #include "math.h"
-#include "system.h"
+#include "system/system.h"
 
 using namespace arma;
 
@@ -15,9 +15,9 @@ public:
 
     virtual void solve()=0;
     double getEnergy();
-    double getEnergyMP2();
-    double getEnergyMP3();
-    virtual mat getCoeff()=0;
+    field<mat> getQmatrix();
+    virtual field<mat> getCoeff()=0;
+    virtual field<colvec> getFockEnergy()=0;
 
 protected:
     System *m_system;
@@ -25,22 +25,18 @@ protected:
     mat m_h;
     mat m_S;
     field<mat> m_Q;
+    mat m_V;
 
     int m_matDim;
     double m_energy;
-    double m_energyMP2;
-    double m_energyMP3;
 
     double m_toler;
     double m_restrictedFactor;
-    int m_perturbOrder;
 
     virtual void buildFockMatrix()=0;
     void calcIntegrals();
+    void diagOverlap();
     void solveSingle(const mat &Fock, mat &Coeffs, mat &P, colvec &fockEnergy, int nElectrons);
-    void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index);
-    virtual double perturbation2order()=0;
-    virtual double perturbation3order()=0;
 };
 
 #endif // HARTREEFOCK_H
