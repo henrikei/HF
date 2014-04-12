@@ -28,7 +28,7 @@ using namespace libconfig;
 
 int main()
 {
-    string run = "NH4";
+    string run = "testBoys";
 
     if (run == "CH4"){
 
@@ -343,6 +343,12 @@ int main()
         minimizer->solve();
         cout << system->getNucleiPositions() << endl;
         cout << minimizer->getMinValue() << endl;
+
+    } else if (run == "testBoys"){
+
+        BoysFunction boys(5);
+        boys.setx(10.7);
+        cout << boys.returnValue(7) << endl;
 
     } else {
         cout << "No valid run selected." << endl;
