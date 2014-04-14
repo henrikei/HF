@@ -5,6 +5,7 @@
 #include <fstream>
 #include <armadillo>
 #include <libconfig.h++>
+#include <mpi.h>
 #include <hartreefock/hartreefock.h>
 #include <hartreefock/rhf.h>
 #include <hartreefock/uhf.h>
@@ -26,14 +27,24 @@ using namespace std;
 using namespace arma;
 using namespace libconfig;
 
+#define RUN_MPI
+
 int main()
 {
-    string run = "CH4";
+    // MPI
+    int my_rank = 0;
+#ifdef RUN_MPI
+    MPI_Init(NULL, NULL);
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+#endif
+
+
+    string run = "NH4";
+
+
+    clock_t begin = clock();
 
     if (run == "CH4"){
-
-        clock_t begin = clock();
-
         double d = 1.1795265999544056;
         rowvec posC = {0.0, 0.0, 0.0};
         rowvec posH1 = {d, d, d};
@@ -62,14 +73,12 @@ int main()
 
         RHF solver(system);
         solver.solve();
-        cout << "Energy: " << setprecision(10) <<  solver.getEnergy() << endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << setprecision(10) <<  solver.getEnergy() << endl;
+        }
 
     } else if (run == "NH4"){
-
-        clock_t begin = clock();
 
         double d = 1.1150365517919136;
         rowvec posN = {0.0, 0.0, 0.0};
@@ -97,16 +106,14 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,1);
+        RMP solver(system,3);
         solver.solve();
-        cout << "Energy: " << setprecision(10) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order()<< endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << setprecision(10) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order()<< endl;
+        }
 
     } else if (run == "CH3"){
-
-        clock_t begin = clock();
 
         double d = 2.04;//2.0262;
         double s = sin(2*M_PI/3);
@@ -135,14 +142,12 @@ int main()
 
         UMP solver(system,2,2);
         solver.solve();
-        cout << "Energy: " << setprecision(7) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << setprecision(7) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
+        }
 
     } else if (run == "H2O"){
-
-        clock_t begin = clock();
 
         rowvec posO = {0.0, 0.0, 0.0};
         rowvec posH1 = {1.797, 0.0, 0.0};
@@ -165,14 +170,12 @@ int main()
 
         RMP solver(system,1);
         solver.solve();
-        cout << "Energy: " << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
+        }
 
     } else if (run =="H2"){
-
-        clock_t begin = clock();
 
         double d = 1.4;
         rowvec posH1 = {-d/2, 0.0, 0.0};
@@ -193,16 +196,14 @@ int main()
 
         RMP solver(system,3);
         solver.solve();
-        cout << "Energy: " << solver.getEnergyHF() +solver.getEnergy2order()+solver.getEnergy3order() << endl;
-        cout << "energyMP2: " << solver.getEnergy2order() << endl;
-        cout << "energyMP3: " << solver.getEnergy2order()+solver.getEnergy3order() << endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << solver.getEnergyHF() +solver.getEnergy2order()+solver.getEnergy3order() << endl;
+            cout << "energyMP2: " << solver.getEnergy2order() << endl;
+            cout << "energyMP3: " << solver.getEnergy2order()+solver.getEnergy3order() << endl;
+        }
 
     } else if (run == "HF") {
-
-        clock_t begin = clock();
 
         double d = 1.889725989*2;
         rowvec posH = {-0.5*d, 0.0, 0.0};
@@ -223,17 +224,15 @@ int main()
 
         UMP solver(system,2,2);
         solver.solve();
-        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
+        }
 
         delete system;
         delete basisFunctions;
 
     } else if (run =="O2") {
-
-        clock_t begin = clock();
 
         double d = 2.314158446;
         rowvec posO1 = {-0.5*d, 0.0, 0.0};
@@ -252,19 +251,17 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UMP solver(system,2);
+        RHF solver(system);
         solver.solve();
-        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+        }
 
         delete system;
         delete basisFunctions;
 
     } else if (run == "N2"){
-
-        clock_t begin = clock();
 
         double d = 2.116115162;
         rowvec posN1 = {-0.5*d, 0.0, 0.0};
@@ -285,17 +282,15 @@ int main()
 
         RMP solver(system,2);
         solver.solve();
-        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
+        }
 
         delete system;
         delete basisFunctions;
 
     } else if (run == "FCl") {
-
-        clock_t begin = clock();
 
         double d = 3.154519593;
         rowvec posF = {-0.5*d, 0.0, 0.0};
@@ -316,10 +311,10 @@ int main()
 
         RMP solver(system,2);
         solver.solve();
-        cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
 
-        clock_t end = clock();
-        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+        if (my_rank == 0){
+            cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
+        }
 
     } else if (run == "H2O_Minimize"){
 
@@ -341,19 +336,26 @@ int main()
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer *minimizer = new Minimizer(func);
         minimizer->solve();
-        cout << system->getNucleiPositions() << endl;
-        cout << minimizer->getMinValue() << endl;
 
-    } else if (run == "testBoys"){
-
-        BoysFunction boys(5);
-        boys.setx(10.7);
-        cout << boys.returnValue(7) << endl;
+        if (my_rank == 0){
+            cout << system->getNucleiPositions() << endl;
+            cout << minimizer->getMinValue() << endl;
+        }
 
     } else {
-        cout << "No valid run selected." << endl;
+        if (my_rank == 0){
+            cout << "No valid run selected." << endl;
+        }
     }
 
+    clock_t end = clock();
+    if (my_rank == 0){
+        cout << "Elapsed time: "<< (double(end - begin))/CLOCKS_PER_SEC << endl;
+    }
+
+#ifdef RUN_MPI
+    MPI_Finalize();
+#endif
 
     return 0;
 }

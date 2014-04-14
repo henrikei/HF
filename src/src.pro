@@ -48,3 +48,4 @@ OTHER_FILES += \
     ../inFiles/boys_tabulated.dat \
     ../inFiles/configFiles/CH4_631Gs_RHFvsUHF.cfg \
     ../inFiles/configFiles/H2_631Gss.cfg
+

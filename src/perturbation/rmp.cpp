@@ -38,10 +38,13 @@ void RMP::solve()
     }
 
     // Transform from Atomic Orbital Integrals to Molecular Orbital Integrals
-    AOItoMOI(temp1, m_AOI, m_C, 0);
-    AOItoMOI(temp2, temp1, m_C, 1);
-    AOItoMOI(temp3, temp2, m_C, 2);
-    AOItoMOI(m_MOI, temp3, m_C, 3);
+    if (m_perturbOrder > 1){
+        AOItoMOI(temp1, m_AOI, m_C, 0);
+        AOItoMOI(temp2, temp1, m_C, 1);
+        AOItoMOI(temp3, temp2, m_C, 2);
+        AOItoMOI(m_MOI, temp3, m_C, 3);
+    }
+    cout << "end AOI to MOI" << endl;
 
     if (m_perturbOrder == 1){
     } else if (m_perturbOrder == 2){
@@ -53,6 +56,7 @@ void RMP::solve()
         cout << "Error: " << m_perturbOrder << " order perturbation theory not implemented." << endl;
         exit(EXIT_FAILURE);
     }
+    cout << "end perturtarbative terms" << endl;
 }
 
 

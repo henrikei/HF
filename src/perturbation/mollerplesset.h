@@ -2,8 +2,11 @@
 #define MOLLERPLESSET_H
 
 #include <armadillo>
+#include <mpi.h>
 #include <system/system.h>
 #include <hartreefock/hartreefock.h>
+
+#define RUN_MPI
 
 class MollerPlesset
 {

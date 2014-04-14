@@ -8,3 +8,4 @@ CONFIG -= qt
 SOURCES += main.cpp
 
 LIBS += -L../src -lmyapp
+

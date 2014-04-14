@@ -37,6 +37,7 @@ void RHF::solve()
         solveSingle(m_F, m_C, m_P, m_fockEnergy, m_nElectrons);
         energyDiff = fabs(fockEnergyOld - m_fockEnergy(0));
     }
+    cout << "done solve-loop" << endl;
 
     // Calculate energy (not equal to Fock energy)
     m_energy = 0;

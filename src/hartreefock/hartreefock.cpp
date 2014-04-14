@@ -46,8 +46,58 @@ void HartreeFock::calcIntegrals()
         }
     }
 
-    // The electron-electron integrals
+    // MPI
+#ifdef RUN_MPI
+    int numprocs, my_rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
+    field<mat> Q_local(m_matDim, m_matDim);
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < m_matDim; j++){
+            Q_local(i,j) = zeros(m_matDim, m_matDim);
+        }
+    }
+
+    cout << "start integrals, proc " << my_rank << endl;
+    int counter = 0;
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < i+1; j++){
+            for (int k = 0; k < i+1; k++){
+                for (int l = 0; l < j+1; l++){
+                    if (counter % numprocs == my_rank){
+                        Q_local(i,j)(k,l) = m_system->getTwoElectronIntegral(i, j, k, l);
+                    }
+                    counter += 1;
+                }
+            }
+        }
+    }
+
+    cout << "end integrals, proc " << my_rank << endl;
+
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < i+1; j++){
+            MPI_Allreduce(Q_local(i,j).memptr(), m_Q(i,j).memptr(), m_matDim*m_matDim, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+            for (int k = 0; k < i+1; k++){
+                for (int l = 0; l < j+1; l++){
+                    m_Q(k,j)(i,l) = m_Q(i,j)(k,l);
+                    m_Q(i,l)(k,j) = m_Q(i,j)(k,l);
+                    m_Q(k,l)(i,j) = m_Q(i,j)(k,l);
+
+                    m_Q(j,i)(l,k) = m_Q(i,j)(k,l);
+                    m_Q(j,k)(l,i) = m_Q(i,j)(k,l);
+                    m_Q(l,i)(j,k) = m_Q(i,j)(k,l);
+                    m_Q(l,k)(j,i) = m_Q(i,j)(k,l);
+                }
+            }
+        }
+    }
+    cout << "end communication, proc " << my_rank << endl;
+#endif
+
+#ifndef RUN_MPI
+    cout << "start integrals" << endl;
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){
             for (int k = 0; k < i+1; k++){
@@ -65,7 +115,10 @@ void HartreeFock::calcIntegrals()
             }
         }
     }
-//        for (int i = 0; i < matDim; i++){
+    cout << "end integrals" << endl;
+#endif
+
+        //        for (int i = 0; i < matDim; i++){
 //            for (int j = 0; j < matDim; j++){
 //                for (int k = 0; k < matDim; k++){
 //                    for (int l = 0; l < matDim; l++){
