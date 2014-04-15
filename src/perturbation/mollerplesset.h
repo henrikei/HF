@@ -6,7 +6,7 @@
 #include <system/system.h>
 #include <hartreefock/hartreefock.h>
 
-#define RUN_MPI
+//#define RUN_MPI
 
 class MollerPlesset
 {

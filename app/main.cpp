@@ -27,7 +27,7 @@ using namespace std;
 using namespace arma;
 using namespace libconfig;
 
-#define RUN_MPI
+//#define RUN_MPI
 
 int main()
 {
@@ -106,7 +106,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,3);
+        RMP solver(system,3,2);
         solver.solve();
 
         if (my_rank == 0){

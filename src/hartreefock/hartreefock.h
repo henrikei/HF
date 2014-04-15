@@ -9,7 +9,7 @@
 
 using namespace arma;
 
-#define RUN_MPI
+//#define RUN_MPI
 
 class HartreeFock
 {
