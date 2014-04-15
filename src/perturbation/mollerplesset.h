@@ -30,6 +30,7 @@ protected:
     int m_frozenCore;
 
     void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index);
+    void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index, int nmprocs, int my_rank);
 };
 
 #endif // MOLLERPLESSET_H

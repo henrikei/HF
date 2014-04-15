@@ -2,6 +2,7 @@
 #define RMP_H
 
 #include <armadillo>
+#include <time.h>
 #include <system/system.h>
 #include <perturbation/mollerplesset.h>
 #include <hartreefock/rhf.h>

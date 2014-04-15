@@ -3,6 +3,7 @@
 
 #include <armadillo>
 #include <mpi.h>
+#include <time.h>
 #include "math.h"
 #include "system/system.h"
 

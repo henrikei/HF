@@ -59,7 +59,7 @@ void HartreeFock::calcIntegrals()
         }
     }
 
-    cout << "start integrals, proc " << my_rank << endl;
+    clock_t begin = clock();
     int counter = 0;
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){
@@ -73,8 +73,8 @@ void HartreeFock::calcIntegrals()
             }
         }
     }
-
-    cout << "end integrals, proc " << my_rank << endl;
+    clock_t end = clock();
+    cout << "Proc " << my_rank <<": Time integrals: " << (double(end - begin))/CLOCKS_PER_SEC << endl;
 
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){

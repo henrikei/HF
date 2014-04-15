@@ -33,47 +33,49 @@ void UMP::solve()
     m_Cdown = m_solver->getCoeff()(1);
 
     // Convert from Atomic Orbital Integrals (AOI) to Molecular Orbital Integrals (MOI)
-    field<mat> tempUU1(m_matDim, m_matDim);
-    field<mat> tempDD1(m_matDim, m_matDim);
-    field<mat> tempUD1(m_matDim, m_matDim);
-    field<mat> tempUU2(m_matDim, m_matDim);
-    field<mat> tempDD2(m_matDim, m_matDim);
-    field<mat> tempUD2(m_matDim, m_matDim);
-    field<mat> tempUU3(m_matDim, m_matDim);
-    field<mat> tempDD3(m_matDim, m_matDim);
-    field<mat> tempUD3(m_matDim, m_matDim);
+    if (m_perturbOrder > 1){
+        field<mat> tempUU1(m_matDim, m_matDim);
+        field<mat> tempDD1(m_matDim, m_matDim);
+        field<mat> tempUD1(m_matDim, m_matDim);
+        field<mat> tempUU2(m_matDim, m_matDim);
+        field<mat> tempDD2(m_matDim, m_matDim);
+        field<mat> tempUD2(m_matDim, m_matDim);
+        field<mat> tempUU3(m_matDim, m_matDim);
+        field<mat> tempDD3(m_matDim, m_matDim);
+        field<mat> tempUD3(m_matDim, m_matDim);
 
-    for(int i = 0; i < m_matDim; i++){
-        for(int j = 0; j < m_matDim; j++){
-            tempUU1(i,j) = zeros(m_matDim, m_matDim);
-            tempDD1(i,j) = zeros(m_matDim, m_matDim);
-            tempUD1(i,j) = zeros(m_matDim, m_matDim);
-            tempUU2(i,j) = zeros(m_matDim, m_matDim);
-            tempDD2(i,j) = zeros(m_matDim, m_matDim);
-            tempUD2(i,j) = zeros(m_matDim, m_matDim);
-            tempUU3(i,j) = zeros(m_matDim, m_matDim);
-            tempDD3(i,j) = zeros(m_matDim, m_matDim);
-            tempUD3(i,j) = zeros(m_matDim, m_matDim);
+        for(int i = 0; i < m_matDim; i++){
+            for(int j = 0; j < m_matDim; j++){
+                tempUU1(i,j) = zeros(m_matDim, m_matDim);
+                tempDD1(i,j) = zeros(m_matDim, m_matDim);
+                tempUD1(i,j) = zeros(m_matDim, m_matDim);
+                tempUU2(i,j) = zeros(m_matDim, m_matDim);
+                tempDD2(i,j) = zeros(m_matDim, m_matDim);
+                tempUD2(i,j) = zeros(m_matDim, m_matDim);
+                tempUU3(i,j) = zeros(m_matDim, m_matDim);
+                tempDD3(i,j) = zeros(m_matDim, m_matDim);
+                tempUD3(i,j) = zeros(m_matDim, m_matDim);
+            }
         }
+
+        // Up-Up AOI to Up-Up MOI
+        AOItoMOI(tempUU1, m_AOI, m_Cup, 0);
+        AOItoMOI(tempUU2, tempUU1, m_Cup, 1);
+        AOItoMOI(tempUU3, tempUU2, m_Cup, 2);
+        AOItoMOI(m_MOI_UU, tempUU3, m_Cup, 3);
+
+        // Down-Down AOI to Down-Down MOI
+        AOItoMOI(tempDD1, m_AOI, m_Cdown, 0);
+        AOItoMOI(tempDD2, tempDD1, m_Cdown, 1);
+        AOItoMOI(tempDD3, tempDD2, m_Cdown, 2);
+        AOItoMOI(m_MOI_DD, tempDD3, m_Cdown, 3);
+
+        // Up-Down AOI to Up-Down MOI
+        AOItoMOI(tempUD1, m_AOI, m_Cup, 0);
+        AOItoMOI(tempUD2, tempUD1, m_Cdown, 1);
+        AOItoMOI(tempUD3, tempUD2, m_Cup, 2);
+        AOItoMOI(m_MOI_UD, tempUD3, m_Cdown, 3);
     }
-
-    // Up-Up AOI to Up-Up MOI
-    AOItoMOI(tempUU1, m_AOI, m_Cup, 0);
-    AOItoMOI(tempUU2, tempUU1, m_Cup, 1);
-    AOItoMOI(tempUU3, tempUU2, m_Cup, 2);
-    AOItoMOI(m_MOI_UU, tempUU3, m_Cup, 3);
-
-    // Down-Down AOI to Down-Down MOI
-    AOItoMOI(tempDD1, m_AOI, m_Cdown, 0);
-    AOItoMOI(tempDD2, tempDD1, m_Cdown, 1);
-    AOItoMOI(tempDD3, tempDD2, m_Cdown, 2);
-    AOItoMOI(m_MOI_DD, tempDD3, m_Cdown, 3);
-
-    // Up-Down AOI to Up-Down MOI
-    AOItoMOI(tempUD1, m_AOI, m_Cup, 0);
-    AOItoMOI(tempUD2, tempUD1, m_Cdown, 1);
-    AOItoMOI(tempUD3, tempUD2, m_Cup, 2);
-    AOItoMOI(m_MOI_UD, tempUD3, m_Cdown, 3);
 
     if (m_perturbOrder == 1){
     } else if (m_perturbOrder == 2){
