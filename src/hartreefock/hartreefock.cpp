@@ -52,33 +52,40 @@ void HartreeFock::calcIntegrals()
     MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-    field<mat> Q_local(m_matDim, m_matDim);
-    for (int i = 0; i < m_matDim; i++){
-        for (int j = 0; j < m_matDim; j++){
-            Q_local(i,j) = zeros(m_matDim, m_matDim);
-        }
-    }
-
+    // Let the different procs calculate on different values of (i,j).
+    // The matrix in m_Q(i,j) is then calculated by a single proc only.
+    // The matrices can therefore be distributed among the procs using MPI_Bcast
     clock_t begin = clock();
     int counter = 0;
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){
-            for (int k = 0; k < i+1; k++){
-                for (int l = 0; l < j+1; l++){
-                    if (counter % numprocs == my_rank){
-                        Q_local(i,j)(k,l) = m_system->getTwoElectronIntegral(i, j, k, l);
+            if (counter % numprocs == my_rank){
+                for (int k = 0; k < i+1; k++){
+                    for (int l = 0; l < j+1; l++){
+                        m_Q(i,j)(k,l) = m_system->getTwoElectronIntegral(i, j, k, l);
                     }
-                    counter += 1;
                 }
             }
+            counter += 1;
         }
     }
     clock_t end = clock();
     cout << "Proc " << my_rank <<": Time integrals: " << (double(end - begin))/CLOCKS_PER_SEC << endl;
 
+    // Broadcast
+    counter = 0;
+    int rank_to_bcast;
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){
-            MPI_Allreduce(Q_local(i,j).memptr(), m_Q(i,j).memptr(), m_matDim*m_matDim, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+            rank_to_bcast = counter % numprocs;
+            MPI_Bcast(m_Q(i,j).memptr(), m_matDim*m_matDim, MPI_DOUBLE, rank_to_bcast, MPI_COMM_WORLD);
+            counter += 1;
+        }
+    }
+
+    // Calculating all elements from symmetries of m_Q
+    for (int i = 0; i < m_matDim; i++){
+        for (int j = 0; j < i+1; j++){
             for (int k = 0; k < i+1; k++){
                 for (int l = 0; l < j+1; l++){
                     m_Q(k,j)(i,l) = m_Q(i,j)(k,l);
