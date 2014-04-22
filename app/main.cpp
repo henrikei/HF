@@ -38,7 +38,6 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-
     string run = "CH4";
 
 
@@ -234,7 +233,7 @@ int main()
 
     } else if (run =="O2") {
 
-        double d = 2.314158446;
+        double d = 2.281;//2.314158446;
         rowvec posO1 = {-0.5*d, 0.0, 0.0};
         rowvec posO2= {0.5*d, 0.0, 0.0};
         rowvec charges = {8.0, 8.0};
@@ -245,13 +244,13 @@ int main()
         nucleiPositions.row(1) = posO2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311Gs.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311Gs.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RHF solver(system);
+        UHF solver(system);
         solver.solve();
 
         if (my_rank == 0){
