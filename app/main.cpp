@@ -39,7 +39,7 @@ int main()
 #endif
 
 
-    string run = "NH4";
+    string run = "CH4";
 
 
     clock_t begin = clock();
