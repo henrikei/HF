@@ -20,7 +20,8 @@ SOURCES += \
     basisfunctions/basisfunctions.cpp \
     perturbation/mollerplesset.cpp \
     perturbation/rmp.cpp \
-    perturbation/ump.cpp
+    perturbation/ump.cpp \
+    density/density.cpp
 
 HEADERS += \
     hartreefock/hartreefock.h \
@@ -38,7 +39,8 @@ HEADERS += \
     basisfunctions/basisfunctions.h \
     perturbation/mollerplesset.h \
     perturbation/rmp.h \
-    perturbation/ump.h
+    perturbation/ump.h \
+    density/density.h
 
 OTHER_FILES += \
     ../inFiles/configFiles/H2O_431G.cfg \
