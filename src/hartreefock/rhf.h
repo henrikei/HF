@@ -9,6 +9,7 @@ public:
     RHF(System *system);
     void solve();
     field<mat> getCoeff();
+    field<mat> getDensityMatrix();
     field<colvec> getFockEnergy();
 
 private:

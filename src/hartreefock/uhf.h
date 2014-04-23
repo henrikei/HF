@@ -10,6 +10,7 @@ public:
     UHF(System *system);
     void solve();
     field<mat> getCoeff();
+    field<mat> getDensityMatrix();
     field<colvec> getFockEnergy();
     int getNumOfElectronsUp();
     int getNumOfElecrtonsDown();

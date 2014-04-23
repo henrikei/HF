@@ -20,6 +20,7 @@ public:
     double getEnergy();
     field<mat> getQmatrix();
     virtual field<mat> getCoeff()=0;
+    virtual field<mat> getDensityMatrix()=0;
     virtual field<colvec> getFockEnergy()=0;
 
 protected:

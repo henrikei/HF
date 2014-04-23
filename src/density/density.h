@@ -20,7 +20,7 @@ private:
     rowvec3 m_R1, m_R2;
     double m_dx, m_dy, m_dz;
 
-    void printDensity(mat P, double factor, string filename);
+    void printDensity(mat P, string filename);
 };
 
 #endif // DENSITY_H

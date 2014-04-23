@@ -12,19 +12,19 @@ Density::Density(BasisFunctions *basisFunctions, field<mat> P, rowvec3 R1, rowve
 void Density::printDensity(string filename)
 {
     if (m_P.n_elem == 1){ // Restricted determinant
-        printDensity(m_P(0), 2, filename);
+        printDensity(m_P(0), filename);
     } else if (m_P.n_elem == 2){ // Unrestricted determinant
         mat Ptot = m_P(0) + m_P(1);
-        printDensity(Ptot, 1, filename);
+        printDensity(Ptot, filename);
     } else {
-        cout << "Error in class Density: Dimension of density field invalid." << endl;
+        cout << "Error in class Density: Dimension of field<mat> m_density invalid." << endl;
         exit(EXIT_FAILURE);
     }
 }
 
-void Density::printDensity(mat P, double factor, string filename)
+void Density::printDensity(mat P, string filename)
 {
-    rowvec3 pos = m_R1;
+    rowvec3 pos;
     int nBasisFunc = P.n_cols;
     Contracted *contractedA, *contractedB;
 
@@ -34,14 +34,18 @@ void Density::printDensity(mat P, double factor, string filename)
 
     ofstream outfile;
     outfile.open(filename);
+    outfile << m_R1(0) << endl; outfile << m_R1(1) << endl; outfile << m_R1(2) << endl;
+    outfile << m_R2(0) << endl; outfile << m_R2(1) << endl; outfile << m_R2(2) << endl;
+    outfile << m_dx << endl; outfile << m_dy << endl; outfile << m_dz << endl;
+    outfile << nx << endl; outfile << ny << endl; outfile << nz << endl;
 
-    double value;
+    double value = 0;
     for (int i = 0; i < nx; i++){
-        pos(0) += i*m_dx;
+        pos(0) = m_R1(0) + i*m_dx;
         for (int j = 0; j < ny; j++){
-            pos(1) += j*m_dy;
+            pos(1) = m_R1(1) + j*m_dy;
             for (int k = 0; k < nz; k++){
-                pos(2) += k*m_dz;
+                pos(2) = m_R1(2) + k*m_dz;
                 value = 0;
 
                 for (int mu = 0; mu < nBasisFunc; mu++){
@@ -49,7 +53,7 @@ void Density::printDensity(mat P, double factor, string filename)
                     for (int nu = 0; nu < nBasisFunc; nu++){
                         contractedB = m_basisFunctions->getContracted(nu);
 
-                        value += factor*P(mu,nu)*contractedA->getValue(pos)*contractedB->getValue(pos);
+                        value += P(mu,nu)*contractedA->getValue(pos)*contractedB->getValue(pos);
                     }
                 }
                 outfile << value << "  ";

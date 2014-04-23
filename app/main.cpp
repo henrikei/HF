@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <ctime>
 #include <time.h>
 #include <iomanip>
@@ -21,6 +21,7 @@
 #include <minimizer/minimizer.h>
 #include <minimizer/twodimtest.h>
 #include <minimizer/hartreefockfunc.h>
+#include <density/density.h>
 
 
 using namespace std;
@@ -38,7 +39,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "CH4";
+    string run = "H2";
 
 
     clock_t begin = clock();
@@ -187,19 +188,24 @@ int main()
         nucleiPositions.row(1) = posH2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,3);
+        RHF solver(system);
         solver.solve();
 
         if (my_rank == 0){
-            cout << "Energy: " << solver.getEnergyHF() +solver.getEnergy2order()+solver.getEnergy3order() << endl;
-            cout << "energyMP2: " << solver.getEnergy2order() << endl;
-            cout << "energyMP3: " << solver.getEnergy2order()+solver.getEnergy3order() << endl;
+            cout << "Energy: " << solver.getEnergy() << endl;
+
+            field<mat> P = solver.getDensityMatrix();
+            rowvec R1 = {-d, -d, -d};
+            rowvec R2 = {d, d, d};
+            double dx = 2*d/100;
+            Density density(basisFunctions, P, R1, R2, dx, dx, dx);
+            density.printDensity("../../out/density/density.dat");
         }
 
     } else if (run == "HF") {

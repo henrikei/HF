@@ -53,6 +53,14 @@ field<mat> UHF::getCoeff(){
     return Coeff;
 }
 
+field<mat> UHF::getDensityMatrix()
+{
+    field<mat> P(2);
+    P(0) = m_Pup;
+    P(1) = m_Pdown;
+    return P;
+}
+
 //------------------------------------------------------------------------------------------------------------------
 field<colvec> UHF::getFockEnergy()
 {
