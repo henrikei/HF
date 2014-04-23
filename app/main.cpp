@@ -39,7 +39,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "H2";
+    string run = "H2_potential";
 
 
     clock_t begin = clock();
@@ -206,6 +206,47 @@ int main()
             double dx = 2*d/100;
             Density density(basisFunctions, P, R1, R2, dx, dx, dx);
             density.printDensity("../../out/density/density.dat");
+        }
+
+    } else if (run == "H2_potential") {
+
+        rowvec charges = {1.0, 1.0};
+        int nElectrons = 2;
+        mat nucleiPositions = zeros<mat>(2,3);
+
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311Gss.dat", 1);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+        UMP solver(system, 3);
+
+        double dmin = 0.5;
+        double dmax = 6.0;
+        int nPoints = 200;
+        double delta = (dmax - dmin)/(nPoints-1);
+        double d, energy;
+        rowvec3 posH1, posH2;
+
+        ofstream ofile;
+        ofile.open("../../out/H2_potential.dat");
+        ofile << "Basis set: 6-311G**" << endl;
+        ofile << "Distance   UHF   UMP2   UMP3" << endl;
+
+        for (int i = 0; i < nPoints; i++){
+            d = dmin + i*delta;
+            posH1 = {-d/2, 0, 0}; posH2 = {d/2, 0, 0};
+            nucleiPositions.row(0) = posH1; nucleiPositions.row(1) = posH2;
+            system->setNucleiPositions(nucleiPositions);
+            solver.solve();
+            ofile << d << "  ";
+            energy = solver.getEnergyHF();
+            ofile << energy << "  ";
+            energy += solver.getEnergy2order();
+            ofile << energy << "  ";
+            energy += solver.getEnergy3order();
+            ofile << energy << endl;
         }
 
     } else if (run == "HF") {

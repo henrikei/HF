@@ -34,6 +34,7 @@ void RMP::solve()
             temp1(i,j) = zeros(m_matDim, m_matDim);
             temp2(i,j) = zeros(m_matDim, m_matDim);
             temp3(i,j) = zeros(m_matDim, m_matDim);
+            m_MOI(i,j) = zeros(m_matDim, m_matDim);
         }
     }
 
@@ -69,6 +70,7 @@ void RMP::solve()
 
 void RMP::calc2OrderPerturb()
 {
+    m_energy2Order = 0;
     // Sum up energy tems
     for (int i = m_frozenCore/2; i < m_nElectrons/2; i++){
         for (int j = m_frozenCore/2; j < m_nElectrons/2; j++){
@@ -85,6 +87,7 @@ void RMP::calc2OrderPerturb()
 
 void RMP::calc3OrderPerturb()
 {
+    m_energy3Order = 0;
     // Contribution from particle ladder diagram
     for (int i = m_frozenCore/2; i < m_nElectrons/2; i++){
         for (int j = m_frozenCore/2; j < m_nElectrons/2; j++){

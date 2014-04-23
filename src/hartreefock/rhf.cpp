@@ -28,6 +28,9 @@ void RHF::solve()
     // such that m_V.t()*S*m_V = I.
     diagOverlap();
 
+    // Initialize density matrix (non-interacting case)
+    m_P = zeros<mat>(m_matDim, m_matDim);
+
     // Iterate until the fock energy has converged
     double fockEnergyOld;
     double energyDiff = 1.0;

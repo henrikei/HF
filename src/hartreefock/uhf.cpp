@@ -97,6 +97,10 @@ void UHF::solve()
     // such that m_V.t()*S*m_V = I.
     diagOverlap();
 
+    // Initialize density matrices (non-interacting initial condition)
+    m_Pup = zeros<mat>(m_matDim, m_matDim); m_Pup(0,1) = 0.1;
+    m_Pdown = zeros<mat>(m_matDim, m_matDim);
+
     // Iterate until the fock energy has converged
     while (energyDiff > m_toler){
         fockEnergyUpOld = m_fockEnergyUp(0);

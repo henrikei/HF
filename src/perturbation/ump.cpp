@@ -55,6 +55,9 @@ void UMP::solve()
                 tempUU3(i,j) = zeros(m_matDim, m_matDim);
                 tempDD3(i,j) = zeros(m_matDim, m_matDim);
                 tempUD3(i,j) = zeros(m_matDim, m_matDim);
+                m_MOI_UU(i,j) = zeros(m_matDim, m_matDim);
+                m_MOI_DD(i,j) = zeros(m_matDim, m_matDim);
+                m_MOI_UD(i,j) = zeros(m_matDim, m_matDim);
             }
         }
 
@@ -91,6 +94,7 @@ void UMP::solve()
 
 void UMP::calc2OrderPerturb()
 {
+    m_energy2Order = 0;
     // Sum up energy terms
     for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
@@ -122,12 +126,14 @@ void UMP::calc2OrderPerturb()
             }
         }
     }
+    cout << m_energy2Order << endl;
 }
 
 void UMP::calc3OrderPerturb()
 {
     // Contributions from loop diagram
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    m_energy3Order = 0;
     for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
             for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
