@@ -6,4 +6,4 @@ SUBDIRS = \
 	tests
 CONFIG += ordered
 
-
+#DEFINES += RUN_MPI
