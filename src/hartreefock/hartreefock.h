@@ -2,14 +2,14 @@
 #define HARTREEFOCK_H
 
 #include <armadillo>
-#include <mpi.h>
 #include <time.h>
 #include "math.h"
 #include "system/system.h"
-
+#ifdef RUN_MPI
+#include <mpi.h>
+#endif
 using namespace arma;
 
-//#define RUN_MPI
 
 class HartreeFock
 {

@@ -5,7 +5,9 @@
 #include <fstream>
 #include <armadillo>
 #include <libconfig.h++>
+#ifdef RUN_MPI
 #include <mpi.h>
+#endif
 #include <hartreefock/hartreefock.h>
 #include <hartreefock/rhf.h>
 #include <hartreefock/uhf.h>

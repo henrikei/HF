@@ -5,5 +5,3 @@ SUBDIRS = \
 	app \
 	tests
 CONFIG += ordered
-
-#DEFINES += RUN_MPI
