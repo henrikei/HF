@@ -40,7 +40,8 @@ HEADERS += \
     perturbation/mollerplesset.h \
     perturbation/rmp.h \
     perturbation/ump.h \
-    density/density.h
+    density/density.h \
+    solverwrapper/solverwrapper.h
 
 OTHER_FILES += \
     ../inFiles/configFiles/H2O_431G.cfg \

@@ -18,6 +18,11 @@ MollerPlesset::MollerPlesset(System *system, int perturbOrder, int frozenCore)
     }
 }
 
+double MollerPlesset::getEnergy()
+{
+    return getEnergyHF() + getEnergy2order() + getEnergy3order();
+}
+
 double MollerPlesset::getEnergyHF()
 {
     return m_energyHF;

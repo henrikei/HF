@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "CH4";
+    string run = "H2O";
 
 
     clock_t begin = clock();
@@ -170,7 +170,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,1);
+        RMP solver(system,2);
         solver.solve();
 
         if (my_rank == 0){

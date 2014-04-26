@@ -3,5 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS = \
 	src \
 	app \
-	tests
+        appconfig \
+        tests
 CONFIG += ordered

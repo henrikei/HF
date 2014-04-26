@@ -14,6 +14,7 @@ class MollerPlesset
 public:
     MollerPlesset(System *system, int perturbOrder, int frozenCore);
     virtual void solve()=0;
+    double getEnergy();
     double getEnergyHF();
     double getEnergy2order();
     double getEnergy3order();
