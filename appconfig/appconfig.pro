@@ -9,3 +9,6 @@ SOURCES += main.cpp
 
 LIBS += -L../src -lmyapp \
          -lyaml-cpp
+
+OTHER_FILES += \
+    configs/test.cfg

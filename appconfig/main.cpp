@@ -135,6 +135,8 @@ System* setup_system(const Node& doc){
 void run_single(const Node& doc){
 
     System *system = setup_system(doc);
+    ofstream file;
+    file.open("../../Results/test.out");
 
     string solver_type;
     int perturbation_order;
@@ -142,25 +144,26 @@ void run_single(const Node& doc){
     if (solver_type == "RHF"){
         SolverWrapper<RHF> solver(system);
         solver.solve();
-        cout << solver.getEnergy() << endl;
+        file << "Energy: " << solver.getEnergy() << endl;
     } else if (solver_type == "UHF"){
         SolverWrapper<UHF> solver(system);
         solver.solve();
-        cout << solver.getEnergy() << endl;
+        file << "Energy: " << solver.getEnergy() << endl;
     } else if (solver_type == "RMP"){
         doc["perturbation_order"] >> perturbation_order;
         SolverWrapper<RMP> solver(system, perturbation_order);
         solver.solve();
-        cout << solver.getEnergy() << endl;
+        file << "Energy: " << solver.getEnergy() << endl;
     } else if (solver_type == "UMP"){
         doc["perturbation_order"] >> perturbation_order;
         SolverWrapper<UMP> solver(system, perturbation_order);
         solver.solve();
-        cout << solver.getEnergy() << endl;
+        file << "Energy: " << solver.getEnergy() << endl;
     } else {
         cout << "Error: Unknown solver type." << endl;
         exit(EXIT_FAILURE);
     }
+    file.close();
 }
 
 
