@@ -48,7 +48,7 @@ void run_minimize(const Node& doc);
 int main()
 {
     ifstream file;
-    file.open("input.dat");
+    file.open("../../HartreeFock/appconfig/configs/test.cfg");
     Parser parser(file);
     Node doc;
     parser.GetNextDocument(doc);
