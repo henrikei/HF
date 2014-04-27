@@ -13,7 +13,7 @@ Minimizer::Minimizer(Func* func)
     m_gamma = 2.0;
     m_rho = -0.5;
     m_sigma = 0.5;
-    m_toler = 1.0E-8;
+    m_toler = 1.0E-12;
 }
 
 void Minimizer::solve()
@@ -22,7 +22,7 @@ void Minimizer::solve()
     while (fabs(m_fX(m_dim) - m_fX(0)) > m_toler){
         counter += 1;
         advance();
-        cout << "Iteration no.: " << counter << ",    Energy: "  << m_fX(0) << endl;
+        cout << "Iteration no.: " << counter << ",    Energy: " << setprecision(12) << m_fX(0) << endl;
     }
 }
 
@@ -34,6 +34,11 @@ rowvec Minimizer::getMinPoint()
 double Minimizer::getMinValue()
 {
     return m_fX(0);
+}
+
+double Minimizer::getMaxValue()
+{
+    return m_fX(m_dim);
 }
 
 void Minimizer::initializeSimplex()

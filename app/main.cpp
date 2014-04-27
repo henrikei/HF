@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "H2O";
+    string run = "H2O_Minimize";
 
 
     clock_t begin = clock();
@@ -367,8 +367,8 @@ int main()
     } else if (run == "H2O_Minimize"){
 
         rowvec O = {0.0,0.0,0.0};
-        rowvec H1 = {1.0,0.0,0.0};
-        rowvec H2 = {0.0,1.0,0.0};
+        rowvec H1 = {2.0,0.0,0.0};
+        rowvec H2 = {0.0,2.0,0.0};
         rowvec charges = {8.0,1.0,1.0};
         int nElectrons = 10;
         mat nucleiPositions = zeros<mat>(3,3);
@@ -387,7 +387,8 @@ int main()
 
         if (my_rank == 0){
             cout << system->getNucleiPositions() << endl;
-            cout << minimizer->getMinValue() << endl;
+            cout << "Energy min.: " << setprecision(14) << minimizer->getMinValue() << endl;
+            cout << "Energy max.: " << setprecision(14) << minimizer->getMaxValue() << endl;
         }
 
     } else {

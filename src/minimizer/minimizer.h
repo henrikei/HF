@@ -15,6 +15,7 @@ public:
     void solve();
     rowvec getMinPoint();
     double getMinValue();
+    double getMaxValue();
 
 private:
     mat m_X;

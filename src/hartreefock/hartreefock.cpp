@@ -16,7 +16,7 @@ HartreeFock::HartreeFock(System *system):
     }
     m_V = zeros(m_matDim, m_matDim);
     m_energy = 1.0E6;
-    m_toler = 1.0E-8;
+    m_toler = 1.0E-14;
 }
 
 
