@@ -1,6 +1,6 @@
 #include "hartreefockfunc.h"
 
-HartreeFockFunc::HartreeFockFunc(HartreeFock *solver, System *system)
+HartreeFockFunc::HartreeFockFunc(MollerPlesset *solver, System *system)
 {
     m_solver = solver;
     m_system = system;

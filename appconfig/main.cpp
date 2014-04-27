@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <armadillo>
 #include <yaml-cpp/yaml.h>
@@ -10,6 +11,7 @@
 #include "system/system.h"
 #include "basisfunctions/basisfunctions.h"
 #include "minimizer/minimizer.h"
+#include "minimizer/hartreefockfunc.h"
 #include "density/density.h"
 
 using namespace std;
@@ -18,23 +20,14 @@ using namespace YAML;
 
 
 
-struct static_atom{
+struct Atom{
     string name;
     double charge;
     rowvec3 position;
 };
 
-struct moving_atom{
-    string name;
-    double charge;
-    rowvec3 position_start;
-    rowvec3 position_end;
-    double delta;
-};
-
 void operator >> (const Node& node, rowvec3& position);
-void operator >> (const Node& node, static_atom& atom);
-void operator >> (const Node& node, moving_atom& atom);
+void operator >> (const Node& node, Atom& atom);
 
 System* setup_system(const Node& doc);
 
@@ -68,6 +61,8 @@ int main()
 }
 
 
+
+
 //---------------------------------------------------------------------------------------------------------------
 void operator >> (const Node& node, rowvec3& position){
     node[0] >> position(0);
@@ -77,7 +72,7 @@ void operator >> (const Node& node, rowvec3& position){
 
 
 //-----------------------------------------------------------------------------------------------------------------
-void operator >> (const Node& node, static_atom& atom){
+void operator >> (const Node& node, Atom& atom){
     node["name"] >> atom.name;
     node["charge"] >> atom.charge;
     node["position"] >> atom.position;
@@ -85,23 +80,13 @@ void operator >> (const Node& node, static_atom& atom){
 
 
 //------------------------------------------------------------------------------------------------------------------
-void operator >> (const Node& node, moving_atom& atom){
-    node["name"] >> atom.name;
-    node["charge"] >> atom.charge;
-    node["position_start"] >> atom.position_start;
-    node["position_end"] >> atom.position_end;
-    node["delta"] >> atom.delta;
-}
-
-
-//------------------------------------------------------------------------------------------------------------------
 System* setup_system(const Node& doc){
-    vector<static_atom> atoms;
+    vector<Atom> atoms;
 
     const Node& node = doc["atoms"];
     int nAtoms = node.size();
     for (int i = 0; i < nAtoms; i++){
-        static_atom atom;
+        Atom atom;
         node[i] >> atom;
         atoms.push_back(atom);
     }
@@ -131,7 +116,7 @@ System* setup_system(const Node& doc){
 }
 
 
-//-------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 void run_single(const Node& doc){
 
     System *system = setup_system(doc);
@@ -177,30 +162,69 @@ void run_multiple(const Node& doc){
 void run_minimize(const Node& doc){
 
     System *system = setup_system(doc);
+    ofstream file;
+    file.open("../../Results/test.out");
 
     string solver_type;
     int perturbation_order;
     doc["solver_type"] >> solver_type;
     if (solver_type == "RHF"){
-        SolverWrapper<RHF> solver(system);
-        solver.solve();
-        cout << solver.getEnergy() << endl;
+        RMP *solver = new RMP(system,1);
+        HartreeFockFunc *func = new HartreeFockFunc(solver, system);
+        Minimizer minimizer(func);
+        minimizer.solve();
+        mat pos = system->getNucleiPositions();
+        for (uint i = 0; i < pos.n_rows; i++){
+            for (uint j = 0; j < pos.n_cols; j++){
+                file << setprecision(10) << pos(i,j) <<"  ";
+            }
+            file << endl;
+        }
+        file << endl << minimizer.getMinValue() << endl;
     } else if (solver_type == "UHF"){
-        SolverWrapper<UHF> solver(system);
-        solver.solve();
-        cout << solver.getEnergy() << endl;
+        UMP *solver = new UMP(system,1);
+        HartreeFockFunc *func = new HartreeFockFunc(solver, system);
+        Minimizer minimizer(func);
+        minimizer.solve();
+        mat pos = system->getNucleiPositions();
+        for (int i = 0; i < pos.n_rows; i++){
+            for (int j = 0; j < pos.n_cols; j++){
+                file << setprecision(10) << pos(i,j) <<"  ";
+            }
+            file << endl;
+        }
+        file << endl << minimizer.getMinValue() << endl;
     } else if (solver_type == "RMP"){
         doc["perturbation_order"] >> perturbation_order;
-        SolverWrapper<RMP> solver(system, perturbation_order);
-        solver.solve();
-        cout << solver.getEnergy() << endl;
+        RMP *solver = new RMP(system, perturbation_order);
+        HartreeFockFunc *func = new HartreeFockFunc(solver, system);
+        Minimizer minimizer(func);
+        minimizer.solve();
+        mat pos = system->getNucleiPositions();
+        for (int i = 0; i < pos.n_rows; i++){
+            for (int j = 0; j < pos.n_cols; j++){
+                file << setprecision(10) << pos(i,j) <<"  ";
+            }
+            file << endl;
+        }
+        file << endl << minimizer.getMinValue() << endl;
     } else if (solver_type == "UMP"){
         doc["perturbation_order"] >> perturbation_order;
-        SolverWrapper<UMP> solver(system, perturbation_order);
-        solver.solve();
-        cout << solver.getEnergy() << endl;
+        UMP *solver = new UMP(system, perturbation_order);
+        HartreeFockFunc *func = new HartreeFockFunc(solver, system);
+        Minimizer minimizer(func);
+        minimizer.solve();
+        mat pos = system->getNucleiPositions();
+        for (int i = 0; i < pos.n_rows; i++){
+            for (int j = 0; j < pos.n_cols; j++){
+                file << setprecision(10) << pos(i,j) <<"  ";
+            }
+            file << endl;
+        }
+        file << endl << minimizer.getMinValue() << endl;
     } else {
         cout << "Error: Unknown solver type." << endl;
         exit(EXIT_FAILURE);
     }
+    file.close();
 }

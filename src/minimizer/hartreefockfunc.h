@@ -3,7 +3,7 @@
 
 #include <armadillo>
 #include "func.h"
-#include "hartreefock/hartreefock.h"
+#include "perturbation/mollerplesset.h"
 #include "system/system.h"
 
 using namespace std;
@@ -13,11 +13,11 @@ using namespace arma;
 class HartreeFockFunc : public Func
 {
 public:
-    HartreeFockFunc(HartreeFock *solver, System *system);
+    HartreeFockFunc(MollerPlesset *solver, System *system);
     virtual rowvec getxInitial();
     virtual double getValue (rowvec x);
 
-    HartreeFock *m_solver;
+    MollerPlesset *m_solver;
     System *m_system;
 
     mat m_trans;

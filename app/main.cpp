@@ -367,8 +367,8 @@ int main()
     } else if (run == "H2O_Minimize"){
 
         rowvec O = {0.0,0.0,0.0};
-        rowvec H1 = {2.0,0.0,0.0};
-        rowvec H2 = {0.0,2.0,0.0};
+        rowvec H1 = {1.0,0.0,0.0};
+        rowvec H2 = {0.0,1.0,0.0};
         rowvec charges = {8.0,1.0,1.0};
         int nElectrons = 10;
         mat nucleiPositions = zeros<mat>(3,3);
@@ -380,13 +380,14 @@ int main()
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 1);
         basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_431G.dat", 2);
         System *system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
-        RHF *solver = new RHF(system);
+        RMP *solver = new RMP(system,1);
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer *minimizer = new Minimizer(func);
         minimizer->solve();
 
         if (my_rank == 0){
             cout << system->getNucleiPositions() << endl;
+            cout << setprecision(7) << system->getNucleiPositions()(1,0) << endl;
             cout << "Energy min.: " << setprecision(14) << minimizer->getMinValue() << endl;
             cout << "Energy max.: " << setprecision(14) << minimizer->getMaxValue() << endl;
         }
