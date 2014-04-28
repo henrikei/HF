@@ -31,17 +31,17 @@ void operator >> (const Node& node, Atom& atom);
 
 System* setup_system(const Node& doc);
 
-void run_single(const Node& doc);
-void run_multiple(const Node& doc);
-void run_minimize(const Node& doc);
+void run_single(const Node& doc, char* argv[]);
+void run_multiple(const Node& doc, char* argv[]);
+void run_minimize(const Node& doc, char* argv[]);
 
 
 
 
-int main()
+int main(int argc, char* argv[])
 {
     ifstream file;
-    file.open("../../HartreeFock/appconfig/configs/test.cfg");
+    file.open(argv[1]);
     Parser parser(file);
     Node doc;
     parser.GetNextDocument(doc);
@@ -50,11 +50,11 @@ int main()
     doc["run_type"] >> run_type;
 
     if (run_type == "single"){
-        run_single(doc);
+        run_single(doc, argv);
     } else if (run_type == "multiple"){
-        run_multiple(doc);
+        run_multiple(doc, argv);
     } else if (run_type == "minimize"){
-        run_minimize(doc);
+        run_minimize(doc, argv);
     }
 
     return 0;
@@ -117,11 +117,13 @@ System* setup_system(const Node& doc){
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void run_single(const Node& doc){
+void run_single(const Node& doc, char *argv[]){
 
     System *system = setup_system(doc);
     ofstream file;
-    file.open("../../Results/test.out");
+    string file_name = argv[2];
+    file_name = file_name+"/energy.dat";
+    file.open(file_name);
 
     string solver_type;
     int perturbation_order;
@@ -153,17 +155,19 @@ void run_single(const Node& doc){
 
 
 //--------------------------------------------------------------------------------------------------------------
-void run_multiple(const Node& doc){
+void run_multiple(const Node& doc, char *argv[]){
 
 }
 
 
 //---------------------------------------------------------------------------------------------------------------
-void run_minimize(const Node& doc){
+void run_minimize(const Node& doc, char *argv[]){
 
     System *system = setup_system(doc);
     ofstream file;
-    file.open("../../Results/test.out");
+    string file_name = argv[2];
+    file_name = file_name+"/min_config.dat";
+    file.open(file_name);
 
     string solver_type;
     int perturbation_order;
