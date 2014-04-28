@@ -1,3 +1,6 @@
+# run appconfig by calling:
+# $ python run.py appconfig/configs/configfile.cfg
+
 import subprocess
 import os
 import os.path
