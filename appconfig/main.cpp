@@ -3,7 +3,6 @@
 #include <fstream>
 #include <armadillo>
 #include <yaml-cpp/yaml.h>
-#include "solverwrapper/solverwrapper.h"
 #include "hartreefock/rhf.h"
 #include "hartreefock/uhf.h"
 #include "perturbation/rmp.h"
@@ -129,21 +128,21 @@ void run_single(const Node& doc, char *argv[]){
     int perturbation_order;
     doc["solver_type"] >> solver_type;
     if (solver_type == "RHF"){
-        SolverWrapper<RHF> solver(system);
+        RHF solver(system);
         solver.solve();
         file << "Energy: " << solver.getEnergy() << endl;
     } else if (solver_type == "UHF"){
-        SolverWrapper<UHF> solver(system);
+        UHF solver(system);
         solver.solve();
         file << "Energy: " << solver.getEnergy() << endl;
     } else if (solver_type == "RMP"){
         doc["perturbation_order"] >> perturbation_order;
-        SolverWrapper<RMP> solver(system, perturbation_order);
+        RMP solver(system, perturbation_order);
         solver.solve();
         file << "Energy: " << solver.getEnergy() << endl;
     } else if (solver_type == "UMP"){
         doc["perturbation_order"] >> perturbation_order;
-        SolverWrapper<UMP> solver(system, perturbation_order);
+        UMP solver(system, perturbation_order);
         solver.solve();
         file << "Energy: " << solver.getEnergy() << endl;
     } else {
