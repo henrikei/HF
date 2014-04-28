@@ -16,7 +16,9 @@ public:
     HartreeFockFunc(MollerPlesset *solver, System *system);
     virtual rowvec getxInitial();
     virtual double getValue (rowvec x);
+    mat getNucleiPositions();
 
+private:
     MollerPlesset *m_solver;
     System *m_system;
 

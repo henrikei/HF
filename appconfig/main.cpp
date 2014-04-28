@@ -173,7 +173,7 @@ void run_minimize(const Node& doc){
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer minimizer(func);
         minimizer.solve();
-        mat pos = system->getNucleiPositions();
+        mat pos = func->getNucleiPositions();
         for (uint i = 0; i < pos.n_rows; i++){
             for (uint j = 0; j < pos.n_cols; j++){
                 file << setprecision(10) << pos(i,j) <<"  ";
@@ -186,9 +186,9 @@ void run_minimize(const Node& doc){
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer minimizer(func);
         minimizer.solve();
-        mat pos = system->getNucleiPositions();
-        for (int i = 0; i < pos.n_rows; i++){
-            for (int j = 0; j < pos.n_cols; j++){
+        mat pos = func->getNucleiPositions();
+        for (uint i = 0; i < pos.n_rows; i++){
+            for (uint j = 0; j < pos.n_cols; j++){
                 file << setprecision(10) << pos(i,j) <<"  ";
             }
             file << endl;
@@ -200,9 +200,9 @@ void run_minimize(const Node& doc){
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer minimizer(func);
         minimizer.solve();
-        mat pos = system->getNucleiPositions();
-        for (int i = 0; i < pos.n_rows; i++){
-            for (int j = 0; j < pos.n_cols; j++){
+        mat pos = func->getNucleiPositions();
+        for (uint i = 0; i < pos.n_rows; i++){
+            for (uint j = 0; j < pos.n_cols; j++){
                 file << setprecision(10) << pos(i,j) <<"  ";
             }
             file << endl;
@@ -214,9 +214,9 @@ void run_minimize(const Node& doc){
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer minimizer(func);
         minimizer.solve();
-        mat pos = system->getNucleiPositions();
-        for (int i = 0; i < pos.n_rows; i++){
-            for (int j = 0; j < pos.n_cols; j++){
+        mat pos = func->getNucleiPositions();
+        for (uint i = 0; i < pos.n_rows; i++){
+            for (uint j = 0; j < pos.n_cols; j++){
                 file << setprecision(10) << pos(i,j) <<"  ";
             }
             file << endl;

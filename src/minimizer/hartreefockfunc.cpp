@@ -23,13 +23,13 @@ HartreeFockFunc::HartreeFockFunc(MollerPlesset *solver, System *system)
     }
 
     calcTransfMatrices();
+    transfPositions();
+    matToVec();
 }
 
 
 rowvec HartreeFockFunc::getxInitial()
 {
-    transfPositions();
-    matToVec();
     return m_x;
 }
 
@@ -41,6 +41,13 @@ double HartreeFockFunc::getValue(rowvec x)
     m_system->setNucleiPositions(m_nucleiPositions);
     m_solver->solve();
     return m_solver->getEnergy();
+}
+
+mat HartreeFockFunc::getNucleiPositions()
+{
+    vecToMat();
+    transfPositionsInverse();
+    return m_nucleiPositions;
 }
 
 
