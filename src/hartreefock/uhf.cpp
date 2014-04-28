@@ -113,6 +113,8 @@ void UHF::solve()
         energyDiff = fabs(fockEnergyUpOld - m_fockEnergyUp(0))+ fabs(fockEnergyDownOld - m_fockEnergyDown(0));
     }
 
+    cout << "done solve-loop" << endl;
+
     // Calculate energy (not equal to Fock energy)
     m_energy = 0;
 

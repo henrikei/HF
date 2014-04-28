@@ -126,7 +126,6 @@ void UMP::calc2OrderPerturb()
             }
         }
     }
-    cout << m_energy2Order << endl;
 }
 
 void UMP::calc3OrderPerturb()

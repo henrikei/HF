@@ -40,10 +40,9 @@ rowvec2 System::getOneElectronIntegrals(int p, int q)
     Primitive* primitiveB;
     for (int v = 0; v < nPrimitivesA ; v++){
         primitiveA = contractedA->getPrimitive(v);
+        m_integrator->setPrimitiveA(primitiveA);
         for (int w = 0; w < nPrimitivesB; w++){
             primitiveB = contractedB->getPrimitive(w);
-
-            m_integrator->setPrimitiveA(primitiveA);
             m_integrator->setPrimitiveB(primitiveB);
 
             m_integrator->setE_AB("oneParticle");
@@ -82,22 +81,33 @@ double System::getTwoElectronIntegral(int p, int q, int r, int s)
 
     double value = 0;
 
+    Primitive* primitiveA;
+    Primitive* primitiveB;
+    Primitive* primitiveC;
+    Primitive* primitiveD;
+
     for (int v = 0; v < nPrimitivesA; v++){
-        Primitive* primitiveA = contractedA->getPrimitive(v);
+
+        primitiveA = contractedA->getPrimitive(v);
+        m_integrator->setPrimitiveA(primitiveA);
+
         for (int w = 0; w < nPrimitivesB; w++){
-            Primitive* primitiveB = contractedB->getPrimitive(w);
+
+            primitiveB = contractedB->getPrimitive(w);
+            m_integrator->setPrimitiveB(primitiveB);
+            m_integrator->setE_AB("twoParticle");
+
             for (int x = 0; x < nPrimitivesC; x++){
-                Primitive* primitiveC = contractedC->getPrimitive(x);
+
+                primitiveC = contractedC->getPrimitive(x);
+                m_integrator->setPrimitiveC(primitiveC);
+
                 for (int y = 0; y < nPrimitivesD; y++){
-                    Primitive* primitiveD = contractedD->getPrimitive(y);
 
-                    m_integrator->setPrimitiveA(primitiveA);
-                    m_integrator->setPrimitiveB(primitiveB);
-                    m_integrator->setPrimitiveC(primitiveC);
+                    primitiveD = contractedD->getPrimitive(y);
                     m_integrator->setPrimitiveD(primitiveD);
-
-                    m_integrator->setE_AB("twoParticle");
                     m_integrator->setE_CD("twoParticle");
+
                     value += m_integrator->coulomb2()
                             *primitiveA->getCoeff()*primitiveB->getCoeff()*primitiveC->getCoeff()*primitiveD->getCoeff();
                 }
