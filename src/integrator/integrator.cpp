@@ -293,11 +293,12 @@ void Integrator::setE(cube E[], Primitive *primitive1, Primitive *primitive2, st
 
     for(int dir = 0; dir < 3; dir++){
 
-        int iMax;
+        int iMax = primitive1->getPow()(dir);
+        int jMax = primitive2->getPow()(dir);
         if (intType == "oneParticle"){
-            iMax = m_angMom + 2;
+            iMax += 2;
+            jMax += 2;
         } else if (intType == "twoParticle"){
-            iMax = m_angMom;
         } else {
             cout << "Error: Integration type for E-coeffs not specified" << endl;
             exit(EXIT_FAILURE);
@@ -318,7 +319,7 @@ void Integrator::setE(cube E[], Primitive *primitive1, Primitive *primitive2, st
 
         // Must here let i <= l because the forward loop is on index j
         for (int i = 0; i <= iMax; i++){
-            for (int j = 0; j < iMax; j++){
+            for (int j = 0; j < jMax; j++){
                 E[dir](i,j+1,0) = PB(dir)*E[dir](i,j,0) + E[dir](i,j,1);
                 for (int t = 1; t <= i + j + 1; t++){
                     E[dir](i,j+1,t) = E[dir](i,j,t-1)/(2*p) + PB(dir)*E[dir](i,j,t) + (t+1)*E[dir](i,j,t+1);
