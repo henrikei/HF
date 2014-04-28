@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "H2O_Minimize";
+    string run = "H2O";
 
 
     clock_t begin = clock();
@@ -163,18 +163,18 @@ int main()
         nucleiPositions.row(2) = posH2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311++Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311++Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311++Gss.dat", 2);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,2);
+        UHF solver(system);
         solver.solve();
 
         if (my_rank == 0){
-            cout << "Energy: " << solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
+            cout << "Energy: " << solver.getEnergy() << endl;
         }
 
     } else if (run =="H2"){

@@ -27,7 +27,7 @@ UHF::UHF(System *system):HartreeFock(system)
 void UHF::buildFockMatrix()
 {
     for (int i = 0; i < m_matDim; i++){
-        for (int j = 0; j < m_matDim; j++){
+        for (int j = 0; j < i+1; j++){
 
             // One-electron integrals
             m_Fup(i,j) = m_h(i,j);
@@ -40,6 +40,8 @@ void UHF::buildFockMatrix()
                     m_Fdown(i,j) += m_Pdown(l,k)*(m_Q(i,k)(j,l) - m_Q(i,k)(l,j)) + m_Pup(l,k)*m_Q(i,k)(j,l);
                 }
             }
+            m_Fup(j,i) = m_Fup(i,j);
+            m_Fdown(j,i) = m_Fdown(i,j);
         }
     }
 }

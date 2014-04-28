@@ -83,7 +83,7 @@ field<colvec> RHF::getFockEnergy()
 void RHF::buildFockMatrix()
 {
     for (int i = 0; i < m_matDim; i++){
-        for (int j = 0; j < m_matDim; j++){
+        for (int j = 0; j < i+1; j++){
 
             // One-electron integrals
             m_F(i,j) = m_h(i,j);
@@ -94,6 +94,7 @@ void RHF::buildFockMatrix()
                     m_F(i,j) += 0.5*m_P(l,k)*(2*m_Q(i,k)(j,l) - m_Q(i,k)(l,j));
                 }
             }
+            m_F(j,i) = m_F(i,j);
         }
     }
 }
