@@ -43,7 +43,7 @@ double BoysFunction::tabulated(int n, double x)
     double Dx = x - xt;        // difference between actual and tabulated x-value
 
     double factorial = 1;
-    double Dx_pow;
+    double Dx_pow = 1;
     double value = m_Ftabulated(xIndex, n);
 
     for(int k = 1; k < 7; k++){

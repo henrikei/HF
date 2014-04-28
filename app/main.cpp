@@ -170,7 +170,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UHF solver(system);
+        RHF solver(system);
         solver.solve();
 
         if (my_rank == 0){
