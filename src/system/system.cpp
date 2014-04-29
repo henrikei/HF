@@ -151,6 +151,11 @@ mat System::getNucleiPositions()
     return m_nucleiPositions;
 }
 
+BasisFunctions *System::getBasisFunctions()
+{
+    return m_basisFunctions;
+}
+
 void System::setNucleiPositions(mat nucleiPositions)
 {
     m_nucleiPositions = nucleiPositions;

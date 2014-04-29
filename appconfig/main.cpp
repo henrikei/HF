@@ -34,6 +34,8 @@ void run_single(const Node& doc, char* argv[]);
 void run_multiple(const Node& doc, char* argv[]);
 void run_minimize(const Node& doc, char* argv[]);
 
+void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunctions, char* argv[]);
+
 
 
 
@@ -131,10 +133,22 @@ void run_single(const Node& doc, char *argv[]){
         RHF solver(system);
         solver.solve();
         file << "Energy: " << solver.getEnergy() << endl;
+        if (doc.FindValue("density")){
+            const Node &node = doc["density"];
+            BasisFunctions *basisFunctions = system->getBasisFunctions();
+            field<mat> P = solver.getDensityMatrix();
+            write_density(node, P, basisFunctions, argv);
+        }
     } else if (solver_type == "UHF"){
         UHF solver(system);
         solver.solve();
         file << "Energy: " << solver.getEnergy() << endl;
+        if (doc.FindValue("density")){
+            const Node &node = doc["density"];
+            BasisFunctions *basisFunctions = system->getBasisFunctions();
+            field<mat> P = solver.getDensityMatrix();
+            write_density(node, P, basisFunctions, argv);
+        }
     } else if (solver_type == "RMP"){
         doc["perturbation_order"] >> perturbation_order;
         RMP solver(system, perturbation_order);
@@ -172,10 +186,12 @@ void run_minimize(const Node& doc, char *argv[]){
     int perturbation_order;
     doc["solver_type"] >> solver_type;
     if (solver_type == "RHF"){
+
         RMP *solver = new RMP(system,1);
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer minimizer(func);
         minimizer.solve();
+        file << "positions: " << endl;
         mat pos = func->getNucleiPositions();
         for (uint i = 0; i < pos.n_rows; i++){
             for (uint j = 0; j < pos.n_cols; j++){
@@ -183,12 +199,22 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl;
         }
-        file << endl << minimizer.getMinValue() << endl;
+        file << endl << "Energy: "<< minimizer.getMinValue() << endl;
+
+        if (doc.FindValue("density")){
+            const Node &node = doc["density"];
+            BasisFunctions *basisFunctions = system->getBasisFunctions();
+            field<mat> P = solver->getDensityMatrix();
+            write_density(node, P, basisFunctions, argv);
+        }
+
     } else if (solver_type == "UHF"){
+
         UMP *solver = new UMP(system,1);
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer minimizer(func);
         minimizer.solve();
+        file << "positions: " << endl;
         mat pos = func->getNucleiPositions();
         for (uint i = 0; i < pos.n_rows; i++){
             for (uint j = 0; j < pos.n_cols; j++){
@@ -196,13 +222,23 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl;
         }
-        file << endl << minimizer.getMinValue() << endl;
+        file << endl  << "Energy: "<< minimizer.getMinValue() << endl;
+
+        if (doc.FindValue("density")){
+            const Node &node = doc["density"];
+            BasisFunctions *basisFunctions = system->getBasisFunctions();
+            field<mat> P = solver->getDensityMatrix();
+            write_density(node, P, basisFunctions, argv);
+        }
+
     } else if (solver_type == "RMP"){
+
         doc["perturbation_order"] >> perturbation_order;
         RMP *solver = new RMP(system, perturbation_order);
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer minimizer(func);
         minimizer.solve();
+        file << "positions: " << endl;
         mat pos = func->getNucleiPositions();
         for (uint i = 0; i < pos.n_rows; i++){
             for (uint j = 0; j < pos.n_cols; j++){
@@ -210,13 +246,15 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl;
         }
-        file << endl << minimizer.getMinValue() << endl;
+        file << endl << "Energy: "<< minimizer.getMinValue() << endl;
+
     } else if (solver_type == "UMP"){
         doc["perturbation_order"] >> perturbation_order;
         UMP *solver = new UMP(system, perturbation_order);
         HartreeFockFunc *func = new HartreeFockFunc(solver, system);
         Minimizer minimizer(func);
         minimizer.solve();
+        file << "positions: " << endl;
         mat pos = func->getNucleiPositions();
         for (uint i = 0; i < pos.n_rows; i++){
             for (uint j = 0; j < pos.n_cols; j++){
@@ -224,10 +262,25 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl;
         }
-        file << endl << minimizer.getMinValue() << endl;
+        file << endl << "Energy: "<< minimizer.getMinValue() << endl;
     } else {
         cout << "Error: Unknown solver type." << endl;
         exit(EXIT_FAILURE);
     }
     file.close();
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunctions, char* argv[]){
+    rowvec3 R1, R2;
+    double dx, dy, dz;
+    node["corner1"] >> R1;
+    node["corner2"] >> R2;
+    node["dx"] >> dx; node["dy"] >> dy; node["dz"] >> dz;
+
+    Density density(basisFunctions, P, R1, R2, dx, dy, dz);
+    string filename = argv[2];
+    filename = filename+"/density.dat";
+    density.printDensity(filename);
 }

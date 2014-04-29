@@ -27,12 +27,12 @@ if not os.path.exists(output_dir):
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
-build_path = os.path.abspath(os.path.join("..", "build-release"))
+build_path = os.path.abspath(os.path.join("..", "build-release-script"))
 
 if not os.path.exists(build_path):
     os.makedirs(build_path)
 
-subprocess.call(["qmake", current_dir], cwd=build_path)
+subprocess.call(["qmake", current_dir, "CONFIG+=nompi"], cwd=build_path)
 subprocess.call(["make"], cwd=build_path)
 
 lib_path = os.path.join("..","src")

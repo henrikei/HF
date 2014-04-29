@@ -14,6 +14,7 @@ class UMP : public MollerPlesset
 public:
     UMP(System *system, int perturbOrder, int frozenCore=0);
     virtual void solve();
+    virtual field<mat> getDensityMatrix();
 
 private:
     UHF *m_solver;

@@ -18,6 +18,7 @@ public:
     double getEnergyHF();
     double getEnergy2order();
     double getEnergy3order();
+    virtual field<mat> getDensityMatrix()=0;
 
 protected:
     System *m_system;

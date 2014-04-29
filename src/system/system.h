@@ -24,6 +24,7 @@ public:
     int getTotalNumOfBasisFunc();
     int getNumOfElectrons();
     mat getNucleiPositions();
+    BasisFunctions* getBasisFunctions();
 
     void setNucleiPositions(mat nucleiPositions);
 

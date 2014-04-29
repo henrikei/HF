@@ -15,6 +15,7 @@ class RMP : public MollerPlesset
 public:
     RMP(System *system, int perturbOrder, int frozenCore=0);
     virtual void solve();
+    virtual field<mat> getDensityMatrix();
 
 private:
     RHF *m_solver;

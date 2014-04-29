@@ -38,6 +38,7 @@ double MollerPlesset::getEnergy3order()
     return m_energy3Order;
 }
 
+
 // Transforms Atomic Orbital Integrals to Molecular Orbital Integrals one index at a time
 void MollerPlesset::AOItoMOI(field<mat>& MOI, field<mat> AOI, mat C, int index)
 {

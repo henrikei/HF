@@ -67,6 +67,11 @@ void RMP::solve()
     }
 }
 
+field<mat> RMP::getDensityMatrix()
+{
+    return m_solver->getDensityMatrix();
+}
+
 
 void RMP::calc2OrderPerturb()
 {

@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "H2O";
+    string run = "CH4";
 
 
     clock_t begin = clock();

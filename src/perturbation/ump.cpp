@@ -92,6 +92,11 @@ void UMP::solve()
     }
 }
 
+field<mat> UMP::getDensityMatrix()
+{
+    return m_solver->getDensityMatrix();
+}
+
 void UMP::calc2OrderPerturb()
 {
     m_energy2Order = 0;
