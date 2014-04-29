@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "CH4";
+    string run = "H2";
 
 
     clock_t begin = clock();
@@ -190,8 +190,8 @@ int main()
         nucleiPositions.row(1) = posH2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_STO3G.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_STO3G.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -202,12 +202,12 @@ int main()
         if (my_rank == 0){
             cout << "Energy: " << solver.getEnergy() << endl;
 
-            field<mat> P = solver.getDensityMatrix();
-            rowvec R1 = {-d, -d, -d};
-            rowvec R2 = {d, d, d};
-            double dx = 2*d/100;
-            Density density(basisFunctions, P, R1, R2, dx, dx, dx);
-            density.printDensity("../../out/density/density.dat");
+//            field<mat> P = solver.getDensityMatrix();
+//            rowvec R1 = {-d, -d, -d};
+//            rowvec R2 = {d, d, d};
+//            double dx = 2*d/100;
+//            Density density(basisFunctions, P, R1, R2, dx, dx, dx);
+//            density.printDensity("../../out/density/density.dat");
         }
 
     } else if (run == "H2_potential") {

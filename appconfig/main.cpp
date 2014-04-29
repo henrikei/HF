@@ -132,7 +132,7 @@ void run_single(const Node& doc, char *argv[]){
     if (solver_type == "RHF"){
         RHF solver(system);
         solver.solve();
-        file << "Energy: " << solver.getEnergy() << endl;
+        file << "Energy: " << setprecision(10) << solver.getEnergy() << endl;
         if (doc.FindValue("density")){
             const Node &node = doc["density"];
             BasisFunctions *basisFunctions = system->getBasisFunctions();
@@ -142,7 +142,7 @@ void run_single(const Node& doc, char *argv[]){
     } else if (solver_type == "UHF"){
         UHF solver(system);
         solver.solve();
-        file << "Energy: " << solver.getEnergy() << endl;
+        file << "Energy: " << setprecision(10) << solver.getEnergy() << endl;
         if (doc.FindValue("density")){
             const Node &node = doc["density"];
             BasisFunctions *basisFunctions = system->getBasisFunctions();
@@ -153,12 +153,12 @@ void run_single(const Node& doc, char *argv[]){
         doc["perturbation_order"] >> perturbation_order;
         RMP solver(system, perturbation_order);
         solver.solve();
-        file << "Energy: " << solver.getEnergy() << endl;
+        file << "Energy: " << setprecision(10) << solver.getEnergy() << endl;
     } else if (solver_type == "UMP"){
         doc["perturbation_order"] >> perturbation_order;
         UMP solver(system, perturbation_order);
         solver.solve();
-        file << "Energy: " << solver.getEnergy() << endl;
+        file << "Energy: " << setprecision(10) << solver.getEnergy() << endl;
     } else {
         cout << "Error: Unknown solver type." << endl;
         exit(EXIT_FAILURE);
@@ -199,7 +199,7 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl;
         }
-        file << endl << "Energy: "<< minimizer.getMinValue() << endl;
+        file << endl << "Energy: " << setprecision(10) << minimizer.getMinValue() << endl;
 
         if (doc.FindValue("density")){
             const Node &node = doc["density"];
@@ -222,7 +222,7 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl;
         }
-        file << endl  << "Energy: "<< minimizer.getMinValue() << endl;
+        file << endl  << "Energy: " << setprecision(10) << minimizer.getMinValue() << endl;
 
         if (doc.FindValue("density")){
             const Node &node = doc["density"];
@@ -246,7 +246,7 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl;
         }
-        file << endl << "Energy: "<< minimizer.getMinValue() << endl;
+        file << endl << "Energy: " << setprecision(10) << minimizer.getMinValue() << endl;
 
     } else if (solver_type == "UMP"){
         doc["perturbation_order"] >> perturbation_order;
@@ -262,7 +262,7 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl;
         }
-        file << endl << "Energy: "<< minimizer.getMinValue() << endl;
+        file << endl << "Energy: " << setprecision(10) << minimizer.getMinValue() << endl;
     } else {
         cout << "Error: Unknown solver type." << endl;
         exit(EXIT_FAILURE);

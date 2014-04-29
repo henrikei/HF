@@ -36,7 +36,7 @@ subprocess.call(["qmake", current_dir, "CONFIG+=nompi"], cwd=build_path)
 subprocess.call(["make"], cwd=build_path)
 
 lib_path = os.path.join("..","src")
-app_path = os.path.join("..","build-release","appconfig")
+app_path = os.path.join(build_path,"appconfig")
 env = dict(os.environ)
 env['LD_LIBRARY_PATH'] = lib_path
 
