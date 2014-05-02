@@ -10,13 +10,14 @@ using namespace arma;
 class Density
 {
 public:
-    Density(BasisFunctions *basisFunctions, field<mat> P, rowvec3 R1, rowvec3 R2,
+    Density(BasisFunctions *basisFunctions, rowvec3 R1, rowvec3 R2,
             double dx, double dy, double dz);
-    void printDensity(string filename);
+    void printDensity(field<mat> P, string filename);
+    void printSpinDensity(field<mat> P, string filename);
+    void printMolecularOrbital(field<mat> C, int orbital, string filename, int spin=0);
 
 private:
     BasisFunctions *m_basisFunctions;
-    field<mat> m_P;
     rowvec3 m_R1, m_R2;
     double m_dx, m_dy, m_dz;
 

@@ -31,7 +31,7 @@ void operator >> (const Node& node, Atom& atom);
 System* setup_system(const Node& doc);
 
 void run_single(const Node& doc, char* argv[]);
-void run_multiple(const Node& doc, char* argv[]);
+//void run_multiple(const Node& doc, char* argv[]);
 void run_minimize(const Node& doc, char* argv[]);
 
 void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunctions, char* argv[]);
@@ -52,8 +52,6 @@ int main(int argc, char* argv[])
 
     if (run_type == "single"){
         run_single(doc, argv);
-    } else if (run_type == "multiple"){
-        run_multiple(doc, argv);
     } else if (run_type == "minimize"){
         run_minimize(doc, argv);
     }
@@ -133,9 +131,10 @@ void run_single(const Node& doc, char *argv[]){
         RHF solver(system);
         solver.solve();
         file << "Energy: " << setprecision(10) << solver.getEnergy() << endl;
+
+        BasisFunctions *basisFunctions = system->getBasisFunctions();
         if (doc.FindValue("density")){
             const Node &node = doc["density"];
-            BasisFunctions *basisFunctions = system->getBasisFunctions();
             field<mat> P = solver.getDensityMatrix();
             write_density(node, P, basisFunctions, argv);
         }
@@ -143,9 +142,10 @@ void run_single(const Node& doc, char *argv[]){
         UHF solver(system);
         solver.solve();
         file << "Energy: " << setprecision(10) << solver.getEnergy() << endl;
+
+        BasisFunctions *basisFunctions = system->getBasisFunctions();
         if (doc.FindValue("density")){
             const Node &node = doc["density"];
-            BasisFunctions *basisFunctions = system->getBasisFunctions();
             field<mat> P = solver.getDensityMatrix();
             write_density(node, P, basisFunctions, argv);
         }
@@ -168,9 +168,9 @@ void run_single(const Node& doc, char *argv[]){
 
 
 //--------------------------------------------------------------------------------------------------------------
-void run_multiple(const Node& doc, char *argv[]){
+//void run_multiple(const Node& doc, char *argv[]){
 
-}
+//}
 
 
 //---------------------------------------------------------------------------------------------------------------
@@ -201,9 +201,9 @@ void run_minimize(const Node& doc, char *argv[]){
         }
         file << endl << "Energy: " << setprecision(10) << minimizer.getMinValue() << endl;
 
+        BasisFunctions *basisFunctions = system->getBasisFunctions();
         if (doc.FindValue("density")){
             const Node &node = doc["density"];
-            BasisFunctions *basisFunctions = system->getBasisFunctions();
             field<mat> P = solver->getDensityMatrix();
             write_density(node, P, basisFunctions, argv);
         }
@@ -224,9 +224,9 @@ void run_minimize(const Node& doc, char *argv[]){
         }
         file << endl  << "Energy: " << setprecision(10) << minimizer.getMinValue() << endl;
 
+        BasisFunctions *basisFunctions = system->getBasisFunctions();
         if (doc.FindValue("density")){
             const Node &node = doc["density"];
-            BasisFunctions *basisFunctions = system->getBasisFunctions();
             field<mat> P = solver->getDensityMatrix();
             write_density(node, P, basisFunctions, argv);
         }
@@ -279,8 +279,8 @@ void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunction
     node["corner2"] >> R2;
     node["dx"] >> dx; node["dy"] >> dy; node["dz"] >> dz;
 
-    Density density(basisFunctions, P, R1, R2, dx, dy, dz);
+    Density density(basisFunctions, R1, R2, dx, dy, dz);
     string filename = argv[2];
     filename = filename+"/density.dat";
-    density.printDensity(filename);
+    density.printDensity(P, filename);
 }
