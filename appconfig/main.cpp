@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
 
     string run_type;
     doc["run_type"] >> run_type;
+    cout << "hey" << endl;
 
     if (run_type == "single"){
         run_single(doc, argv);
@@ -153,12 +154,18 @@ void run_single(const Node& doc, char *argv[]){
         doc["perturbation_order"] >> perturbation_order;
         RMP solver(system, perturbation_order);
         solver.solve();
-        file << "Energy: " << setprecision(10) << solver.getEnergy() << endl;
+        file << "Total energy: " << setprecision(10) << solver.getEnergy() << endl;
+        file << "HF-energy: " << setprecision(10) << solver.getEnergyHF() << endl;
+        file << "2nd order corr.: " << setprecision(10) << solver.getEnergy2order() << endl;
+        file << "3rd order corr.: " << setprecision(10) << solver.getEnergy3order() << endl;
     } else if (solver_type == "UMP"){
         doc["perturbation_order"] >> perturbation_order;
         UMP solver(system, perturbation_order);
         solver.solve();
-        file << "Energy: " << setprecision(10) << solver.getEnergy() << endl;
+        file << "Total energy: " << setprecision(10) << solver.getEnergy() << endl;
+        file << "HF-energy: " << setprecision(10) << solver.getEnergyHF() << endl;
+        file << "2nd order corr.: " << setprecision(10) << solver.getEnergy2order() << endl;
+        file << "3rd order corr.: " << setprecision(10) << solver.getEnergy3order() << endl;
     } else {
         cout << "Error: Unknown solver type." << endl;
         exit(EXIT_FAILURE);
