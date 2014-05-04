@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "H2";
+    string run = "H2_potential";
 
 
     clock_t begin = clock();

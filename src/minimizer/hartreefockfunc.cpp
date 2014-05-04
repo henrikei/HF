@@ -98,12 +98,20 @@ void HartreeFockFunc::calcTransfMatrices()
 void HartreeFockFunc::transfPositions()
 {
     m_nucleiPositions = m_nucleiPositions + m_trans;
-    m_nucleiPositions = m_nucleiPositions*m_rotz.t()*m_roty.t()*m_rotx.t();
+    if (m_nucleiPositions.n_rows > 2){
+        m_nucleiPositions = m_nucleiPositions*m_rotz.t()*m_roty.t();
+    } else {
+        m_nucleiPositions = m_nucleiPositions*m_rotz.t()*m_roty.t();
+    }
 }
 
 void HartreeFockFunc::transfPositionsInverse()
 {
-    m_nucleiPositions = m_nucleiPositions*inv(m_rotx.t())*inv(m_roty.t())*inv(m_rotz.t());
+    if (m_nucleiPositions.n_rows > 2){
+        m_nucleiPositions = m_nucleiPositions*inv(m_rotx.t())*inv(m_roty.t())*inv(m_rotz.t());
+    } else {
+        m_nucleiPositions = m_nucleiPositions*inv(m_roty.t())*inv(m_rotz.t());
+    }
     m_nucleiPositions = m_nucleiPositions - m_trans;
 }
 
