@@ -38,6 +38,7 @@ double HartreeFockFunc::getValue(rowvec x)
 {
     m_x = x;
     vecToMat();
+    cout << m_nucleiPositions << endl;
     m_system->setNucleiPositions(m_nucleiPositions);
     m_solver->solve();
     return m_solver->getEnergy();
@@ -113,8 +114,11 @@ void HartreeFockFunc::matToVec()
     if (m_nucleiPositions.n_rows > 2){
         m_x(1) = m_nucleiPositions(2,0);
         m_x(2) = m_nucleiPositions(2,1);
-        for (uint i = 3; i < m_x.n_elem; i++){
-            m_x(i) = m_nucleiPositions(i+3);
+        int row, col;
+        for (uint i = 0; i < m_x.n_elem-3; i++){
+            row = 3 + i/3;
+            col = i % 3;
+            m_x(3+i) = m_nucleiPositions(row,col);
         }
     }
 }
@@ -125,8 +129,11 @@ void HartreeFockFunc::vecToMat()
     if (m_nucleiPositions.n_rows > 2){
         m_nucleiPositions(2,0) = m_x(1);
         m_nucleiPositions(2,1) = m_x(2);
-        for (uint i = 3; i < m_x.n_elem; i++){
-            m_nucleiPositions(i+3) = m_x(i);
+        int row, col;
+        for (uint i = 0; i < m_x.n_elem-3; i++){
+            row = 3 + i/3;
+            col = i % 3;
+            m_nucleiPositions(row,col) = m_x(3+i);
         }
     }
 }
