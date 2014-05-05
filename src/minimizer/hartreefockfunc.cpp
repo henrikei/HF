@@ -85,13 +85,19 @@ void HartreeFockFunc::calcTransfMatrices()
 
     nucleiPositions = nucleiPositions*m_roty.t();
 
-    if (nucleiPositions.n_rows > 2){
-        double cx = nucleiPositions(2,1)/sqrt(nucleiPositions(2,1)*nucleiPositions(2,1) + nucleiPositions(2,2)*nucleiPositions(2,2));
-        double sx = nucleiPositions(2,2)/sqrt(nucleiPositions(2,1)*nucleiPositions(2,1) + nucleiPositions(2,2)*nucleiPositions(2,2));
+    // Define necessary rotations to place atom 3 in the xy-plane
+    if (nucleiPositions.n_rows){
+        // If atom 3 is already in the xy-plane, the rotation matrix is the identity
+        if (nucleiPositions(2,2) == 0){
+            m_rotx(0,0) = 1.0; m_rotx(1,1) = 1.0; m_rotx(2,2) = 1.0;
+        } else {
+            double cx = nucleiPositions(2,1)/sqrt(nucleiPositions(2,1)*nucleiPositions(2,1) + nucleiPositions(2,2)*nucleiPositions(2,2));
+            double sx = nucleiPositions(2,2)/sqrt(nucleiPositions(2,1)*nucleiPositions(2,1) + nucleiPositions(2,2)*nucleiPositions(2,2));
 
-        m_rotx(0,0) = 1.0;
-        m_rotx(1,1) = cx; m_rotx(1,2) = sx;
-        m_rotx(2,1) = -sx; m_rotx(2,2) = cx;
+            m_rotx(0,0) = 1.0;
+            m_rotx(1,1) = cx; m_rotx(1,2) = sx;
+            m_rotx(2,1) = -sx; m_rotx(2,2) = cx;
+        }
     }
 }
 
@@ -99,7 +105,7 @@ void HartreeFockFunc::transfPositions()
 {
     m_nucleiPositions = m_nucleiPositions + m_trans;
     if (m_nucleiPositions.n_rows > 2){
-        m_nucleiPositions = m_nucleiPositions*m_rotz.t()*m_roty.t();
+        m_nucleiPositions = m_nucleiPositions*m_rotz.t()*m_roty.t()*m_rotx.t();
     } else {
         m_nucleiPositions = m_nucleiPositions*m_rotz.t()*m_roty.t();
     }
