@@ -38,7 +38,15 @@ double HartreeFockFunc::getValue(rowvec x)
 {
     m_x = x;
     vecToMat();
-    cout << m_nucleiPositions << endl;
+
+    int my_rank = 0;
+#ifdef RUN_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+#endif
+    if (my_rank == 0){
+        cout << m_nucleiPositions << endl;
+    }
+
     m_system->setNucleiPositions(m_nucleiPositions);
     m_solver->solve();
     return m_solver->getEnergy();

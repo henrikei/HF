@@ -39,21 +39,21 @@ void RMP::solve()
     }
 
     // Transform from Atomic Orbital Integrals to Molecular Orbital Integrals
-#ifdef RUN_MPI
-    clock_t begin = clock();
-#endif
     if (m_perturbOrder > 1){
+//#ifdef RUN_MPI
+//    clock_t begin = clock();
+//#endif
         AOItoMOI(temp1, m_AOI, m_C, 0);
         AOItoMOI(temp2, temp1, m_C, 1);
         AOItoMOI(temp3, temp2, m_C, 2);
         AOItoMOI(m_MOI, temp3, m_C, 3);
+//#ifdef RUN_MPI
+//    clock_t end = clock();
+//    int my_rank;
+//    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+//    cout << "Proc " << my_rank << ": Time AOI to MOI: " << (double(end - begin))/CLOCKS_PER_SEC << endl;
+//#endif
     }
-#ifdef RUN_MPI
-    clock_t end = clock();
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    cout << "Proc " << my_rank << ": Time AOI to MOI: " << (double(end - begin))/CLOCKS_PER_SEC << endl;
-#endif
 
     if (m_perturbOrder == 1){
     } else if (m_perturbOrder == 2){
