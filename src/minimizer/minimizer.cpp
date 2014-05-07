@@ -45,7 +45,7 @@ void Minimizer::initializeSimplex()
 {
     m_X.row(0) = m_func->getxInitial();
 
-    double initialStep = 0.1;
+    double initialStep = 0.8;
     rowvec xtemp = zeros<rowvec>(m_dim);
 
     for (uint i = 1; i < m_dim+1; i++){
