@@ -94,7 +94,7 @@ void HartreeFockFunc::calcTransfMatrices()
     nucleiPositions = nucleiPositions*m_roty.t();
 
     // Define necessary rotations to place atom 3 in the xy-plane
-    if (nucleiPositions.n_rows){
+    if (nucleiPositions.n_rows > 2){
         // If atom 3 is already in the xy-plane, the rotation matrix is the identity
         if (nucleiPositions(2,2) == 0){
             m_rotx(0,0) = 1.0; m_rotx(1,1) = 1.0; m_rotx(2,2) = 1.0;

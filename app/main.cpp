@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "H2_potential";
+    string run = "HF";
 
 
     clock_t begin = clock();
@@ -253,7 +253,7 @@ int main()
 
     } else if (run == "HF") {
 
-        double d = 1.889725989*2;
+        double d = 2.0;
         rowvec posH = {-0.5*d, 0.0, 0.0};
         rowvec posF= {0.5*d, 0.0, 0.0};
         rowvec charges = {1.0, 9.0};
@@ -264,17 +264,17 @@ int main()
         nucleiPositions.row(1) = posF;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_631Gs.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_STO3G.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_STO3G.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UMP solver(system,2,2);
+        RHF solver(system);
         solver.solve();
 
         if (my_rank == 0){
-            cout << "Energy: " << setprecision(9) << solver.getEnergyHF() + solver.getEnergy2order() << endl;
+            cout << "Energy: " << setprecision(9) << solver.getEnergy()<< endl;
         }
 
         delete system;
