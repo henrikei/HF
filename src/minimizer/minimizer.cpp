@@ -4,7 +4,7 @@
 Minimizer::Minimizer(Func* func)
 {
     m_func = func;
-    m_dim = m_func->getxInitial().n_elem;
+    m_dim = m_func->getx().n_elem;
     m_X = zeros<mat>(m_dim+1, m_dim);
     m_x0 = zeros<rowvec>(m_dim);
     initializeSimplex();
@@ -43,13 +43,13 @@ double Minimizer::getMaxValue()
 
 void Minimizer::initializeSimplex()
 {
-    m_X.row(0) = m_func->getxInitial();
+    m_X.row(0) = m_func->getx();
 
     double initialStep = 0.8;
     rowvec xtemp = zeros<rowvec>(m_dim);
 
     for (uint i = 1; i < m_dim+1; i++){
-        xtemp = m_func->getxInitial();
+        xtemp = m_func->getx();
         xtemp(i-1) += initialStep;
         m_X.row(i) = xtemp;
     }

@@ -14,9 +14,10 @@ class HartreeFockFunc : public Func
 {
 public:
     HartreeFockFunc(MollerPlesset *solver, System *system);
-    virtual rowvec getxInitial();
+    virtual rowvec getx();
     virtual double getValue (rowvec x);
     mat getNucleiPositions();
+    void freezeAtoms(vector<int> frozenAtoms);
 
 private:
     MollerPlesset *m_solver;
@@ -28,7 +29,9 @@ private:
     mat m_rotz;
 
     mat m_nucleiPositions;
+    mat m_nucleiPositionsTransformed;
     rowvec m_x;
+    vector<pair<int,int>> m_map;
 
     void calcTransfMatrices();
     void transfPositions();

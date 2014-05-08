@@ -5,6 +5,8 @@ HartreeFockFunc::HartreeFockFunc(MollerPlesset *solver, System *system)
     m_solver = solver;
     m_system = system;
     m_nucleiPositions = system->getNucleiPositions();
+    m_nucleiPositionsTransformed.copy_size(m_nucleiPositions);
+    m_nucleiPositionsTransformed.fill(0.0);
 
     int N = m_nucleiPositions.n_rows;
 
@@ -16,10 +18,25 @@ HartreeFockFunc::HartreeFockFunc(MollerPlesset *solver, System *system)
     if (N < 2){
         cout << "Error: No degree of freedom to vary during minimization" << endl;
         exit(EXIT_FAILURE);
-    } else if (N == 2){
+    } else if (N > 1){
         m_x = zeros<rowvec>(1);
-    } else {
+
+        pair<int,int> a(1,0);
+        m_map.push_back(a);
+    }
+    if (N > 2){
         m_x = zeros<rowvec>(3*N - 6);
+
+        pair<int,int> a(2,0);
+        pair<int,int> b(2,1);
+        m_map.push_back(a); m_map.push_back(b);
+        int row, col;
+        for (uint i = 0; i < m_x.n_elem; i++){
+            row = 3 + i/3;
+            col = i % 3;
+            pair<int,int> c(row,col);
+            m_map.push_back(c);
+        }
     }
 
     calcTransfMatrices();
@@ -28,7 +45,7 @@ HartreeFockFunc::HartreeFockFunc(MollerPlesset *solver, System *system)
 }
 
 
-rowvec HartreeFockFunc::getxInitial()
+rowvec HartreeFockFunc::getx()
 {
     return m_x;
 }
@@ -44,19 +61,41 @@ double HartreeFockFunc::getValue(rowvec x)
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
     if (my_rank == 0){
-        cout << m_nucleiPositions << endl;
+        cout << m_nucleiPositionsTransformed << endl;
     }
 
-    m_system->setNucleiPositions(m_nucleiPositions);
+    m_system->setNucleiPositions(m_nucleiPositionsTransformed);
     m_solver->solve();
     return m_solver->getEnergy();
 }
+
 
 mat HartreeFockFunc::getNucleiPositions()
 {
     vecToMat();
     transfPositionsInverse();
     return m_nucleiPositions;
+}
+
+void HartreeFockFunc::freezeAtoms(vector<int> frozenAtoms)
+{
+    for(int i = 0; i < frozenAtoms.size(); i++){
+        if(frozenAtoms.at(i) < 2){
+            cout << "Error: Not possible to freeze any of the first three atoms." << endl;
+            exit(EXIT_FAILURE);
+        } else if(frozenAtoms.at(i) > m_nucleiPositions.n_rows-1){
+            cout << "Error: Unable to freeze atom " << frozenAtoms.at(i) << " since it is not defined." << endl;
+            exit(EXIT_FAILURE);
+        } else {
+            m_map.erase(m_map.begin() + (frozenAtoms.at(i)-3)*3 + 1);
+            m_map.erase(m_map.begin() + (frozenAtoms.at(i)-3)*3 + 2);
+            m_map.erase(m_map.begin() + (frozenAtoms.at(i)-3)*3 + 3);
+        }
+        int n_dof = m_x.n_elem;
+        int n_frozen_dof = frozenAtoms.size();
+        m_x.set_size(n_dof - n_frozen_dof);
+        matToVec();
+    }
 }
 
 
@@ -111,51 +150,63 @@ void HartreeFockFunc::calcTransfMatrices()
 
 void HartreeFockFunc::transfPositions()
 {
-    m_nucleiPositions = m_nucleiPositions + m_trans;
-    if (m_nucleiPositions.n_rows > 2){
-        m_nucleiPositions = m_nucleiPositions*m_rotz.t()*m_roty.t()*m_rotx.t();
+    m_nucleiPositionsTransformed = m_nucleiPositions + m_trans;
+    if (m_nucleiPositionsTransformed.n_rows > 2){
+        m_nucleiPositionsTransformed = m_nucleiPositions*m_rotz.t()*m_roty.t()*m_rotx.t();
     } else {
-        m_nucleiPositions = m_nucleiPositions*m_rotz.t()*m_roty.t();
+        m_nucleiPositionsTransformed = m_nucleiPositions*m_rotz.t()*m_roty.t();
     }
 }
 
 void HartreeFockFunc::transfPositionsInverse()
 {
     if (m_nucleiPositions.n_rows > 2){
-        m_nucleiPositions = m_nucleiPositions*inv(m_rotx.t())*inv(m_roty.t())*inv(m_rotz.t());
+        m_nucleiPositions = m_nucleiPositionsTransformed*inv(m_rotx.t())*inv(m_roty.t())*inv(m_rotz.t());
     } else {
-        m_nucleiPositions = m_nucleiPositions*inv(m_roty.t())*inv(m_rotz.t());
+        m_nucleiPositions = m_nucleiPositionsTransformed*inv(m_roty.t())*inv(m_rotz.t());
     }
-    m_nucleiPositions = m_nucleiPositions - m_trans;
+    m_nucleiPositions = m_nucleiPositionsTransformed - m_trans;
 }
 
 void HartreeFockFunc::matToVec()
 {
-    m_x(0) = m_nucleiPositions(1,0);
+//    m_x(0) = m_nucleiPositionsTransformed(1,0);
 
-    if (m_nucleiPositions.n_rows > 2){
-        m_x(1) = m_nucleiPositions(2,0);
-        m_x(2) = m_nucleiPositions(2,1);
-        int row, col;
-        for (uint i = 0; i < m_x.n_elem-3; i++){
-            row = 3 + i/3;
-            col = i % 3;
-            m_x(3+i) = m_nucleiPositions(row,col);
-        }
+//    if (m_nucleiPositionsTransformed.n_rows > 2){
+//        m_x(1) = m_nucleiPositionsTransformed(2,0);
+//        m_x(2) = m_nucleiPositionsTransformed(2,1);
+//        int row, col;
+//        for (uint i = 0; i < m_x.n_elem-3; i++){
+//            row = 3 + i/3;
+//            col = i % 3;
+//            m_x(3+i) = m_nucleiPositionsTransformed(row,col);
+//        }
+//    }
+    int row, col;
+    for(uint i = 0; i < m_x.n_elem; i++){
+        row = m_map.at(i).first;
+        col = m_map.at(i).second;
+        m_x(i) = m_nucleiPositionsTransformed(row,col);
     }
 }
 
 void HartreeFockFunc::vecToMat()
 {
-    m_nucleiPositions(1,0) = m_x(0);
-    if (m_nucleiPositions.n_rows > 2){
-        m_nucleiPositions(2,0) = m_x(1);
-        m_nucleiPositions(2,1) = m_x(2);
-        int row, col;
-        for (uint i = 0; i < m_x.n_elem-3; i++){
-            row = 3 + i/3;
-            col = i % 3;
-            m_nucleiPositions(row,col) = m_x(3+i);
-        }
+    int row, col;
+    for (uint i = 0; i < m_x.n_elem; i++){
+        row = m_map.at(i).first;
+        col = m_map.at(i).second;
+        m_nucleiPositionsTransformed(row,col) = m_x(i);
     }
+//    m_nucleiPositionsTransformed(1,0) = m_x(0);
+//    if (m_nucleiPositionsTransformed.n_rows > 2){
+//        m_nucleiPositionsTransformed(2,0) = m_x(1);
+//        m_nucleiPositionsTransformed(2,1) = m_x(2);
+//        int row, col;
+//        for (uint i = 0; i < m_x.n_elem-3; i++){
+//            row = 3 + i/3;
+//            col = i % 3;
+//            m_nucleiPositionsTransformed(row,col) = m_x(3+i);
+//        }
+//    }
 }

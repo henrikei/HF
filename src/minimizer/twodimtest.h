@@ -12,7 +12,7 @@ class TwoDimTest : public Func
 {
 public:
     TwoDimTest(rowvec xInitial);
-    virtual rowvec getxInitial();
+    virtual rowvec getx();
     virtual double getValue(rowvec x);
 private:
     rowvec m_xInitial;

@@ -12,7 +12,7 @@ class Func
 public:
     Func();
     ~Func();
-    virtual rowvec getxInitial()=0;
+    virtual rowvec getx()=0;
     virtual double getValue(rowvec x)=0;
 };
 

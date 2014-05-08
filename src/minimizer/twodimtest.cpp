@@ -5,7 +5,7 @@ TwoDimTest::TwoDimTest(rowvec xInitial)
     m_xInitial = xInitial;
 }
 
-rowvec TwoDimTest::getxInitial()
+rowvec TwoDimTest::getx()
 {
     return m_xInitial;
 }
