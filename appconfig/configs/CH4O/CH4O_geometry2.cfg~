@@ -1,0 +1,34 @@
+###################################################
+################## Config #########################
+
+basis: 631Gss
+solver_type: RHF
+perturbation_order: 0
+run_type: single # Can be single or minimize
+atoms:
+  - name: C
+    charge: 6
+    position: [0.0, 0.0, 0.0]
+  - name: H
+    charge: 1
+    position: [2.069368449, 0.0, 0.0]
+  - name: H
+    charge: 1
+    position: [-0.6408166947, 1.960488846, 0.0]
+  - name: H
+    charge: 1
+    position: [-0.6429783255, -0.8866272549, 1.755774717,]
+  - name: O
+    charge: 8
+    position: [-1.030598821, -1.199937897, -2.197994318]
+  - name: H
+    charge: 1
+    position: [-0.3884950632, -2.956235247, -2.092854181]
+n_electrons: 18
+
+density:
+  corner1: [-6.0, -6.0, -6.0]
+  corner2: [6.0, 6.0, 6.0]
+  dx: 0.12
+  dy: 0.12
+  dz: 0.12

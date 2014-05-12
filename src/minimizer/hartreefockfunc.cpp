@@ -77,27 +77,6 @@ mat HartreeFockFunc::getNucleiPositions()
     return m_nucleiPositions;
 }
 
-void HartreeFockFunc::freezeAtoms(vector<int> frozenAtoms)
-{
-    for(int i = 0; i < frozenAtoms.size(); i++){
-        if(frozenAtoms.at(i) < 2){
-            cout << "Error: Not possible to freeze any of the first three atoms." << endl;
-            exit(EXIT_FAILURE);
-        } else if(frozenAtoms.at(i) > m_nucleiPositions.n_rows-1){
-            cout << "Error: Unable to freeze atom " << frozenAtoms.at(i) << " since it is not defined." << endl;
-            exit(EXIT_FAILURE);
-        } else {
-            m_map.erase(m_map.begin() + (frozenAtoms.at(i)-3)*3 + 1);
-            m_map.erase(m_map.begin() + (frozenAtoms.at(i)-3)*3 + 2);
-            m_map.erase(m_map.begin() + (frozenAtoms.at(i)-3)*3 + 3);
-        }
-        int n_dof = m_x.n_elem;
-        int n_frozen_dof = frozenAtoms.size();
-        m_x.set_size(n_dof - n_frozen_dof);
-        matToVec();
-    }
-}
-
 
 // Calculates on the basis of m_nucleiPositions the matrices necessary to place:
 // 1) atom 1 at the origin

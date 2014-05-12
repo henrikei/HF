@@ -17,7 +17,6 @@ public:
     virtual rowvec getx();
     virtual double getValue (rowvec x);
     mat getNucleiPositions();
-    void freezeAtoms(vector<int> frozenAtoms);
 
 private:
     MollerPlesset *m_solver;
