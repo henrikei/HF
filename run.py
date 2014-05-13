@@ -46,4 +46,4 @@ env = dict(os.environ)
 env['LD_LIBRARY_PATH'] = lib_path
 
 #subprocess.call(["./appconfig", input_file, output_dir], cwd=app_path, env=env)
-subprocess.call(["mpirun", "-n", "4", "./appconfig", input_file, output_dir], cwd=app_path, env=env)
+subprocess.call(["mpirun", "-n", "2", "./appconfig", input_file, output_dir], cwd=app_path, env=env)
