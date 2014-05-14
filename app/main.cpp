@@ -41,12 +41,12 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "HF";
+    string run = "HF_potential";
 
 
     clock_t begin = clock();
 
-    if (run == "CH4"){
+    if (run == "CH4_potential"){
         double d0 = 1.0910338084437818; // gives 1 ånsgtrøm bond length
         double dexp = 1.086*d0; // experimental value
         rowvec posC = {0.0, 0.0, 0.0};
@@ -83,102 +83,106 @@ int main()
         double energy;
 
         ofstream ofile;
-        ofile.open("../../Results/CH4_potential/UHF_631Gs.dat");
-        ofile << "Basis set: 6-31G*" << endl;
-        ofile << "Frozen core" << endl;
-        ofile << "Distance (a.u.)   UHF   UMP2   UMP3" << endl;
+        if (my_rank == 0){
+            ofile.open("../../Results/CH4_potential/UHF_631Gs.dat");
+            ofile << "Basis set: 6-31G*" << endl;
+            ofile << "Frozen core" << endl;
+            ofile << "Distance (a.u.)   UHF   UMP2   UMP3" << endl;
+        }
 
         while (d < dmax){
             posH1 = {d, d, d};
             nucleiPositions.row(1) = posH1;
             system->setNucleiPositions(nucleiPositions);
             solver.solve();
-            ofile << d*sqrt(3) << "  ";
-            energy = solver.getEnergyHF();
-            ofile << setprecision(10) << energy << "  ";
-            energy += solver.getEnergy2order();
-            ofile << setprecision(10) << energy << "  ";
-            energy += solver.getEnergy3order();
-            ofile << setprecision(10) << energy << endl;
+            if (my_rank == 0){
+                ofile << d*sqrt(3) << "  ";
+                energy = solver.getEnergyHF();
+                ofile << setprecision(10) << energy << "  ";
+                energy += solver.getEnergy2order();
+                ofile << setprecision(10) << energy << "  ";
+                energy += solver.getEnergy3order();
+                ofile << setprecision(10) << energy << endl;
+            }
             d += delta;
         }
 
-    } else if (run == "CH4_reaction"){
+//    } else if (run == "CH4_reaction"){
 
-        double d0 = 1.889725989; // 1 ånsgtrøm bond length
-        double d_exp = 1.086*d0; // experimental value
-        double theta_exp = 19.47*M_PI/180;
-        double L = 3.0*d0;
-        rowvec posC = {0.0, 0.0, 0.0};
-        rowvec posH1 = {-d_exp*sin(theta_exp), d_exp*cos(theta_exp)*cos(2*M_PI/3), d_exp*cos(theta_exp)*sin(2*M_PI/3)};
-        rowvec posH2 = {-d_exp*sin(theta_exp), -d_exp*cos(theta_exp), 0.0};
-        rowvec posH3 = {-d_exp*sin(theta_exp), d_exp*cos(theta_exp)*cos(2*M_PI/3), -d_exp*cos(theta_exp)*sin(2*M_PI/3)};
-        rowvec posH4 = {d_exp, 0.0, 0.0};
-        rowvec posH5 = {L, 0, 0};
-        rowvec charges = {6.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-        int nElectrons = 11;
+//        double d0 = 1.889725989; // 1 ånsgtrøm bond length
+//        double d_exp = 1.086*d0; // experimental value
+//        double theta_exp = 19.47*M_PI/180;
+//        double L = 3.0*d0;
+//        rowvec posC = {0.0, 0.0, 0.0};
+//        rowvec posH1 = {-d_exp*sin(theta_exp), d_exp*cos(theta_exp)*cos(2*M_PI/3), d_exp*cos(theta_exp)*sin(2*M_PI/3)};
+//        rowvec posH2 = {-d_exp*sin(theta_exp), -d_exp*cos(theta_exp), 0.0};
+//        rowvec posH3 = {-d_exp*sin(theta_exp), d_exp*cos(theta_exp)*cos(2*M_PI/3), -d_exp*cos(theta_exp)*sin(2*M_PI/3)};
+//        rowvec posH4 = {d_exp, 0.0, 0.0};
+//        rowvec posH5 = {L, 0, 0};
+//        rowvec charges = {6.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+//        int nElectrons = 11;
 
-        mat nucleiPositions = zeros<mat>(6,3);
-        nucleiPositions.row(0) = posC;
-        nucleiPositions.row(1) = posH1;
-        nucleiPositions.row(2) = posH2;
-        nucleiPositions.row(3) = posH3;
-        nucleiPositions.row(4) = posH4;
-        nucleiPositions.row(5) = posH5;
+//        mat nucleiPositions = zeros<mat>(6,3);
+//        nucleiPositions.row(0) = posC;
+//        nucleiPositions.row(1) = posH1;
+//        nucleiPositions.row(2) = posH2;
+//        nucleiPositions.row(3) = posH3;
+//        nucleiPositions.row(4) = posH4;
+//        nucleiPositions.row(5) = posH5;
 
-        BasisFunctions *basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 1);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 2);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 3);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 4);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 5);
+//        BasisFunctions *basisFunctions = new BasisFunctions;
+//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
+//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 1);
+//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 2);
+//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 3);
+//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 4);
+//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 5);
 
-        System *system;
-        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+//        System *system;
+//        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UMP solver(system,3,2);
+//        UMP solver(system,3,2);
 
-        double d_start = 1.0*d0;
-        double d_end = 2.5*d0;
-        double d_delta = 0.025*d0;
-        int n_steps = (d_end - d_start)/d_delta + 1;
-        double theta_start = theta_exp;
-        double theta_end = 0.0;
-        double theta_delta = (theta_end - theta_end)/n_steps;
+//        double d_start = 1.0*d0;
+//        double d_end = 2.5*d0;
+//        double d_delta = 0.025*d0;
+//        int n_steps = (d_end - d_start)/d_delta + 1;
+//        double theta_start = theta_exp;
+//        double theta_end = 0.0;
+//        double theta_delta = (theta_end - theta_end)/n_steps;
 
-        double d = d_start;
-        double theta = theta_start;
-        double energy;
+//        double d = d_start;
+//        double theta = theta_start;
+//        double energy;
 
-        ofstream ofile;
-        ofile.open("../../Results/CH4_reaction/UHF_631Gs.dat");
-        ofile << "Basis set: 6-31G*" << endl;
-        ofile << "Frozen core" << endl;
-        ofile << "Distance (a.u.)   UHF   UMP2   UMP3" << endl;
+//        ofstream ofile;
+//        ofile.open("../../Results/CH4_reaction/UHF_631Gs.dat");
+//        ofile << "Basis set: 6-31G*" << endl;
+//        ofile << "Frozen core" << endl;
+//        ofile << "Distance (a.u.)   UHF   UMP2   UMP3" << endl;
 
-        while (d < d_end){
-            posH1 = {-d_exp*sin(theta), d_exp*cos(theta)*cos(2*M_PI/3), d_exp*cos(theta)*sin(2*M_PI/3)};
-            posH2 = {-d_exp*sin(theta), -d_exp*cos(theta), 0.0};
-            posH3 = {-d_exp*sin(theta), d_exp*cos(theta)*cos(2*M_PI/3), -d_exp*cos(theta)*sin(2*M_PI/3)};
-            posH4 = {d, 0.0, 0.0};
+//        while (d < d_end){
+//            posH1 = {-d_exp*sin(theta), d_exp*cos(theta)*cos(2*M_PI/3), d_exp*cos(theta)*sin(2*M_PI/3)};
+//            posH2 = {-d_exp*sin(theta), -d_exp*cos(theta), 0.0};
+//            posH3 = {-d_exp*sin(theta), d_exp*cos(theta)*cos(2*M_PI/3), -d_exp*cos(theta)*sin(2*M_PI/3)};
+//            posH4 = {d, 0.0, 0.0};
 
-            nucleiPositions.row(1) = posH1;
-            nucleiPositions.row(2) = posH2;
-            nucleiPositions.row(3) = posH3;
-            nucleiPositions.row(4) = posH4;
-            system->setNucleiPositions(nucleiPositions);
-            solver.solve();
-            ofile << d << "  ";
-            energy = solver.getEnergyHF();
-            ofile << setprecision(10) << energy << "  ";
-            energy += solver.getEnergy2order();
-            ofile << setprecision(10) << energy << "  ";
-            energy += solver.getEnergy3order();
-            ofile << setprecision(10) << energy << endl;
-            d += d_delta;
-            theta -= theta_delta;
-        }
+//            nucleiPositions.row(1) = posH1;
+//            nucleiPositions.row(2) = posH2;
+//            nucleiPositions.row(3) = posH3;
+//            nucleiPositions.row(4) = posH4;
+//            system->setNucleiPositions(nucleiPositions);
+//            solver.solve();
+//            ofile << d << "  ";
+//            energy = solver.getEnergyHF();
+//            ofile << setprecision(10) << energy << "  ";
+//            energy += solver.getEnergy2order();
+//            ofile << setprecision(10) << energy << "  ";
+//            energy += solver.getEnergy3order();
+//            ofile << setprecision(10) << energy << endl;
+//            d += d_delta;
+//            theta -= theta_delta;
+//        }
 
     } else if (run == "NH4"){
 
@@ -351,11 +355,11 @@ int main()
             ofile << setprecision(10) << energy << endl;
         }
 
-    } else if (run == "HF") {
+    } else if (run == "HF_potential") {
 
-        double d = 1.733;
-        rowvec posH = {-0.5*d, 0.0, 0.0};
-        rowvec posF= {0.5*d, 0.0, 0.0};
+        double d0 = 1.889725989; // 1 ångstrøm
+        rowvec posH = {-0.5*d0, 0.0, 0.0};
+        rowvec posF= {0.5*d0, 0.0, 0.0};
         rowvec charges = {1.0, 9.0};
         int nElectrons = 10;
 
@@ -364,17 +368,43 @@ int main()
         nucleiPositions.row(1) = posF;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311++G(3df,3pd).dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_6311++G(3df,3pd).dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_631Gss.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,3);
-        solver.solve();
+        UMP solver(system,3,2);
 
+        double dmin = 0.7*d0;
+        double dmax = 3.7*d0;
+        double delta = 0.025*d0;
+        double d = dmin;
+        double energy;
+
+        ofstream ofile;
         if (my_rank == 0){
-            cout << "Energy: " << setprecision(9) << solver.getEnergy()<< endl;
+            ofile.open("../../Results/FH_potential/UHF_631Gss.dat");
+            ofile << "Basis set: 6-31G**" << endl;
+            ofile << "Frozen core" << endl;
+            ofile << "Distance (a.u.)   UHF   UMP2   UMP3" << endl;
+        }
+
+        while (d <= dmax){
+            posH = {-0.5*d, 0.0, 0.0}; posF = {0.5*d, 0.0, 0.0};
+            nucleiPositions.row(0) = posH; nucleiPositions.row(1) = posF;
+            system->setNucleiPositions(nucleiPositions);
+            solver.solve();
+            if (my_rank == 0){
+                ofile << d << "  ";
+                energy = solver.getEnergyHF();
+                ofile << setprecision(10) << energy << "  ";
+                energy += solver.getEnergy2order();
+                ofile << setprecision(10) << energy << "  ";
+                energy += solver.getEnergy3order();
+                ofile << setprecision(10) << energy << endl;
+            }
+            d += delta;
         }
 
         delete system;
