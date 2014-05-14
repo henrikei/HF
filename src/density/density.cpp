@@ -23,7 +23,7 @@ void Density::printDensity(field<mat> P, string filename)
 
 void Density::printSpinDensity(field<mat> P, string filename)
 {
-    if (P.n_elem == 1){
+    if (P.n_elem == 2){
         mat Pspin = P(0) - P(1);
         printDensity(Pspin, filename);
     } else {

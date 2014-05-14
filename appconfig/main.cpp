@@ -37,7 +37,7 @@ void run_single(const Node& doc, char* argv[]);
 //void run_multiple(const Node& doc, char* argv[]);
 void run_minimize(const Node& doc, char* argv[]);
 
-void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunctions, char* argv[]);
+void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunctions, char* argv[], string type="density");
 
 
 
@@ -153,7 +153,12 @@ void run_single(const Node& doc, char *argv[]){
             if (doc.FindValue("density")){
                 const Node &node = doc["density"];
                 field<mat> P = solver.getDensityMatrix();
-                write_density(node, P, basisFunctions, argv);
+                write_density(node, P, basisFunctions, argv, "density");
+            }
+            if (doc.FindValue("spin_density")){
+                const Node &node = doc["spin_density"];
+                field<mat> P = solver.getDensityMatrix();
+                write_density(node, P, basisFunctions, argv, "spin_density");
             }
         }
     } else if (solver_type == "UHF"){
@@ -166,7 +171,12 @@ void run_single(const Node& doc, char *argv[]){
             if (doc.FindValue("density")){
                 const Node &node = doc["density"];
                 field<mat> P = solver.getDensityMatrix();
-                write_density(node, P, basisFunctions, argv);
+                write_density(node, P, basisFunctions, argv, "density");
+            }
+            if (doc.FindValue("spin_density")){
+                const Node &node = doc["spin_density"];
+                field<mat> P = solver.getDensityMatrix();
+                write_density(node, P, basisFunctions, argv, "spin_density");
             }
         }
     } else if (solver_type == "RMP"){
@@ -239,12 +249,6 @@ void run_minimize(const Node& doc, char *argv[]){
             }
             file << endl << "Energy: " << setprecision(10) << minimizer.getMinValue() << endl;
 
-            BasisFunctions *basisFunctions = system->getBasisFunctions();
-            if (doc.FindValue("density")){
-                const Node &node = doc["density"];
-                field<mat> P = solver->getDensityMatrix();
-                write_density(node, P, basisFunctions, argv);
-            }
         }
 
     } else if (solver_type == "UHF"){
@@ -264,13 +268,6 @@ void run_minimize(const Node& doc, char *argv[]){
                 file << endl;
             }
             file << endl  << "Energy: " << setprecision(10) << minimizer.getMinValue() << endl;
-
-            BasisFunctions *basisFunctions = system->getBasisFunctions();
-            if (doc.FindValue("density")){
-                const Node &node = doc["density"];
-                field<mat> P = solver->getDensityMatrix();
-                write_density(node, P, basisFunctions, argv);
-            }
         }
 
     } else if (solver_type == "RMP"){
@@ -321,7 +318,7 @@ void run_minimize(const Node& doc, char *argv[]){
 
 
 //---------------------------------------------------------------------------------------------------------------------
-void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunctions, char* argv[]){
+void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunctions, char* argv[], string type){
     rowvec3 R1, R2;
     double dx, dy, dz;
     node["corner1"] >> R1;
@@ -330,6 +327,13 @@ void write_density(const Node& node, field<mat> P, BasisFunctions *basisFunction
 
     Density density(basisFunctions, R1, R2, dx, dy, dz);
     string filename = argv[2];
-    filename = filename+"/density.dat";
-    density.printDensity(P, filename);
+    filename = filename+"/"+type+".dat";
+    if (type == "density"){
+        density.printDensity(P, filename);
+    } else if (type == "spin_density"){
+        density.printSpinDensity(P, filename);
+    } else {
+        cout << "Error: Unknown density type given as input." << endl;
+        exit(EXIT_FAILURE);
+    }
 }
