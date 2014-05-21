@@ -82,6 +82,27 @@ int UHF::getNumOfElecrtonsDown()
     return m_nElectronsDown;
 }
 
+double UHF::getSpinExpectation()
+{
+    double value, value_temp;
+    value = 0;
+    for (int i = 0; i < m_nElectronsUp; i++){
+        for (int j = 0; j < m_nElectronsDown; j++){
+            value_temp = 0;
+            for (uint mu = 0; mu < m_Cup.n_rows; mu++){
+                for (uint nu = 0; nu < m_Cdown.n_rows; nu++){
+                    value_temp += m_Cup(mu,i)*m_Cdown(nu,j)*m_S(mu,nu);
+                }
+            }
+            value -= value_temp*value_temp;
+        }
+    }
+    double factor = (double)(m_nElectronsUp - m_nElectronsDown);
+    factor /= 2;
+    value += factor*(factor + 1) + (double)m_nElectronsDown;
+    return value;
+}
+
 
 //-----------------------------------------------------------------------------------------------------------------
 // Solves the Hartree-Fock equations (iterated), stores the energy in double energy and the coefficients
