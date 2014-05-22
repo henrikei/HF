@@ -74,20 +74,18 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UMP solver(system,3,2);
+        UHF solver(system);
 
         double dmin = 0.8*d0;
         double dmax = 4.6*d0;
         double delta = 0.025*d0;
         double d = dmin;
-        double energy;
 
         ofstream ofile;
         if (my_rank == 0){
-            ofile.open("../../Results/CH4_potential/UHF_631Gs.dat");
+            ofile.open("../../Results/CH4_potential/UHF_spin_631Gs.dat");
             ofile << "Basis set: 6-31G*" << endl;
-            ofile << "Frozen core" << endl;
-            ofile << "Distance (a.u.)   UHF   UMP2   UMP3" << endl;
+            ofile << "Distance (a.u.)   <S^2>" << endl;
         }
 
         while (d < dmax){
@@ -97,12 +95,7 @@ int main()
             solver.solve();
             if (my_rank == 0){
                 ofile << d*sqrt(3) << "  ";
-                energy = solver.getEnergyHF();
-                ofile << setprecision(10) << energy << "  ";
-                energy += solver.getEnergy2order();
-                ofile << setprecision(10) << energy << "  ";
-                energy += solver.getEnergy3order();
-                ofile << setprecision(10) << energy << endl;
+                ofile << solver.getSpinExpectation() << endl;
             }
             d += delta;
         }
@@ -374,20 +367,18 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UMP solver(system,3,2);
+        UHF solver(system);
 
         double dmin = 0.7*d0;
         double dmax = 3.7*d0;
         double delta = 0.025*d0;
         double d = dmin;
-        double energy;
 
         ofstream ofile;
         if (my_rank == 0){
-            ofile.open("../../Results/FH_potential/UHF_631Gss.dat");
+            ofile.open("../../Results/FH_potential/UHF_spin_631Gss.dat");
             ofile << "Basis set: 6-31G**" << endl;
-            ofile << "Frozen core" << endl;
-            ofile << "Distance (a.u.)   UHF   UMP2   UMP3" << endl;
+            ofile << "Distance (a.u.)   <S^2>" << endl;
         }
 
         while (d <= dmax){
@@ -397,12 +388,7 @@ int main()
             solver.solve();
             if (my_rank == 0){
                 ofile << d << "  ";
-                energy = solver.getEnergyHF();
-                ofile << setprecision(10) << energy << "  ";
-                energy += solver.getEnergy2order();
-                ofile << setprecision(10) << energy << "  ";
-                energy += solver.getEnergy3order();
-                ofile << setprecision(10) << energy << endl;
+                ofile << solver.getSpinExpectation() << endl;
             }
             d += delta;
         }

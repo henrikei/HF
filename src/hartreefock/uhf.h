@@ -14,6 +14,7 @@ public:
     field<colvec> getFockEnergy();
     int getNumOfElectronsUp();
     int getNumOfElecrtonsDown();
+    double getSpinExpectation();
 
 private:
     mat m_Fup;
