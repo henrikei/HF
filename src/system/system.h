@@ -15,7 +15,8 @@ using namespace arma;
 class System
 {
 public:
-    System(BasisFunctions* m_basisFunctions, mat nucleiPositions, rowvec charges, int nElectrons);
+    System(BasisFunctions *basisFunctions, mat nucleiPositions, rowvec charges, int nElectrons);
+    System(BasisFunctions *basisFunctions, mat nucleiPositions, rowvec charges, int nElectronsUp, int nElectronsDown);
     virtual ~System();
 
     rowvec2 getOneElectronIntegrals(int p, int q);
@@ -23,6 +24,8 @@ public:
     double getNucleiPotential();
     int getTotalNumOfBasisFunc();
     int getNumOfElectrons();
+    int getNumOfElectronsUp();
+    int getNumOfElectronsDown();
     mat getNucleiPositions();
     BasisFunctions* getBasisFunctions();
 
@@ -32,7 +35,7 @@ private:
     int m_nNuclei;
     mat m_nucleiPositions;
     rowvec m_charges;
-    int m_nElectrons;
+    int m_nElectrons, m_nElectronsUp, m_nElectronsDown;
     BasisFunctions* m_basisFunctions;
     Integrator* m_integrator;
 };

@@ -9,9 +9,22 @@ System::System(BasisFunctions *basisFunctions, mat nucleiPositions, rowvec charg
     m_nucleiPositions = nucleiPositions;
     m_charges = charges;
     m_nElectrons = nElectrons;
+    m_nElectronsUp = nElectrons/2;
+    m_nElectronsDown = nElectrons/2;
+    // This constructor places +1 electron spin-up if number of electrons is odd
+    if (m_nElectrons % 2 == 1){
+        m_nElectronsUp += 1;
+    }
 
     m_basisFunctions->setPosPointer(&m_nucleiPositions);
     m_nNuclei = m_nucleiPositions.n_rows;
+}
+
+System::System(BasisFunctions *basisFunctions, mat nucleiPositions, rowvec charges, int nElectronsUp, int nElectronsDown):
+    System(basisFunctions, nucleiPositions, charges, nElectronsUp + nElectronsDown)
+{
+    m_nElectronsUp = nElectronsUp;
+    m_nElectronsDown = nElectronsDown;
 }
 
 System::~System()
@@ -144,6 +157,16 @@ int System::getTotalNumOfBasisFunc()
 int System::getNumOfElectrons()
 {
     return m_nElectrons;
+}
+
+int System::getNumOfElectronsUp()
+{
+    return m_nElectronsUp;
+}
+
+int System::getNumOfElectronsDown()
+{
+    return m_nElectronsDown;
 }
 
 mat System::getNucleiPositions()

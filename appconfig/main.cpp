@@ -118,10 +118,17 @@ System* setup_system(const Node& doc){
         charges[i] = atoms[i].charge;
     }
 
-    int n_electrons;
-    doc["n_electrons"] >> n_electrons;
+    System *system;
+    int n_electrons, n_electrons_up, n_electrons_down;
+    if (doc.FindValue("n_electrons")){
+        doc["n_electrons"] >> n_electrons;
+        system = new System(basisFunctions, nucleiPositions, charges, n_electrons);
+    } else {
+        doc["n_electrons_up"] >> n_electrons_up;
+        doc["n_electrons_down"] >> n_electrons_down;
+        system = new System(basisFunctions, nucleiPositions, charges, n_electrons_up, n_electrons_down);
+    }
 
-    System *system = new System(basisFunctions, nucleiPositions, charges, n_electrons);
     return system;
 }
 

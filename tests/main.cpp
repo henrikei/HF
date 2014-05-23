@@ -703,7 +703,6 @@ TEST(MINIMIZER_RBANANA){
     CHECK_CLOSE(2.4, x(0), 1.0E-4);
     CHECK_CLOSE(5.76, x(1), 1.0E-4);
 
-    delete func;
     delete minimizer;
 }
 

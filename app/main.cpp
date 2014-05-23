@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "HF_potential";
+    string run = "O2";
 
 
     clock_t begin = clock();
@@ -205,7 +205,7 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        RMP solver(system,3,2);
+        UMP solver(system,3,2);
         solver.solve();
 
         if (my_rank == 0){
@@ -276,7 +276,7 @@ int main()
 
     } else if (run =="H2"){
 
-        double d = 2.8;
+        double d = 3.779451977;
         rowvec posH1 = {-d/2, 0.0, 0.0};
         rowvec posH2 = {d/2, 0.0, 0.0};
         rowvec charges = {1.0, 1.0};
@@ -287,8 +287,8 @@ int main()
         nucleiPositions.row(1) = posH2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_STO3G.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_STO3G.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -299,12 +299,12 @@ int main()
         if (my_rank == 0){
             cout << "Energy: " << solver.getEnergy() << endl;
 
-            field<mat> C = solver.getCoeff();
-            rowvec R1 = {-6.0, -3.0, -3.0};
-            rowvec R2 = {6.0, 3.0, 3.0};
-            double dx = 8.0/100;
-            Density density(basisFunctions, R1, R2, dx, dx, dx);
-            density.printMolecularOrbital(C, 1,"../../Results/H2_potential/orbitals_d2p0/orbital2_UHF.dat");
+//            field<mat> C = solver.getCoeff();
+//            rowvec R1 = {-6.0, -3.0, -3.0};
+//            rowvec R2 = {6.0, 3.0, 3.0};
+//            double dx = 8.0/100;
+//            Density density(basisFunctions, R1, R2, dx, dx, dx);
+//            density.printMolecularOrbital(C, 1,"../../Results/H2_potential/orbitals_d2p0/orbital2_UHF.dat");
         }
 
     } else if (run == "H2_potential") {
@@ -314,8 +314,8 @@ int main()
         mat nucleiPositions = zeros<mat>(2,3);
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_STO3G.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_STO3G.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -329,7 +329,7 @@ int main()
         rowvec3 posH1, posH2;
 
         ofstream ofile;
-        ofile.open("../../Results/H2_potential/UHF_631Gss.dat");
+        ofile.open("../../Results/H2_potential/UHF_631Gsstest.dat");
         ofile << "Basis set: 6-31G**" << endl;
         ofile << "Distance   UHF   UMP2   UMP3" << endl;
 
@@ -398,24 +398,24 @@ int main()
 
     } else if (run =="O2") {
 
-        double d = 2.281;//2.314158446;
+        double d = 1.812247223;//2.314158446;
         rowvec posO1 = {-0.5*d, 0.0, 0.0};
         rowvec posO2= {0.5*d, 0.0, 0.0};
         rowvec charges = {8.0, 8.0};
-        int nElectrons = 16;
+        int nElectrons = 14;
 
         mat nucleiPositions = zeros<mat>(2,3);
         nucleiPositions.row(0) = posO1;
         nucleiPositions.row(1) = posO2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631G.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631G.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UHF solver(system);
+        UMP solver(system,2);
         solver.solve();
 
         if (my_rank == 0){

@@ -13,7 +13,7 @@ Minimizer::Minimizer(Func* func)
     m_gamma = 2.0;
     m_rho = -0.5;
     m_sigma = 0.5;
-    m_toler = 1.0E-7;
+    m_toler = 1.0E-10;
 }
 
 void Minimizer::solve()

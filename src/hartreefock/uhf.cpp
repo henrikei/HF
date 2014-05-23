@@ -12,11 +12,8 @@ UHF::UHF(System *system):HartreeFock(system)
     m_fockEnergyUp = ones<colvec>(m_matDim)*1.0E6;
     m_fockEnergyDown = ones<colvec>(m_matDim)*1.0E6;
     m_restrictedFactor = 1;
-    m_nElectronsUp = system->getNumOfElectrons()/2;
-    m_nElectronsDown = m_nElectronsUp;
-    if (system->getNumOfElectrons() % 2 == 1){
-        m_nElectronsUp += 1;
-    }
+    m_nElectronsUp = system->getNumOfElectronsUp();
+    m_nElectronsDown = system->getNumOfElectronsDown();
 }
 
 
