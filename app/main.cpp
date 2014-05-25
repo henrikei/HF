@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "O2";
+    string run = "CH3";
 
 
     clock_t begin = clock();
@@ -100,82 +100,31 @@ int main()
             d += delta;
         }
 
-//    } else if (run == "CH4_reaction"){
+    } else if (run == "CN"){
 
-//        double d0 = 1.889725989; // 1 ånsgtrøm bond length
-//        double d_exp = 1.086*d0; // experimental value
-//        double theta_exp = 19.47*M_PI/180;
-//        double L = 3.0*d0;
-//        rowvec posC = {0.0, 0.0, 0.0};
-//        rowvec posH1 = {-d_exp*sin(theta_exp), d_exp*cos(theta_exp)*cos(2*M_PI/3), d_exp*cos(theta_exp)*sin(2*M_PI/3)};
-//        rowvec posH2 = {-d_exp*sin(theta_exp), -d_exp*cos(theta_exp), 0.0};
-//        rowvec posH3 = {-d_exp*sin(theta_exp), d_exp*cos(theta_exp)*cos(2*M_PI/3), -d_exp*cos(theta_exp)*sin(2*M_PI/3)};
-//        rowvec posH4 = {d_exp, 0.0, 0.0};
-//        rowvec posH5 = {L, 0, 0};
-//        rowvec charges = {6.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-//        int nElectrons = 11;
+        double d = 2.333811596;
+        rowvec posC = {-d/2, 0.0, 0.0};
+        rowvec posN = {d/2, 0.0, 0.0};
+        rowvec charges = {6.0, 7.0};
+        int nElectrons = 13;
 
-//        mat nucleiPositions = zeros<mat>(6,3);
-//        nucleiPositions.row(0) = posC;
-//        nucleiPositions.row(1) = posH1;
-//        nucleiPositions.row(2) = posH2;
-//        nucleiPositions.row(3) = posH3;
-//        nucleiPositions.row(4) = posH4;
-//        nucleiPositions.row(5) = posH5;
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posC;
+        nucleiPositions.row(1) = posN;
 
-//        BasisFunctions *basisFunctions = new BasisFunctions;
-//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
-//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 1);
-//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 2);
-//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 3);
-//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 4);
-//        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gs.dat", 5);
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_STO3G.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/N_STO3G.dat", 1);
 
-//        System *system;
-//        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-//        UMP solver(system,3,2);
+        UMP solver(system,3,4);
+        solver.solve();
 
-//        double d_start = 1.0*d0;
-//        double d_end = 2.5*d0;
-//        double d_delta = 0.025*d0;
-//        int n_steps = (d_end - d_start)/d_delta + 1;
-//        double theta_start = theta_exp;
-//        double theta_end = 0.0;
-//        double theta_delta = (theta_end - theta_end)/n_steps;
-
-//        double d = d_start;
-//        double theta = theta_start;
-//        double energy;
-
-//        ofstream ofile;
-//        ofile.open("../../Results/CH4_reaction/UHF_631Gs.dat");
-//        ofile << "Basis set: 6-31G*" << endl;
-//        ofile << "Frozen core" << endl;
-//        ofile << "Distance (a.u.)   UHF   UMP2   UMP3" << endl;
-
-//        while (d < d_end){
-//            posH1 = {-d_exp*sin(theta), d_exp*cos(theta)*cos(2*M_PI/3), d_exp*cos(theta)*sin(2*M_PI/3)};
-//            posH2 = {-d_exp*sin(theta), -d_exp*cos(theta), 0.0};
-//            posH3 = {-d_exp*sin(theta), d_exp*cos(theta)*cos(2*M_PI/3), -d_exp*cos(theta)*sin(2*M_PI/3)};
-//            posH4 = {d, 0.0, 0.0};
-
-//            nucleiPositions.row(1) = posH1;
-//            nucleiPositions.row(2) = posH2;
-//            nucleiPositions.row(3) = posH3;
-//            nucleiPositions.row(4) = posH4;
-//            system->setNucleiPositions(nucleiPositions);
-//            solver.solve();
-//            ofile << d << "  ";
-//            energy = solver.getEnergyHF();
-//            ofile << setprecision(10) << energy << "  ";
-//            energy += solver.getEnergy2order();
-//            ofile << setprecision(10) << energy << "  ";
-//            energy += solver.getEnergy3order();
-//            ofile << setprecision(10) << energy << endl;
-//            d += d_delta;
-//            theta -= theta_delta;
-//        }
+        if (my_rank == 0){
+            cout << setprecision(7) << solver.getEnergy() << endl;
+        }
 
     } else if (run == "NH4"){
 
@@ -214,6 +163,7 @@ int main()
 
     } else if (run == "CH3"){
 
+        cout << "Hey" << endl;
         double d = 2.04;//2.0262;
         double s = sin(2*M_PI/3);
         double c = cos(2*M_PI/3);
@@ -231,15 +181,16 @@ int main()
         nucleiPositions.row(3) = posH3;
 
         BasisFunctions *basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gs.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 1);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 2);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631G.dat", 3);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_6311++G(3df,3pd).dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311++G(3df,3pd).dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311++G(3df,3pd).dat", 2);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311++G(3df,3pd).dat", 3);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UMP solver(system,2,2);
+        UMP solver(system,3);
+        cout << "Hey2" << endl;
         solver.solve();
 
         if (my_rank == 0){
@@ -398,24 +349,25 @@ int main()
 
     } else if (run =="O2") {
 
-        double d = 1.812247223;//2.314158446;
+        double d = 2.471761593;//2.314158446;
         rowvec posO1 = {-0.5*d, 0.0, 0.0};
         rowvec posO2= {0.5*d, 0.0, 0.0};
         rowvec charges = {8.0, 8.0};
-        int nElectrons = 14;
+        int nElectronsUp = 9;
+        int nElectronsDown = 7;
 
         mat nucleiPositions = zeros<mat>(2,3);
         nucleiPositions.row(0) = posO1;
         nucleiPositions.row(1) = posO2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631G.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631G.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_STO3G.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_STO3G.dat", 1);
 
         System *system;
-        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+        system = new System(basisFunctions, nucleiPositions, charges, nElectronsUp, nElectronsDown);
 
-        UMP solver(system,2);
+        UHF solver(system);
         solver.solve();
 
         if (my_rank == 0){

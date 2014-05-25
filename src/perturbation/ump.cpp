@@ -43,6 +43,7 @@ void UMP::solve()
         field<mat> tempUU3(m_matDim, m_matDim);
         field<mat> tempDD3(m_matDim, m_matDim);
         field<mat> tempUD3(m_matDim, m_matDim);
+        cout << "Done initializing temps" << endl;
 
         for(int i = 0; i < m_matDim; i++){
             for(int j = 0; j < m_matDim; j++){
@@ -60,24 +61,28 @@ void UMP::solve()
                 m_MOI_UD(i,j) = zeros(m_matDim, m_matDim);
             }
         }
+        cout << "Done initializing temps" << endl;
 
         // Up-Up AOI to Up-Up MOI
         AOItoMOI(tempUU1, m_AOI, m_Cup, 0);
         AOItoMOI(tempUU2, tempUU1, m_Cup, 1);
         AOItoMOI(tempUU3, tempUU2, m_Cup, 2);
         AOItoMOI(m_MOI_UU, tempUU3, m_Cup, 3);
+        cout << "1" << endl;
 
         // Down-Down AOI to Down-Down MOI
         AOItoMOI(tempDD1, m_AOI, m_Cdown, 0);
         AOItoMOI(tempDD2, tempDD1, m_Cdown, 1);
         AOItoMOI(tempDD3, tempDD2, m_Cdown, 2);
         AOItoMOI(m_MOI_DD, tempDD3, m_Cdown, 3);
+        cout << "2" << endl;
 
         // Up-Down AOI to Up-Down MOI
         AOItoMOI(tempUD1, m_AOI, m_Cup, 0);
         AOItoMOI(tempUD2, tempUD1, m_Cdown, 1);
         AOItoMOI(tempUD3, tempUD2, m_Cup, 2);
         AOItoMOI(m_MOI_UD, tempUD3, m_Cdown, 3);
+        cout << "3" << endl;
     }
 
     if (m_perturbOrder == 1){
@@ -154,6 +159,7 @@ void UMP::calc3OrderPerturb()
         }
     }
 
+
     for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
@@ -170,6 +176,7 @@ void UMP::calc3OrderPerturb()
         }
     }
 
+
     for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
             for (int k = m_frozenCore/2; k < m_nElectronsUp; k++){
@@ -185,6 +192,7 @@ void UMP::calc3OrderPerturb()
             }
         }
     }
+
 
     for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
@@ -236,6 +244,7 @@ void UMP::calc3OrderPerturb()
         }
     }
 
+
     for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
             for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
@@ -251,6 +260,7 @@ void UMP::calc3OrderPerturb()
             }
         }
     }
+
 
     for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
@@ -268,6 +278,7 @@ void UMP::calc3OrderPerturb()
         }
     }
 
+
     for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
             for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
@@ -284,6 +295,7 @@ void UMP::calc3OrderPerturb()
         }
     }
 
+
     for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsUp; j++){
             for (int k = m_frozenCore/2; k < m_nElectronsDown; k++){
@@ -299,6 +311,7 @@ void UMP::calc3OrderPerturb()
             }
         }
     }
+
 
 
     // Contributions from particle ladder diagram
@@ -320,6 +333,7 @@ void UMP::calc3OrderPerturb()
         }
     }
 
+
     for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsDown; a < m_matDim; a++){
@@ -336,6 +350,7 @@ void UMP::calc3OrderPerturb()
         }
     }
 
+
     for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsUp; a < m_matDim; a++){
@@ -351,6 +366,7 @@ void UMP::calc3OrderPerturb()
             }
         }
     }
+
 
 
     // Contributions from hole ladder diagram
@@ -372,6 +388,7 @@ void UMP::calc3OrderPerturb()
         }
     }
 
+
     for (int i = m_frozenCore/2; i < m_nElectronsDown; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
             for (int a = m_nElectronsDown; a < m_matDim; a++){
@@ -387,6 +404,7 @@ void UMP::calc3OrderPerturb()
             }
         }
     }
+
 
     for (int i = m_frozenCore/2; i < m_nElectronsUp; i++){
         for (int j = m_frozenCore/2; j < m_nElectronsDown; j++){
