@@ -33,6 +33,7 @@ protected:
     int m_frozenCore;
 
     void AOItoMOI(field<mat> &MOI, field<mat> AOI, mat C, int index);
+    void fillZero(field<mat> &A);
 };
 
 #endif // MOLLERPLESSET_H

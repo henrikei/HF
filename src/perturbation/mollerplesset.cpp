@@ -98,3 +98,12 @@ void MollerPlesset::AOItoMOI(field<mat>& MOI, field<mat> AOI, mat C, int index)
     }
 #endif
 }
+
+void MollerPlesset::fillZero(field<mat> &A)
+{
+    for (uint i = 0; i < A.n_rows; i++){
+        for (uint j = 0; j < A.n_cols; j++){
+            A(i,j).fill(0.0);
+        }
+    }
+}

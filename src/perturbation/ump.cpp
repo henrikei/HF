@@ -34,28 +34,14 @@ void UMP::solve()
 
     // Convert from Atomic Orbital Integrals (AOI) to Molecular Orbital Integrals (MOI)
     if (m_perturbOrder > 1){
-        field<mat> tempUU1(m_matDim, m_matDim);
-        field<mat> tempDD1(m_matDim, m_matDim);
-        field<mat> tempUD1(m_matDim, m_matDim);
-        field<mat> tempUU2(m_matDim, m_matDim);
-        field<mat> tempDD2(m_matDim, m_matDim);
-        field<mat> tempUD2(m_matDim, m_matDim);
-        field<mat> tempUU3(m_matDim, m_matDim);
-        field<mat> tempDD3(m_matDim, m_matDim);
-        field<mat> tempUD3(m_matDim, m_matDim);
+        field<mat> temp1(m_matDim, m_matDim);
+        field<mat> temp2(m_matDim, m_matDim);
         cout << "Done initializing temps" << endl;
 
         for(int i = 0; i < m_matDim; i++){
             for(int j = 0; j < m_matDim; j++){
-                tempUU1(i,j) = zeros(m_matDim, m_matDim);
-                tempDD1(i,j) = zeros(m_matDim, m_matDim);
-                tempUD1(i,j) = zeros(m_matDim, m_matDim);
-                tempUU2(i,j) = zeros(m_matDim, m_matDim);
-                tempDD2(i,j) = zeros(m_matDim, m_matDim);
-                tempUD2(i,j) = zeros(m_matDim, m_matDim);
-                tempUU3(i,j) = zeros(m_matDim, m_matDim);
-                tempDD3(i,j) = zeros(m_matDim, m_matDim);
-                tempUD3(i,j) = zeros(m_matDim, m_matDim);
+                temp1(i,j) = zeros(m_matDim, m_matDim);
+                temp2(i,j) = zeros(m_matDim, m_matDim);
                 m_MOI_UU(i,j) = zeros(m_matDim, m_matDim);
                 m_MOI_DD(i,j) = zeros(m_matDim, m_matDim);
                 m_MOI_UD(i,j) = zeros(m_matDim, m_matDim);
@@ -64,24 +50,31 @@ void UMP::solve()
         cout << "Done initializing temps" << endl;
 
         // Up-Up AOI to Up-Up MOI
-        AOItoMOI(tempUU1, m_AOI, m_Cup, 0);
-        AOItoMOI(tempUU2, tempUU1, m_Cup, 1);
-        AOItoMOI(tempUU3, tempUU2, m_Cup, 2);
-        AOItoMOI(m_MOI_UU, tempUU3, m_Cup, 3);
+        AOItoMOI(temp1, m_AOI, m_Cup, 0);
+        AOItoMOI(temp2, temp1, m_Cup, 1);
+        fillZero(temp1);
+        AOItoMOI(temp1, temp2, m_Cup, 2);
+        AOItoMOI(m_MOI_UU, temp1, m_Cup, 3);
+        fillZero(temp1);
+        fillZero(temp2);
         cout << "1" << endl;
 
         // Down-Down AOI to Down-Down MOI
-        AOItoMOI(tempDD1, m_AOI, m_Cdown, 0);
-        AOItoMOI(tempDD2, tempDD1, m_Cdown, 1);
-        AOItoMOI(tempDD3, tempDD2, m_Cdown, 2);
-        AOItoMOI(m_MOI_DD, tempDD3, m_Cdown, 3);
+        AOItoMOI(temp1, m_AOI, m_Cdown, 0);
+        AOItoMOI(temp2, temp1, m_Cdown, 1);
+        fillZero(temp1);
+        AOItoMOI(temp1, temp2, m_Cdown, 2);
+        AOItoMOI(m_MOI_DD, temp1, m_Cdown, 3);
+        fillZero(temp1);
+        fillZero(temp2);
         cout << "2" << endl;
 
         // Up-Down AOI to Up-Down MOI
-        AOItoMOI(tempUD1, m_AOI, m_Cup, 0);
-        AOItoMOI(tempUD2, tempUD1, m_Cdown, 1);
-        AOItoMOI(tempUD3, tempUD2, m_Cup, 2);
-        AOItoMOI(m_MOI_UD, tempUD3, m_Cdown, 3);
+        AOItoMOI(temp1, m_AOI, m_Cup, 0);
+        AOItoMOI(temp2, temp1, m_Cdown, 1);
+        fillZero(temp1);
+        AOItoMOI(temp1, temp2, m_Cup, 2);
+        AOItoMOI(m_MOI_UD, temp1, m_Cdown, 3);
         cout << "3" << endl;
     }
 

@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "CH3";
+    string run = "O2";
 
 
     clock_t begin = clock();
@@ -163,8 +163,7 @@ int main()
 
     } else if (run == "CH3"){
 
-        cout << "Hey" << endl;
-        double d = 2.04;//2.0262;
+        double d = 2.0273;
         double s = sin(2*M_PI/3);
         double c = cos(2*M_PI/3);
         rowvec posC = {0.0, 0.0, 0.0};
@@ -189,12 +188,13 @@ int main()
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
 
-        UMP solver(system,3);
+        UHF solver(system);
         cout << "Hey2" << endl;
         solver.solve();
 
         if (my_rank == 0){
-            cout << "Energy: " << setprecision(7) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order() << endl;
+            cout << "Energy: " << setprecision(10) <<  solver.getEnergy()<< endl;
+            cout << "S: " << solver.getSpinExpectation() << endl;
         }
 
     } else if (run == "H2O"){
@@ -349,7 +349,7 @@ int main()
 
     } else if (run =="O2") {
 
-        double d = 2.471761593;//2.314158446;
+        double d = 2.282;
         rowvec posO1 = {-0.5*d, 0.0, 0.0};
         rowvec posO2= {0.5*d, 0.0, 0.0};
         rowvec charges = {8.0, 8.0};
@@ -361,8 +361,8 @@ int main()
         nucleiPositions.row(1) = posO2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_STO3G.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_STO3G.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311++G(3df,3pd).dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311++G(3df,3pd).dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectronsUp, nElectronsDown);
@@ -372,6 +372,7 @@ int main()
 
         if (my_rank == 0){
             cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+            cout << "Spin: " << setprecision(9) << solver.getSpinExpectation() << endl;
         }
 
         delete system;
