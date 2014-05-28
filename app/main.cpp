@@ -100,6 +100,42 @@ int main()
             d += delta;
         }
 
+    } else if (run == "CH4"){
+
+        double d = 1.1835680518387328;
+        rowvec posC = {0.0, 0.0, 0.0};
+        rowvec posH1 = {d, d, d};
+        rowvec posH2 = {-d, -d, d};
+        rowvec posH3 = {d, -d, -d};
+        rowvec posH4 = {-d, d, -d};
+        rowvec charges = {6.0, 1.0, 1.0, 1.0, 1.0};
+        int nElectrons = 9;
+
+        mat nucleiPositions = zeros<mat>(5,3);
+        nucleiPositions.row(0) = posC;
+        nucleiPositions.row(1) = posH1;
+        nucleiPositions.row(2) = posH2;
+        nucleiPositions.row(3) = posH3;
+        nucleiPositions.row(4) = posH4;
+
+        BasisFunctions *basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/C_631Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 3);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 4);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        UHF solver(system);
+        solver.solve();
+
+        if (my_rank == 0){
+            cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
+            //cout << "Orbital energies: " << solver.getFockEnergy()(0) << endl;
+        }
+
     } else if (run == "CN"){
 
         double d = 2.333811596;
@@ -161,6 +197,38 @@ int main()
             cout << "Energy: " << setprecision(10) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order()<< endl;
         }
 
+    } else if (run == "NH3"){
+
+        rowvec posN = {0.0, 0.0, 0.0};
+        rowvec posH1 = {1.7718820838495062, 0.0, 0.72111225265774803};
+        rowvec posH2 = {-0.88594104192475265, 1.5344948971241812, 0.72111225265774803};
+        rowvec posH3 = {-0.88594104192475265, -1.5344948971241812, 0.72111225265774803};
+        rowvec charges = {7.0, 1.0, 1.0, 1.0};
+        int nElectrons = 10;
+
+        mat nucleiPositions = zeros<mat>(4,3);
+        nucleiPositions.row(0) = posN;
+        nucleiPositions.row(1) = posH1;
+        nucleiPositions.row(2) = posH2;
+        nucleiPositions.row(3) = posH3;
+
+        BasisFunctions *basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/N_631Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 3);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        RHF solver(system);
+        solver.solve();
+
+        if (my_rank == 0){
+            cout << "Energy: " << solver.getEnergy() << endl;
+            cout << "Orbital energies: " << solver.getFockEnergy()(0) << endl;
+        }
+
     } else if (run == "CH3"){
 
         double d = 2.0273;
@@ -200,8 +268,8 @@ int main()
     } else if (run == "H2O"){
 
         rowvec posO = {0.0, 0.0, 0.0};
-        rowvec posH1 = {1.797, 0.0, 0.0};
-        rowvec posH2 = {-0.448, 1.740, 0.0};
+        rowvec posH1 = {1.809, 0.0, 0.0};
+        rowvec posH2 = {-0.45354874635597853, 1.7512208697588434, 0.0};
         rowvec charges = {8.0, 1.0, 1.0};
         int nElectrons = 10;
 
@@ -211,9 +279,9 @@ int main()
         nucleiPositions.row(2) = posH2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311++Gss.dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311++Gss.dat", 1);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_6311++Gss.dat", 2);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 2);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
@@ -223,6 +291,7 @@ int main()
 
         if (my_rank == 0){
             cout << "Energy: " << solver.getEnergy() << endl;
+            cout << "Orbital energies: " << solver.getFockEnergy()(0) << endl;
         }
 
     } else if (run =="H2"){
@@ -299,6 +368,34 @@ int main()
             ofile << setprecision(10) << energy << endl;
         }
 
+    } else if (run == "HF"){
+
+        double d0 = 1.733;
+        rowvec posH = {-0.5*d0, 0.0, 0.0};
+        rowvec posF= {0.5*d0, 0.0, 0.0};
+        rowvec charges = {1.0, 9.0};
+        int nElectrons = 10;
+
+        mat nucleiPositions = zeros<mat>(2,3);
+        nucleiPositions.row(0) = posH;
+        nucleiPositions.row(1) = posF;
+
+        BasisFunctions* basisFunctions = new BasisFunctions;
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/H_631Gss.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/F_631Gss.dat", 1);
+
+        System *system;
+        system = new System(basisFunctions, nucleiPositions, charges, nElectrons);
+
+        RHF solver(system);
+        solver.solve();
+
+        if (my_rank == 0){
+            cout << "Energy: " << solver.getEnergy() << endl;
+            cout << "Orbital energies: " << solver.getFockEnergy()(0) << endl;
+        }
+
+
     } else if (run == "HF_potential") {
 
         double d0 = 1.889725989; // 1 ångstrøm
@@ -361,8 +458,8 @@ int main()
         nucleiPositions.row(1) = posO2;
 
         BasisFunctions* basisFunctions = new BasisFunctions;
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311++G(3df,3pd).dat", 0);
-        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_6311++G(3df,3pd).dat", 1);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 0);
+        basisFunctions->addContracteds("../../HartreeFock/inFiles/basisSets/O_631Gs.dat", 1);
 
         System *system;
         system = new System(basisFunctions, nucleiPositions, charges, nElectronsUp, nElectronsDown);
@@ -372,7 +469,23 @@ int main()
 
         if (my_rank == 0){
             cout << "Energy: " << setprecision(9) << solver.getEnergy() << endl;
-            cout << "Spin: " << setprecision(9) << solver.getSpinExpectation() << endl;
+            cout << "Spin-up orbital energies: " << solver.getFockEnergy()(0) << endl;
+            cout << "Spin-down orbital energies: " << solver.getFockEnergy()(1) << endl;
+//            rowvec3 R1 = {-3.0, -3.0, -3.0};
+//            rowvec3 R2 = -R1;
+//            double dx = 0.06;
+//            Density density(basisFunctions, R1, R2, dx, dx, dx);
+//            density.printMolecularOrbital(solver.getCoeff(), 0, "../../Results/O2_orbs/1_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 1, "../../Results/O2_orbs/2_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 2, "../../Results/O2_orbs/3_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 3, "../../Results/O2_orbs/4_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 4, "../../Results/O2_orbs/5_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 5, "../../Results/O2_orbs/6_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 6, "../../Results/O2_orbs/7_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 7, "../../Results/O2_orbs/8_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 8, "../../Results/O2_orbs/9_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 9, "../../Results/O2_orbs/10_up.dat",0);
+//            density.printMolecularOrbital(solver.getCoeff(), 10, "../../Results/O2_orbs/11_up.dat",0);
         }
 
         delete system;
