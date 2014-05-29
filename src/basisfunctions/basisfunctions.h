@@ -25,8 +25,8 @@ public:
 private:
     vector<Contracted*> m_contracteds;
 
-    void addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, int posNum);
-    void normalizeCoeff(double exp, double& coeff, irowvec pows);
+    void addSomeContracteds(vector<double> exp, vector<double> coeff, field<irowvec3> pows, int posNum);
+    void normalizeCoeff(double exp, double& coeff, irowvec3 pows);
     int factorial (int n);
 };
 

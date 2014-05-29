@@ -1,47 +1,60 @@
-#  6-31G(3df,3pd)  EMSL  Basis Set Exchange Library  5/25/14 11:39 AM
+#  6-311++G(3df,3pd)  EMSL  Basis Set Exchange Library  5/29/14 3:09 AM
 # Elements                             References
 # --------                             ----------
-# H - He: W.J. Hehre, R. Ditchfield and J.A. Pople, J. Chem. Phys. 56,
-# Li - Ne: 2257 (1972).  Note: Li and B come from J.D. Dill and J.A.
-# Pople, J. Chem. Phys. 62, 2921 (1975).
-# Na - Ar: M.M. Francl, W.J. Petro, W.J. Hehre, J.S. Binkley, M.S. Gordon,
-# D.J. DeFrees and J.A. Pople, J. Chem. Phys. 77, 3654 (1982)
-# K  - Zn: V. Rassolov, J.A. Pople, M. Ratner and T.L. Windus, J. Chem. Phys.
-# 109, 1223 (1998)
-# Note: He and Ne are unpublished basis sets taken from the Gaussian
-# program
-# 
-
+# H, Li - Ne: R. Krishnan, J.S. Binkley, R. Seeger and J.A. Pople,
+#             J. Chem. Phys. 72, 650 (1980)
+# Na - Ar:    A.D. McLean and G.S. Chandler J. Chem. Phys. 72, 5639, (1980).
+# K  - Ca:    J-P. Blaudeau, M. P. McGrath, L.A. Curtiss and L. Radom,
+#             J. Chem. Phys. 107, 5016 (1997).
+# Ga - Kr:    L. A. Curtiss, M. P. McGrath, J-P. Blandeau, N. E. Davis, 
+#             R. C. Binning, Jr. L. Radom, J. Chem. Phys. 103, 6104 (1995).
+# I      :    M.N. Glukhovstev, A. pross, M.P. McGrath, L. Radom, J. Chem. Phys.
+#             103, 1878 (1995)
+#   
 
 # Elements                             References
 # --------                             ----------
 # H-Ne: M.J. Frisch, J.A. Pople and J.S. Binkley, J. Chem. Phys. 80, 3265 (1984)
 #   
 
+# Elements                             Reference
+# --------                             ----------
+# H, Li-Cl: T. Clark, J. Chandrasekhar,  G.W. Spitznagel, P.V.R. Schleyer, 
+#           J. Comp. Chem. 4, 294 (1983).
+#   
+
 
 $basis
 *
-c   6-31G(3df,3pd)
+c   6-311++G(3df,3pd)
 *
     6  s
-   3047.5249000              0.0018347        
-    457.3695100              0.0140373        
-    103.9486900              0.0688426        
-     29.2101550              0.2321844        
-      9.2866630              0.4679413        
-      3.1639270              0.3623120        
+   4563.2400000              0.00196665       
+    682.0240000              0.0152306        
+    154.9730000              0.0761269        
+     44.4553000              0.2608010        
+     13.0290000              0.6164620        
+      1.8277300              0.2210060        
     3  s
-      7.8682724             -0.1193324        
-      1.8812885             -0.1608542        
-      0.5442493              1.1434564        
+     20.9642000              0.1146600        
+      4.8033100              0.9199990        
+      1.4593300             -0.00303068       
     1  s
-      0.1687144              1.0000000        
+      0.4834560              1.0000000        
+    1  s
+      0.1455850              1.0000000        
+    1  s
+      0.0438000              1.0000000        
     3  p
-      7.8682724              0.0689991        
-      1.8812885              0.3164240        
-      0.5442493              0.7443083        
+     20.9642000              0.0402487        
+      4.8033100              0.2375940        
+      1.4593300              0.8158540        
     1  p
-      0.1687144              1.0000000        
+      0.4834560              1.0000000        
+    1  p
+      0.1455850              1.0000000        
+    1  p
+      0.0438000              1.0000000        
     1  d
       2.5040000              1.0000000        
     1  d
@@ -52,6 +65,3 @@ c   6-31G(3df,3pd)
       0.8000000              1.0000000        
 *
 $end
-
-
-

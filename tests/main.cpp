@@ -1,6 +1,9 @@
 #include <iostream>
 #include <iomanip>
 #include <armadillo>
+#ifdef RUN_MPI
+#include <mpi.h>
+#endif
 #include <unittest++/UnitTest++.h>
 #include <integrator/integrator.h>
 #include <boysfunction/boysfunction.h>
@@ -708,7 +711,19 @@ TEST(MINIMIZER_RBANANA){
 
 int main()
 {
-    return UnitTest::RunAllTests();
+    // MPI
+#ifdef RUN_MPI
+    MPI_Init(NULL, NULL);
+#endif
+
+    int result = UnitTest::RunAllTests();
+    cout << result << endl;
+
+#ifdef RUN_MPI
+    MPI_Finalize();
+#endif
+
+    return result;
 }
 
 

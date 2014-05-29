@@ -41,7 +41,7 @@ int main()
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 #endif
 
-    string run = "O2";
+    string run = "NH4";
 
 
     clock_t begin = clock();
@@ -194,7 +194,7 @@ int main()
         solver.solve();
 
         if (my_rank == 0){
-            cout << "Energy: " << setprecision(10) <<  solver.getEnergyHF() + solver.getEnergy2order() + solver.getEnergy3order()<< endl;
+            cout << "Energy: " << setprecision(10) <<  solver.getEnergy() << endl;
         }
 
     } else if (run == "NH3"){

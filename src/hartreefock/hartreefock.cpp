@@ -6,6 +6,7 @@ HartreeFock::HartreeFock(System *system):
     m_system = system;
 
     m_matDim = m_system->getTotalNumOfBasisFunc();
+    cout << m_matDim << endl;
     m_h = zeros<mat>(m_matDim, m_matDim);
     m_S = zeros<mat>(m_matDim, m_matDim);
     m_Q.set_size(m_matDim, m_matDim);
@@ -55,7 +56,7 @@ void HartreeFock::calcIntegrals()
     // Let the different procs calculate on different values of (i,j).
     // The matrix in m_Q(i,j) is then calculated by a single proc only.
     // The matrices can therefore be distributed among the procs using MPI_Bcast
-    //clock_t begin = clock();
+    clock_t begin = clock();
     int counter = 0;
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){
@@ -69,8 +70,8 @@ void HartreeFock::calcIntegrals()
             counter += 1;
         }
     }
-    //clock_t end = clock();
-    //cout << "Proc " << my_rank <<": Time integrals: " << (double(end - begin))/CLOCKS_PER_SEC << endl;
+    clock_t end = clock();
+    cout << "Proc " << my_rank <<": Time integrals: " << (double(end - begin))/CLOCKS_PER_SEC << endl;
 
     // Broadcast
     counter = 0;
@@ -104,6 +105,7 @@ void HartreeFock::calcIntegrals()
 #endif
 
 #ifndef RUN_MPI
+    clock_t begin = clock();
     cout << "start integrals" << endl;
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < i+1; j++){
@@ -122,7 +124,8 @@ void HartreeFock::calcIntegrals()
             }
         }
     }
-    cout << "end integrals" << endl;
+    clock_t end = clock();
+    cout << "Time integrals: " << (double(end - begin))/CLOCKS_PER_SEC << endl;
 #endif
 
         //        for (int i = 0; i < matDim; i++){

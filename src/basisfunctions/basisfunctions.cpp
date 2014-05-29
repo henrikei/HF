@@ -22,66 +22,32 @@ BasisFunctions::~BasisFunctions()
 void BasisFunctions::addContracteds(string inFileName, int posNum)
 {
     // pows_s, pows_p and pows_d defines the powers which are used to form primitives. For example, i+j+k = 1 for p-orbitals.
-    // The prefactors are needed in cases where each primitive has a sum of two or more power terms, which is the case when
-    // 5 d-orbitals are used instead of 6. The 5 p-orbitals are have the following powers:
-    // xy, xz, yz, x^2 - y^2, 3*r^2 - z^2.
 
-    field <imat> pows_s(1);
-    field <imat> pows_p(3);
-    field <imat> pows_d;
-    field <rowvec> prefactor_s(1);
-    field <rowvec> prefactor_p(3);
-    field <rowvec> prefactor_d;
+    field<irowvec3> pows_s(1,3);
+    field<irowvec3> pows_p(3,3);
+    field<irowvec3> pows_d(6,3);
+    field<irowvec3> pows_f(10,3);
 
-    bool d6 = true;
-    if (d6 == true){
-        pows_s(0) = {0,0,0};
-        pows_p(0) = {1,0,0};
-        pows_p(1) = {0,1,0};
-        pows_p(2) = {0,0,1};
-        pows_d.set_size(6);
-        pows_d(0) = {2,0,0};
-        pows_d(1) = {0,2,0};
-        pows_d(2) = {0,0,2};
-        pows_d(3) = {1,1,0};
-        pows_d(4) = {1,0,1};
-        pows_d(5) = {0,1,1};
-        prefactor_s(0) = {1.0};
-        prefactor_p(0) = {1.0};
-        prefactor_p(1) = {1.0};
-        prefactor_p(2) = {1.0};
-        prefactor_d.set_size(6);
-        prefactor_d(0) = {1.0};
-        prefactor_d(1) = {1.0};
-        prefactor_d(2) = {1.0};
-        prefactor_d(3) = {1.0};
-        prefactor_d(4) = {1.0};
-        prefactor_d(5) = {1.0};
-    } else {
-        pows_s(0) = {0,0,0};
-        pows_p(0) = {1,0,0};
-        pows_p(1) = {0,1,0};
-        pows_p(2) = {0,0,1};
-        pows_d.set_size(5);
-        pows_d(0) = {1,1,0};
-        pows_d(1) = {1,0,1};
-        pows_d(2) = {0,1,1};
-        imat pows_dTemp = zeros<imat>(3,3);
-        pows_dTemp.diag() += 2;
-        pows_d(3) = pows_dTemp.rows(0,1);
-        pows_d(4) = pows_dTemp;
-        prefactor_s(0) = {1.0};
-        prefactor_p(0) = {1.0};
-        prefactor_p(1) = {1.0};
-        prefactor_p(2) = {1.0};
-        prefactor_d.set_size(5);
-        prefactor_d(0) = {1.0};
-        prefactor_d(1) = {1.0};
-        prefactor_d(2) = {1.0};
-        prefactor_d(3) = {1.0, -1.0};
-        prefactor_d(4) = {-1.0, -1.0, 2.0};
-    }
-
+    pows_s(0) = {0,0,0};
+    pows_p(0) = {1,0,0};
+    pows_p(1) = {0,1,0};
+    pows_p(2) = {0,0,1};
+    pows_d(0) = {2,0,0};
+    pows_d(1) = {0,2,0};
+    pows_d(2) = {0,0,2};
+    pows_d(3) = {1,1,0};
+    pows_d(4) = {1,0,1};
+    pows_d(5) = {0,1,1};
+    pows_f(0) = {3,0,0};
+    pows_f(1) = {0,3,0};
+    pows_f(2) = {0,0,3};
+    pows_f(3) = {2,1,0};
+    pows_f(4) = {2,0,1};
+    pows_f(5) = {1,2,0};
+    pows_f(6) = {0,2,1};
+    pows_f(7) = {1,0,2};
+    pows_f(8) = {0,1,2};
+    pows_f(9) = {1,1,1};
 
     string line, stringToSearch;
     fstream file;
@@ -97,7 +63,7 @@ void BasisFunctions::addContracteds(string inFileName, int posNum)
     }
 
     // search1: Search for groups of contracted basis sets
-    regex search1("([0-9]\\s+[spd])((\\s+-?[0-9]+\\.[0-9]+)+)");
+    regex search1("([0-9]\\s+[spdf])((\\s+-?[0-9]+\\.[0-9]+)+)");
     sregex_iterator pos1(stringToSearch.begin(), stringToSearch.end(), search1);
     sregex_iterator end1;
     for(; pos1!=end1; pos1++){
@@ -114,19 +80,20 @@ void BasisFunctions::addContracteds(string inFileName, int posNum)
             coeff.push_back(atof(pos2->str(2).c_str()));
         }
 
-        // Check type of orbital (s, p, d)
+        // Check type of orbital (s, p, d, f)
         string orbitalType = pos1->str(1).c_str();
         regex search_s("[0-9]\\s+s");
         regex search_p("[0-9]\\s+p");
         regex search_d("[0-9]\\s+d");
+        regex search_f("[0-9]\\s+f");
         if(regex_match(orbitalType, search_s)){
-            addSomeContracteds(exp, coeff, pows_s, prefactor_s, posNum);
-        }
-        if(regex_match(orbitalType, search_p)){
-            addSomeContracteds(exp, coeff, pows_p, prefactor_p, posNum);
-        }
-        if(regex_match(orbitalType, search_d)){
-            addSomeContracteds(exp, coeff, pows_d, prefactor_d, posNum);
+            addSomeContracteds(exp, coeff, pows_s, posNum);
+        } else if (regex_match(orbitalType, search_p)){
+            addSomeContracteds(exp, coeff, pows_p, posNum);
+        } else if (regex_match(orbitalType, search_d)){
+            addSomeContracteds(exp, coeff, pows_d, posNum);
+        } else if (regex_match(orbitalType, search_f)){
+            addSomeContracteds(exp, coeff, pows_f, posNum);
         }
     }
     //----------------------------------------------------------------------------------------------------------------------------
@@ -163,30 +130,26 @@ int BasisFunctions::getAngMomMax()
     return maxAngMom;
 }
 
-void BasisFunctions::addSomeContracteds(vector<double> exp, vector<double> coeff, field<imat> pows, field<rowvec> prefactor, int posNum)
+void BasisFunctions::addSomeContracteds(vector<double> exp, vector<double> coeff, field<irowvec3> pows, int posNum)
 {
-    // Loop through number of contracteds (1s -> 1, 2p -> 3, 2d -> 6 (or 5)
+    // Loop through number of contracteds (s -> 1, p -> 3, d -> 6, f -> 10)
     for (uint i = 0; i < pows.n_rows; i++){
         vector<Primitive*> primitives;
-        // Loop though number of power terms (only different from 1 when 5 d-functions are used)
-        for (uint j = 0; j < pows(i).n_rows; j++){
-            int counter = 0;
-            // Loop through the elements of exp and coeff
-            while (counter < (int)exp.size()){
-                double coeffn = coeff.at(counter);
-                normalizeCoeff(exp.at(counter), coeffn, pows(i).row(j));
-                coeffn *= prefactor(i)(j);
-                Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows(i).row(j), posNum);
-                primitives.push_back(primitive);
-                counter += 1;
-            }
+        int counter = 0;
+        // Loop through the elements of exp and coeff
+        while (counter < (int)exp.size()){
+            double coeffn = coeff.at(counter);
+            normalizeCoeff(exp.at(counter), coeffn, pows(i));
+            Primitive *primitive = new Primitive(exp.at(counter), coeffn, pows(i), posNum);
+            primitives.push_back(primitive);
+            counter += 1;
         }
         Contracted *contracted = new Contracted(primitives);
         m_contracteds.push_back(contracted);
     }
 }
 
-void BasisFunctions::normalizeCoeff(double exp, double &coeff, irowvec pows)
+void BasisFunctions::normalizeCoeff(double exp, double &coeff, irowvec3 pows)
 {
     int i = pows.at(0);
     int j = pows.at(1);

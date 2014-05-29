@@ -34,14 +34,12 @@ void UMP::solve()
 
     // Convert from Atomic Orbital Integrals (AOI) to Molecular Orbital Integrals (MOI)
     if (m_perturbOrder > 1){
-        field<mat> temp1(m_matDim, m_matDim);
-        field<mat> temp2(m_matDim, m_matDim);
+        field<mat> temp(m_matDim, m_matDim);
         cout << "Done initializing temps" << endl;
 
         for(int i = 0; i < m_matDim; i++){
             for(int j = 0; j < m_matDim; j++){
-                temp1(i,j) = zeros(m_matDim, m_matDim);
-                temp2(i,j) = zeros(m_matDim, m_matDim);
+                temp(i,j) = zeros(m_matDim, m_matDim);
                 m_MOI_UU(i,j) = zeros(m_matDim, m_matDim);
                 m_MOI_DD(i,j) = zeros(m_matDim, m_matDim);
                 m_MOI_UD(i,j) = zeros(m_matDim, m_matDim);
@@ -50,32 +48,37 @@ void UMP::solve()
         cout << "Done initializing temps" << endl;
 
         // Up-Up AOI to Up-Up MOI
-        AOItoMOI(temp1, m_AOI, m_Cup, 0);
-        AOItoMOI(temp2, temp1, m_Cup, 1);
-        fillZero(temp1);
-        AOItoMOI(temp1, temp2, m_Cup, 2);
-        AOItoMOI(m_MOI_UU, temp1, m_Cup, 3);
-        fillZero(temp1);
-        fillZero(temp2);
+        clock_t begin = clock();
+        AOItoMOI(temp, m_AOI, m_Cup, 0);
+        AOItoMOI(m_MOI_UU, temp, m_Cup, 1);
+        fillZero(temp);
+        AOItoMOI(temp, m_MOI_UU, m_Cup, 2);
+        fillZero(m_MOI_UU);
+        AOItoMOI(m_MOI_UU, temp, m_Cup, 3);
+        fillZero(temp);
         cout << "1" << endl;
 
         // Down-Down AOI to Down-Down MOI
-        AOItoMOI(temp1, m_AOI, m_Cdown, 0);
-        AOItoMOI(temp2, temp1, m_Cdown, 1);
-        fillZero(temp1);
-        AOItoMOI(temp1, temp2, m_Cdown, 2);
-        AOItoMOI(m_MOI_DD, temp1, m_Cdown, 3);
-        fillZero(temp1);
-        fillZero(temp2);
+        AOItoMOI(temp, m_AOI, m_Cdown, 0);
+        AOItoMOI(m_MOI_DD, temp, m_Cdown, 1);
+        fillZero(temp);
+        AOItoMOI(temp, m_MOI_DD, m_Cdown, 2);
+        fillZero(m_MOI_DD);
+        AOItoMOI(m_MOI_DD, temp, m_Cdown, 3);
+        fillZero(temp);
         cout << "2" << endl;
 
         // Up-Down AOI to Up-Down MOI
-        AOItoMOI(temp1, m_AOI, m_Cup, 0);
-        AOItoMOI(temp2, temp1, m_Cdown, 1);
-        fillZero(temp1);
-        AOItoMOI(temp1, temp2, m_Cup, 2);
-        AOItoMOI(m_MOI_UD, temp1, m_Cdown, 3);
+        AOItoMOI(temp, m_AOI, m_Cup, 0);
+        AOItoMOI(m_MOI_UD, temp, m_Cdown, 1);
+        fillZero(temp);
+        AOItoMOI(temp, m_MOI_UD, m_Cup, 2);
+        fillZero(m_MOI_UD);
+        AOItoMOI(m_MOI_UD, temp, m_Cdown, 3);
         cout << "3" << endl;
+
+        clock_t end = clock();
+        cout << "Time AOI to MOI: " << (double(end - begin))/CLOCKS_PER_SEC << endl;
     }
 
     if (m_perturbOrder == 1){
