@@ -25,15 +25,11 @@ void RMP::solve()
 
     // temp1, temp2, temp3 are temporary fields used to get from
     // Atomic Orbital Integrals to Molecular Orbital Integrals
-    field<mat> temp1(m_matDim, m_matDim);
-    field<mat> temp2(m_matDim, m_matDim);
-    field<mat> temp3(m_matDim, m_matDim);
+    field<mat> temp(m_matDim, m_matDim);
     // orbitalIntegral = <ij|g|ab>
     for (int i = 0; i < m_matDim; i++){
         for (int j = 0; j < m_matDim; j++){
-            temp1(i,j) = zeros(m_matDim, m_matDim);
-            temp2(i,j) = zeros(m_matDim, m_matDim);
-            temp3(i,j) = zeros(m_matDim, m_matDim);
+            temp(i,j) = zeros(m_matDim, m_matDim);
             m_MOI(i,j) = zeros(m_matDim, m_matDim);
         }
     }
@@ -43,10 +39,12 @@ void RMP::solve()
 //#ifdef RUN_MPI
 //    clock_t begin = clock();
 //#endif
-        AOItoMOI(temp1, m_AOI, m_C, 0);
-        AOItoMOI(temp2, temp1, m_C, 1);
-        AOItoMOI(temp3, temp2, m_C, 2);
-        AOItoMOI(m_MOI, temp3, m_C, 3);
+        AOItoMOI(temp, m_AOI, m_C, 0);
+        AOItoMOI(m_MOI, temp, m_C, 1);
+        fillZero(temp);
+        AOItoMOI(temp, m_MOI, m_C, 2);
+        fillZero(m_MOI);
+        AOItoMOI(m_MOI, temp, m_C, 3);
 //#ifdef RUN_MPI
 //    clock_t end = clock();
 //    int my_rank;

@@ -35,8 +35,8 @@ if not os.path.exists(build_path):
 print "Cleaning"
 subprocess.call(["make", "clean"], cwd=build_path)
 print "Running qmake"
-subprocess.call(["qmake", current_dir, "CONFIG+=nompi"], cwd=build_path)
-#subprocess.call(["qmake", current_dir], cwd=build_path)
+#subprocess.call(["qmake", current_dir, "CONFIG+=nompi"], cwd=build_path)
+subprocess.call(["qmake", current_dir], cwd=build_path)
 print "Running make"
 subprocess.call(["make"], cwd=build_path)
 
@@ -45,5 +45,5 @@ app_path = os.path.join(build_path,"appconfig")
 env = dict(os.environ)
 env['LD_LIBRARY_PATH'] = lib_path
 
-subprocess.call(["./appconfig", input_file, output_dir], cwd=app_path, env=env)
-#subprocess.call(["mpirun", "-n", "2", "./appconfig", input_file, output_dir], cwd=app_path, env=env)
+#subprocess.call(["./appconfig", input_file, output_dir], cwd=app_path, env=env)
+subprocess.call(["mpirun", "-n", "4", "./appconfig", input_file, output_dir], cwd=app_path, env=env)
